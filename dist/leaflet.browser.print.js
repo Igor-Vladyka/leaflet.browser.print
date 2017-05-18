@@ -115,14 +115,18 @@ L.Control.BrowserPrint = L.Control.extend({
 
         this._validatePrintLayer();
 
-        this._map.invalidateSize();
-        this._map.on("moveend", this._onPrintBoundsLoaded, this);
+        this._map.on("resize", this._onMapResized, this);
+        this._map.invalidateSize({reset: true, animate: false, pan: false});
+    },
 
+    _onMapResized: function(){
+        this._map.off("resize", this._onMapResized, this);
         var boundsToFitForPrint = this.options.origins.bounds;
         if (this.options.autoBounds) {
             boundsToFitForPrint = this._getBoundsForAllVisualLayers() || boundsToFitForPrint;
         }
 
+        this._map.on("moveend", this._onPrintBoundsLoaded, this);
         this._map.fitBounds(boundsToFitForPrint);
     },
 
@@ -153,48 +157,49 @@ L.Control.BrowserPrint = L.Control.extend({
     },
 
     _onCustomPrintLayerLoaded: function () {
-
+        var self = this;
         if (this.options.printLayer) {
             this.options.printLayer.off("load", this._onCustomPrintLayerLoaded, this);
         }
 
         window.print();
-        this._printEnd();
+        self._printEnd(self);
     },
 
     _onPrintBoundsLoaded: function () {
-        this._map.off("moveend", this._onPrintBoundsLoaded);
 
-        if (this.options.printLayer) {
+        this._map.off("moveend", this._onPrintBoundsLoaded, this);
+
+        if (this.options.printLayer && this.options.printLayer._tilesToLoad) {
             this.options.printLayer.on("load", this._onCustomPrintLayerLoaded, this);
         } else {
             this._onCustomPrintLayerLoaded();
         }
     },
 
-    _printEnd: function () {
+    _printEnd: function (context) {
 
-        var self = this;
+        var self = context;
 
-        if (this.options.prevLayers) {
-            this.options.prevLayers.forEach(function(l) { self._map.addLayer(l); });
+        if (self.options.prevLayers) {
+            self.options.prevLayers.forEach(function(l) { self._map.addLayer(l); });
         }
 
         if (self.options.printLayer) {
             self._map.removeLayer(self.options.printLayer);
         }
 
-        var mapContainer = this._map.getContainer();
+        var mapContainer = self._map.getContainer();
 
-        mapContainer.style.width = this.options.origins.width;
-        mapContainer.style.height = this.options.origins.height;
+        mapContainer.style.width = self.options.origins.width;
+        mapContainer.style.height = self.options.origins.height;
 
         self._map.invalidateSize();
-        self._map.fitBounds(this.options.origins.bounds);
+        self._map.fitBounds(self.options.origins.bounds);
 
-        this.options.origins.printCss.remove();
+        self.options.origins.printCss.remove();
 
-        this.options.origins = undefined;
+        self.options.origins = undefined;
     },
 
     _validatePrintLayer: function() {

@@ -1,6 +1,6 @@
 ## leaflet browser print plugin
 
-A [leaflet](http://www.leafletjs.com) plugin which allows users to print the map directly from the browser. Compatible with all versions off Leaflet.js.
+A [leaflet](http://www.leafletjs.com) plugin which allows users to print the map directly from the browser. Compatible with Leaflet v0.7.7.
 
 Check out the [DEMO](https://igor-vladyka.github.io/leaflet.browser.print/).
 
