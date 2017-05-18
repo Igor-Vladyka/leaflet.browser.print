@@ -34,6 +34,11 @@
             			fillColor: '#f03',
             			fillOpacity: 0.5
             		}).addTo(map);
+            L.circle([55, 5], 50000, {
+                        color: 'green',
+                        fillColor: 'darkgreen',
+                        fillOpacity: 0.8
+                    }).addTo(map);
 
             L.browserPrint({
             	title: 'Just print me!',
@@ -41,7 +46,8 @@
                                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
                                 subdomains: 'abcd',
                                 maxZoom: 19
-                            })
+                            }),
+                autoBounds: true
             }).addTo(map);
 
     	</script>

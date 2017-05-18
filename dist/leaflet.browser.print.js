@@ -2,9 +2,10 @@ L.Control.BrowserPrint = L.Control.extend({
 	options: {
 		title: 'Print map',
 		position: 'topleft',
-        Landscape: true,
-        Portrait: true,
-        printLayer: null
+        printLayer: null,
+        landscapeMode: true,
+        portraitMode: true,
+		autoBounds: false,
 	},
 
 	onAdd: function () {
@@ -15,7 +16,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		this.link.id = "leafletBrowserPrint";
 		this.link.title = this.options.title;
 
-        if (this.options.Landscape === true && this.options.Portrait === true) {
+        if (this.options.landscapeMode === true && this.options.portraitMode === true) {
 
     		L.DomEvent.addListener(container, 'mouseover', this._displayPageSizeButtons, this);
     		L.DomEvent.addListener(container, 'mouseout', this._hidePageSizeButtons, this);
@@ -43,10 +44,10 @@ L.Control.BrowserPrint = L.Control.extend({
         this.link.style.borderTopRightRadius = "0px";
     	this.link.style.borderBottomRightRadius = "0px";
 
-    	if(this.options.Portrait){
+    	if(this.options.portraitMode){
     		this.portrait.style.display = "inline-block";
     	}
-    	if(this.options.Landscape){
+    	if(this.options.landscapeMode){
     		this.landscape.style.display = "inline-block";
     	}
 
@@ -58,10 +59,10 @@ L.Control.BrowserPrint = L.Control.extend({
     	this.link.style.borderTopRightRadius = "";
     	this.link.style.borderBottomRightRadius = "";
 
-    	if(this.options.Portrait){
+    	if(this.options.portraitMode){
     		this.portrait.style.display = "";
     	}
-    	if(this.options.Landscape){
+    	if(this.options.landscapeMode){
     		this.landscape.style.display = "";
     	}
 
@@ -78,7 +79,7 @@ L.Control.BrowserPrint = L.Control.extend({
     },
 
     _printAuto: function () {
-        if (this.options.Landscape) {
+        if (this.options.landscapeMode) {
             this._print("Landscape");
         } else {
             this._print("Portrait");
@@ -94,7 +95,7 @@ L.Control.BrowserPrint = L.Control.extend({
             default:
             case "Portrait":
                 mapContainer.style.width = "850px";
-                mapContainer.style.height = "1200px";
+                mapContainer.style.height = "1100px";
                 break;
         }
     },
@@ -116,7 +117,39 @@ L.Control.BrowserPrint = L.Control.extend({
 
         this._map.invalidateSize();
         this._map.on("moveend", this._onPrintBoundsLoaded, this);
-        this._map.fitBounds(this.options.origins.bounds);
+
+        var boundsToFitForPrint = this.options.origins.bounds;
+        if (this.options.autoBounds) {
+            boundsToFitForPrint = this._getBoundsForAllVisualLayers() || boundsToFitForPrint;
+        }
+
+        this._map.fitBounds(boundsToFitForPrint);
+    },
+
+    _getBoundsForAllVisualLayers: function () {
+	    var fitBounds = null;
+
+        // Getting all layers without URL -> not tiles.
+        for (var layerId in this._map._layers){
+            var layer = this._map._layers[layerId];
+            if (!layer._url) {
+                if (fitBounds) {
+                    if (layer.getBounds) {
+                        fitBounds.extend(layer.getBounds());
+                    } else if(layer.getLatLng){
+                        fitBounds.extend(layer.getLatLng());
+                    }
+                } else {
+                    if (layer.getBounds) {
+                        fitBounds = layer.getBounds();
+                    } else if(layer.getLatLng){
+                        fitBounds = L.latLngBounds(layer.getLatLng(), layer.getLatLng());
+                    }
+                }
+            }
+        }
+
+		return fitBounds;
     },
 
     _onCustomPrintLayerLoaded: function () {
@@ -209,9 +242,9 @@ L.Control.BrowserPrint = L.Control.extend({
 
 L.browserPrint = function(options) {
 
-    if (options.Landscape === false && options.Portrait === false) {
-        options.Landscape = true;
-        options.Portrait = true;
+    if (options.landscapeMode === false && options.portraitMode === false) {
+        options.landscapeMode = true;
+        options.portraitMode = true;
     }
 
 	return new L.Control.BrowserPrint(options);

@@ -5,12 +5,12 @@ A [leaflet](http://www.leafletjs.com) plugin which allows users to print the map
 Check out the [DEMO](https://igor-vladyka.github.io/leaflet.browser.print/).
 
 ### Downloads
-**with NPM**
+**NPM**
 ````
 	npm install --save leaflet.browser.print
 ````
 
-**with YARN**
+**YARN**
 ````
 	yarn add leaflet.browser.print
 ````
@@ -36,16 +36,21 @@ You can pass a number of options to the plugin to control various settings.
 | ------------- |--------------|--------------|---------------|
 | title | string | 'Print map' | Sets the text which appears as the tooltip of the print button |
 | position | [Leaflet control position](http://leafletjs.com/reference.html#control-positions) | 'topleft' | Position the print button |
-| Portrait | boolean | true | Displays a portrait button |
-| Landscape | boolean | true | Displays a landscape button |
+| portraitMode | boolean | true | Displays a portrait button |
+| landscapeMode | boolean | true | Displays a landscape button |
+| autoBounds | boolean | false | When we have any kind of layers on the map (except of Tiles), we will try to fit those layers |
 | printLayer | [Leaflet tile layer](http://leafletjs.com/reference-0.7.7.html#tilelayer) | null | A tiles layer to show instead of all current active tile layers |
 
 Here's an example of passing through some options.
 ``` js
 L.browserPrint({
 	title: 'Just print me!',
-	Landscape: false,
-	printLayer: L.tileLayer('http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { maxZoom: 17, attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'})
+	printLayer: L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png', {
+					attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+					subdomains: 'abcd',
+					maxZoom: 19
+				}),
+	autoBounds: true
 }).addTo(map);
 ```
 
