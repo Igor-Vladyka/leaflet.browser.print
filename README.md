@@ -50,11 +50,10 @@ L.browserPrint({
 }).addTo(map);
 ```
 
-
 ### Print Modes Details
 
 | Mode        | Description   |
-| ------------- |--------------|--------------|---------------|
+| ------------- |--------------|
 | Portrait | Print currently visual part of the map with Portrait dimensions |
 | Landscape | Print currently visual part of the map with Landscape dimensions |
 | Auto | Track all active map layers (markers, lines, polygons, etc. ) and tries to fit them in print page in Portrait or Landscape page dimensions |
