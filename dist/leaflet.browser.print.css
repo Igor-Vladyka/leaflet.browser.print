@@ -1,23 +1,28 @@
-.leaflet-control-browserPrint a {
+.leaflet-control-browser-print a {
 	background: #fff url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gcCCi8Vjp+aNAAAAGhJREFUOMvFksENgDAMA68RC7BBN+Cf/ZU33QAmYAT6BolAGxB+RrrIsg1BpfNBVXcPMLMDI/ytpKozMHWwK7BJJ7yYWQbGdBea9wTIkRDzKy0MT7r2NiJACRgotCzxykFI34QY2Ea7KmtxGJ+uX4wfAAAAAElFTkSuQmCC') no-repeat 5px;
 	background-size: 16px 16px;
 	display: block;
 	border-radius: 4px;
 }
 
-.browserPrintHolder{
+.browser-print-holder {
 	margin: 0px;
 	padding: 0px;
 	list-style: none;
 	white-space: nowrap;
 }
 
-.browserPrintHolder li:last-child {
+.browser-print-holder-left li:last-child {
 	border-top-right-radius: 2px;
 	border-bottom-right-radius: 2px;
 }
 
-.browserPrintPortrait, .browserPrintLandscape{
+.browser-print-holder-right li:first-child {
+	border-top-left-radius: 2px;
+	border-bottom-left-radius: 2px;
+}
+
+.browser-print-mode {
 	display: none;
 	background-color: #919187;
 	color: #FFF;
@@ -27,25 +32,7 @@
 	text-align: center;
 }
 
-.browserPrintPortrait:hover, .browserPrintLandscape:hover{
+.browser-print-mode:hover {
 	background-color: #757570;
 	cursor: pointer;
-}
-
-@media print {
-
-	html, body{
-		padding: 0px!important;
-		margin: 0px!important;
-	}
-
-	.leaflet-control-container > .leaflet-bottom.leaflet-left,
-	.leaflet-control-container > .leaflet-top.leaflet-left,
-	.leaflet-control-container > .leaflet-top.leaflet-right {
-		display: none!important;
-	}
-
-	.leaflet-popup-content-wrapper, .leaflet-popup-tip {
-		box-shadow: none;
-	}
 }

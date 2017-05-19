@@ -3,71 +3,92 @@ L.Control.BrowserPrint = L.Control.extend({
 		title: 'Print map',
 		position: 'topleft',
         printLayer: null,
-        landscapeMode: true,
-        portraitMode: true,
-		autoBounds: false,
+		printModes: ["Portrait", "Landscape", "Auto", "Custom"]
 	},
 
 	onAdd: function () {
 
-		var container = L.DomUtil.create('div', 'leaflet-control-browserPrint leaflet-bar leaflet-control');
+		var container = L.DomUtil.create('div', 'leaflet-control-browser-print leaflet-bar leaflet-control');
+		L.DomEvent.disableClickPropagation(container);
 
-		this.link = L.DomUtil.create('a', 'leaflet-control-browserPrint-button leaflet-bar-part', container);
-		this.link.id = "leafletBrowserPrint";
+		this.link = L.DomUtil.create('a', '', container);
+		this.link.id = "leaflet-browser-print";
 		this.link.title = this.options.title;
 
-        if (this.options.landscapeMode === true && this.options.portraitMode === true) {
+		L.DomEvent.addListener(container, 'mouseover', this._displayPageSizeButtons, this);
+		L.DomEvent.addListener(container, 'mouseout', this._hidePageSizeButtons, this);
 
-    		L.DomEvent.addListener(container, 'mouseover', this._displayPageSizeButtons, this);
-    		L.DomEvent.addListener(container, 'mouseout', this._hidePageSizeButtons, this);
+		this.holder = L.DomUtil.create('ul', 'browser-print-holder', container);
 
-            this.holder = L.DomUtil.create('ul', 'browserPrintHolder', container );
+		var domPrintModes = [];
 
-            this.landscape = L.DomUtil.create('li', 'browserPrintLandscape leaflet-bar-part', this.holder);
-			this.landscape.innerHTML = "Landscape";
-			L.DomEvent.addListener(this.landscape, 'click', this._printLandscape, this);
+		for (var i = 0; i < this.options.printModes.length; i++) {
+			var mode = this.options.printModes[i];
+			var normilizedName = mode[0].toUpperCase() + mode.substring(1).toLowerCase();
 
-            this.portrait = L.DomUtil.create('li', 'browserPrintPortrait leaflet-bar-part', this.holder);
-			this.portrait.innerHTML = "Portrait";
-			L.DomEvent.addListener(this.portrait, 'click', this._printPortrait, this);
+			if (this["_print" + normilizedName]) {
+				var domMode = L.DomUtil.create('li', 'browser-print-mode', this.holder);
 
-        } else {
+				domMode.innerHTML = normilizedName;
 
-			L.DomEvent.addListener(this.link, 'click', this._printAuto, this);
+				L.DomEvent.addListener(domMode, 'click', this["_print" + normilizedName], this);
 
-        }
+				domPrintModes.push(domMode);
+			}
+		}
+
+		this.options.printModes = domPrintModes;
 
 		return container;
 	},
 
     _displayPageSizeButtons: function() {
-        this.link.style.borderTopRightRadius = "0px";
-    	this.link.style.borderBottomRightRadius = "0px";
 
-    	if(this.options.portraitMode){
-    		this.portrait.style.display = "inline-block";
-    	}
-    	if(this.options.landscapeMode){
-    		this.landscape.style.display = "inline-block";
-    	}
+    	this.holder.style.marginTop = "-" + this.link.clientHeight - 1 + "px";
 
-    	this.holder.style.marginTop = "-"+this.link.clientHeight-1+"px";
-    	this.holder.style.marginLeft = this.link.clientWidth+"px";
+		if (this.options.position.indexOf("left") > 0) {
+
+	        this.link.style.borderTopRightRadius = "0px";
+	    	this.link.style.borderBottomRightRadius = "0px";
+
+			this.holder.style.marginLeft = this.link.clientWidth + "px";
+
+		} else {
+
+			this.link.style.borderTopLeftRadius = "0px";
+	    	this.link.style.borderBottomLeftRadius = "0px";
+
+			this.holder.style.marginRight = this.link.clientWidth + "px";
+
+		}
+
+		this.options.printModes.forEach(function(mode){
+			mode.style.display = "inline-block";
+		});
     },
 
     _hidePageSizeButtons: function (){
-    	this.link.style.borderTopRightRadius = "";
-    	this.link.style.borderBottomRightRadius = "";
-
-    	if(this.options.portraitMode){
-    		this.portrait.style.display = "";
-    	}
-    	if(this.options.landscapeMode){
-    		this.landscape.style.display = "";
-    	}
 
     	this.holder.style.marginTop = "";
-    	this.holder.style.marginLeft = "";
+
+		if (this.options.position.indexOf("left") > 0) {
+
+	    	this.link.style.borderTopRightRadius = "";
+	    	this.link.style.borderBottomRightRadius = "";
+
+			this.holder.style.marginLeft = "";
+
+		} else {
+
+	    	this.link.style.borderTopLeftRadius = "";
+	    	this.link.style.borderBottomLeftRadius = "";
+
+			this.holder.style.marginRight = "";
+		}
+
+		this.options.printModes.forEach(function(mode){
+			mode.style.display = "";
+		});
     },
 
     _printLandscape: function () {
@@ -79,12 +100,19 @@ L.Control.BrowserPrint = L.Control.extend({
     },
 
     _printAuto: function () {
-        if (this.options.landscapeMode) {
-            this._print("Landscape");
-        } else {
-            this._print("Portrait");
-        }
+		this.options.autoBounds = this._getBoundsForAllVisualLayers();
+		this._print(this._getPageSizeFromBounds(this.options.autoBounds));
     },
+
+	_getPageSizeFromBounds: function(bounds) {
+		var height = Math.abs(bounds.getNorth() - bounds.getSouth());
+		var width = Math.abs(bounds.getEast() - bounds.getWest());
+		if (height > width) {
+			return "Portrait";
+		} else {
+			return "Landscape";
+		}
+	},
 
     _setupMapSize: function (mapContainer, printSize) {
         switch (printSize) {
@@ -119,15 +147,13 @@ L.Control.BrowserPrint = L.Control.extend({
         this._map.invalidateSize({reset: true, animate: false, pan: false});
     },
 
-    _onMapResized: function(){
+    _onMapResized: function () {
+
         this._map.off("resize", this._onMapResized, this);
-        var boundsToFitForPrint = this.options.origins.bounds;
-        if (this.options.autoBounds) {
-            boundsToFitForPrint = this._getBoundsForAllVisualLayers() || boundsToFitForPrint;
-        }
 
         this._map.on("moveend", this._onPrintBoundsLoaded, this);
-        this._map.fitBounds(boundsToFitForPrint);
+
+        this._map.fitBounds(this.options.autoBounds || this.options.origins.bounds);
     },
 
     _getBoundsForAllVisualLayers: function () {
@@ -197,6 +223,7 @@ L.Control.BrowserPrint = L.Control.extend({
         self._map.invalidateSize();
         self._map.fitBounds(self.options.origins.bounds);
 
+		self.options.autoBounds = undefined;
         self.options.origins.printCss.remove();
 
         self.options.origins = undefined;
@@ -227,14 +254,16 @@ L.Control.BrowserPrint = L.Control.extend({
 
         var printStyleSheet = document.createElement('style');
         printStyleSheet.setAttribute('type', 'text/css');
+		printStyleSheet.innerHTML = '@media print { .leaflet-control-container > .leaflet-bottom.leaflet-left, .leaflet-control-container > .leaflet-top.leaflet-left, .leaflet-control-container > .leaflet-top.leaflet-right { display: none!important; } }';
+		printStyleSheet.innerHTML += '@media print { .leaflet-popup-content-wrapper, .leaflet-popup-tip { box-shadow: none; } }';
 
         switch (printSize) {
             case "Landscape":
-                printStyleSheet.innerText = "@media print { @page { size : landscape; }}";
+                printStyleSheet.innerText += "@media print { @page { size : landscape; }}";
                 break;
             default:
             case "Portrait":
-                printStyleSheet.innerText = "@media print { @page { size : portrait; }}";
+                printStyleSheet.innerText += "@media print { @page { size : portrait; }}";
                 break;
         }
 
@@ -247,10 +276,9 @@ L.Control.BrowserPrint = L.Control.extend({
 
 L.browserPrint = function(options) {
 
-    if (options.landscapeMode === false && options.portraitMode === false) {
-        options.landscapeMode = true;
-        options.portraitMode = true;
-    }
+	if(options.printModes && (!options.printModes.filter || !options.printModes.length)){
+		throw "Please specify valid print modes for Print action. Example: printModes: ['Portrait', 'Landscape', 'Auto', 'Custom']";
+	}
 
 	return new L.Control.BrowserPrint(options);
 };

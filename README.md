@@ -2,8 +2,7 @@
 
 A [leaflet](http://www.leafletjs.com) plugin which allows users to print the map directly from the browser. Compatible with Leaflet v0.7.7 and v1.0.3.
 
-Check out the [DEMO v0.7.7](https://igor-vladyka.github.io/leaflet.browser.print/v0.7.7.html);
-			  [DEMO v1.0.3](https://igor-vladyka.github.io/leaflet.browser.print/v1.0.3.html);
+Check out the [DEMO v0.7.7](https://igor-vladyka.github.io/leaflet.browser.print/v0.7.7.html) and [DEMO v1.0.3](https://igor-vladyka.github.io/leaflet.browser.print/v1.0.3.html);
 
 ### Downloads
 **NPM**
@@ -37,9 +36,7 @@ You can pass a number of options to the plugin to control various settings.
 | ------------- |--------------|--------------|---------------|
 | title | string | 'Print map' | Sets the text which appears as the tooltip of the print button |
 | position | [Leaflet control position](http://leafletjs.com/reference.html#control-positions) | 'topleft' | Position the print button |
-| portraitMode | boolean | true | Displays a portrait button |
-| landscapeMode | boolean | true | Displays a landscape button |
-| autoBounds | boolean | false | When we have any kind of layers on the map (except of Tiles), we will try to fit those layers |
+| printModes | array | ["Portrait", "Landscape", "Auto", "Custom"] | Collection of page print actions |
 | printLayer | [Leaflet tile layer](http://leafletjs.com/reference-0.7.7.html#tilelayer) | null | A tiles layer to show instead of all current active tile layers |
 
 Here's an example of passing through some options.
@@ -49,8 +46,7 @@ L.browserPrint({
 	printLayer: L.tileLayer('//{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
 					attribution: '&copy; Openstreetmap France | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 					maxZoom: 19
-				}),
-	autoBounds: true
+				})
 }).addTo(map);
 ```
 
