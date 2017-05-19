@@ -110,9 +110,6 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		this._map.on('mousedown', this._startAutoPoligon, this);
 		this._map.on('mouseup', this._endAutoPoligon, this);
-/*
-		this.options.autoBounds = this._getBoundsForAllVisualLayers();
-		this._print(this._getPageSizeFromBounds(this.options.autoBounds));*/
     },
 
 	_startAutoPoligon: function (e) {
@@ -133,7 +130,7 @@ L.Control.BrowserPrint = L.Control.extend({
 				this._map.removeLayer(this.options.custom.rectangle);
 			}
 
-			this.options.custom.rectangle = L.rectangle([this.options.custom.start, e.latlng], {color: "red", dashArray: '5, 10' });
+			this.options.custom.rectangle = L.rectangle([this.options.custom.start, e.latlng], {color: "gray", dashArray: '5, 10' });
 			this.options.custom.rectangle.addTo(this._map);
 		}
 	},
@@ -154,7 +151,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		this._map.dragging.enable();
 
 		this._print(this._getPageSizeFromBounds(this.options.autoBounds));
-		
+
 	},
 
 	_getPageSizeFromBounds: function(bounds) {
@@ -206,8 +203,83 @@ L.Control.BrowserPrint = L.Control.extend({
 
         this._map.on("moveend", this._onPrintBoundsLoaded, this);
 
-        this._map.fitBounds(this.options.autoBounds || this.options.origins.bounds);
+		 this._map.fitBounds(this.options.autoBounds || this.options.origins.bounds);
     },
+
+	_getPrintLayerUrl: function () {
+		var url = null;
+		var subdomain = 'a';
+		if (this.options.printLayer) {
+            url = this.options.printLayer._url;
+			subdomain = this.options.printLayer.options.subdomains[0];
+        } else {
+			for (var layerId in this._map._layers) {
+				var l = this._map._layers[layerId];
+				if (l._url) {
+					url = l._url;
+					subdomain = l.options.subdomains[0];
+				}
+			}
+		}
+
+		return url.replace("{s}", subdomain);
+	},
+
+	_long2tile: function (lon,zoom) { return (Math.floor((lon+180)/360*Math.pow(2,zoom))); },
+
+	_lat2tile: function (lat,zoom)  { return (Math.floor((1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom))); },
+
+	_preloadTiles: function (bounds, cb) {
+		var layerUrl = this._getPrintLayerUrl();
+
+		var zoom = map.getZoom(bounds);
+		var east = bounds.getEast();
+		var west = bounds.getWest();
+		var north = bounds.getNorth();
+		var south = bounds.getSouth();
+
+		var dataEast = this._long2tile(east, zoom);
+		var dataWest = this._long2tile(west, zoom);
+		var dataNorth = this._lat2tile(north, zoom);
+		var dataSouth = this._lat2tile(south, zoom);
+
+		var neededTiles = [];
+		var preloadedTiles = [];
+
+		for(var y = dataNorth; y < dataSouth + 1; y++) {
+		    for(var x = dataWest; x < dataEast + 1; x++) {
+		        var url = layerUrl.replace("{z}", zoom).replace("{x}", x).replace("{y}", y);
+				neededTiles.push(url)
+		    }
+		}
+
+		for (var i = 0; i < neededTiles.length; i++) {
+			var url = neededTiles[i];
+			this._preloadParticularTile(url, function(u){
+				preloadedTiles.push(u);
+				if(preloadedTiles.length === neededTiles.length){
+					setTimeout(function(){
+						cb && cb(bounds);
+					}, 1000);
+				}
+			});
+		}
+	},
+
+	_preloadParticularTile: function (url, cb) {
+
+		var img = new Image();
+
+		img.onload = function (){
+			cb && cb(url);
+		};
+
+		img.onerror = function (){
+			cb && cb(url);
+		};
+
+		img.src = url;
+	},
 
     _getBoundsForAllVisualLayers: function () {
 	    var fitBounds = null;
@@ -241,8 +313,10 @@ L.Control.BrowserPrint = L.Control.extend({
             this.options.printLayer.off("load", this._onCustomPrintLayerLoaded, this);
         }
 
-        window.print();
-        self._printEnd(self);
+		this._preloadTiles(this.options.autoBounds || this.options.origins.bounds, function () {
+			window.print();
+			self._printEnd(self);
+		});
     },
 
     _onPrintBoundsLoaded: function () {

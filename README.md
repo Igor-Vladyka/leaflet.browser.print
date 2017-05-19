@@ -54,10 +54,10 @@ L.browserPrint({
 
 | Mode        | Description   |
 | ------------- |--------------|
-| Portrait | Print currently visual part of the map with Portrait dimensions |
-| Landscape | Print currently visual part of the map with Landscape dimensions |
+| Portrait | Print currently visual part of the map with Portrait page dimensions |
+| Landscape | Print currently visual part of the map with Landscape page dimensions |
 | Auto | Track all active map layers (markers, lines, polygons, etc. ) and tries to fit them in print page in Portrait or Landscape page dimensions |
-| Custom | Allows you so select rectangle for printing, and then fit it in Portrait or Landscape page dimensions |
+| Custom | Allows you to select rectangle for printing, and then fit it in Portrait or Landscape page dimensions |
 
 ### Acknowledgements
 Thanks to [Rowan Winsemius](https://github.com/rowanwins/leaflet-easyPrint) for general idea with a map print functionality.
