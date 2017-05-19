@@ -104,6 +104,59 @@ L.Control.BrowserPrint = L.Control.extend({
 		this._print(this._getPageSizeFromBounds(this.options.autoBounds));
     },
 
+    _printCustom: function () {
+
+		this._map.getContainer().style.cursor = "crosshair";
+
+		this._map.on('mousedown', this._startAutoPoligon, this);
+		this._map.on('mouseup', this._endAutoPoligon, this);
+/*
+		this.options.autoBounds = this._getBoundsForAllVisualLayers();
+		this._print(this._getPageSizeFromBounds(this.options.autoBounds));*/
+    },
+
+	_startAutoPoligon: function (e) {
+		e.originalEvent.preventDefault();
+
+		this._map.dragging.disable();
+
+		this._map.off('mousedown', this._startAutoPoligon, this);
+
+		this.options.custom = { start: e.latlng };
+		this._map.on('mousemove', this._moveAutoPoligon, this);
+	},
+
+	_moveAutoPoligon: function (e) {
+		if (this.options.custom) {
+			e.originalEvent.preventDefault();
+			if (this.options.custom.rectangle) {
+				this._map.removeLayer(this.options.custom.rectangle);
+			}
+
+			this.options.custom.rectangle = L.rectangle([this.options.custom.start, e.latlng], {color: "red", dashArray: '5, 10' });
+			this.options.custom.rectangle.addTo(this._map);
+		}
+	},
+
+	_endAutoPoligon: function (e) {
+
+		e.originalEvent.preventDefault();
+		this._map.off('mousemove', this._moveAutoPoligon, this);
+		this._map.off('mouseup', this._endAutoPoligon, this);
+
+		this._map.getContainer().style.cursor = "";
+
+		this._map.removeLayer(this.options.custom.rectangle);
+
+		this.options.autoBounds = this.options.custom.rectangle.getBounds();
+		this.options.custom = undefined;
+
+		this._map.dragging.enable();
+
+		this._print(this._getPageSizeFromBounds(this.options.autoBounds));
+		
+	},
+
 	_getPageSizeFromBounds: function(bounds) {
 		var height = Math.abs(bounds.getNorth() - bounds.getSouth());
 		var width = Math.abs(bounds.getEast() - bounds.getWest());
