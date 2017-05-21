@@ -204,7 +204,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		this._map.fitBounds(this.options.autoBounds || this.options.origins.bounds);
 
 		this.options.origins.interval = setInterval(function(){
-			if (!self.options.origins.printLayer._tilesToLoad) {
+			if (self.options.origins.printLayer._tilesToLoad < 1) {
 				clearInterval(self.options.origins.interval);
 				self._completePrinting(self);
 			}
@@ -216,6 +216,10 @@ L.Control.BrowserPrint = L.Control.extend({
 		setTimeout(function(){
 			window.print();
 			self._printEnd(self);
+			if (self.options.origins.printLayer._tilesToLoad < 0) {
+				self.options.origins.printLayer._reset();
+			}
+
 		}, 1000);
 	},
 
