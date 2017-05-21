@@ -179,106 +179,38 @@ L.Control.BrowserPrint = L.Control.extend({
     },
 
     _print: function (printSize) {
-
+		var self = this;
         var mapContainer = this._map.getContainer();
 
         this.options.origins = {
             bounds: this._map.getBounds(),
             width: mapContainer.style.width,
             height: mapContainer.style.height,
-            printCss: this._addPrintCss(printSize)
+            printCss: this._addPrintCss(printSize),
+			printLayer: this._validatePrintLayer()
         };
+
+		self._map.fire("browser-print-start", { printLayer: this.options.origins.printLayer });
 
         this._setupMapSize(mapContainer, printSize);
 
-        this._validatePrintLayer();
-
-        this._map.on("resize", this._onMapResized, this);
         this._map.invalidateSize({reset: true, animate: false, pan: false});
-    },
+		this._map.fitBounds(this.options.autoBounds || this.options.origins.bounds);
 
-    _onMapResized: function () {
-
-        this._map.off("resize", this._onMapResized, this);
-
-        this._map.on("moveend", this._onPrintBoundsLoaded, this);
-
-		 this._map.fitBounds(this.options.autoBounds || this.options.origins.bounds);
-    },
-
-	_getPrintLayerUrl: function () {
-		var url = null;
-		var subdomain = 'a';
-		if (this.options.printLayer) {
-            url = this.options.printLayer._url;
-			subdomain = this.options.printLayer.options.subdomains[0];
-        } else {
-			for (var layerId in this._map._layers) {
-				var l = this._map._layers[layerId];
-				if (l._url) {
-					url = l._url;
-					subdomain = l.options.subdomains[0];
-				}
+		this.options.origins.interval = setInterval(function(){
+			if (!self.options.origins.printLayer._tilesToLoad) {
+				clearInterval(self.options.origins.interval);
+				self._completePrinting(self);
 			}
-		}
+		}, 50);
+    },
 
-		return url.replace("{s}", subdomain);
-	},
+	_completePrinting: function (self) {
 
-	_long2tile: function (lon,zoom) { return (Math.floor((lon+180)/360*Math.pow(2,zoom))); },
-
-	_lat2tile: function (lat,zoom)  { return (Math.floor((1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom))); },
-
-	_preloadTiles: function (bounds, cb) {
-		var layerUrl = this._getPrintLayerUrl();
-
-		var zoom = map.getZoom(bounds);
-		var east = bounds.getEast();
-		var west = bounds.getWest();
-		var north = bounds.getNorth();
-		var south = bounds.getSouth();
-
-		var dataEast = this._long2tile(east, zoom);
-		var dataWest = this._long2tile(west, zoom);
-		var dataNorth = this._lat2tile(north, zoom);
-		var dataSouth = this._lat2tile(south, zoom);
-
-		var neededTiles = [];
-		var preloadedTiles = [];
-
-		for(var y = dataNorth; y < dataSouth + 1; y++) {
-		    for(var x = dataWest; x < dataEast + 1; x++) {
-		        var url = layerUrl.replace("{z}", zoom).replace("{x}", x).replace("{y}", y);
-				neededTiles.push(url)
-		    }
-		}
-
-		for (var i = 0; i < neededTiles.length; i++) {
-			var url = neededTiles[i];
-			this._preloadParticularTile(url, function(u){
-				preloadedTiles.push(u);
-				if(preloadedTiles.length === neededTiles.length){
-					setTimeout(function(){
-						cb && cb(bounds);
-					}, 1000);
-				}
-			});
-		}
-	},
-
-	_preloadParticularTile: function (url, cb) {
-
-		var img = new Image();
-
-		img.onload = function (){
-			cb && cb(url);
-		};
-
-		img.onerror = function (){
-			cb && cb(url);
-		};
-
-		img.src = url;
+		setTimeout(function(){
+			window.print();
+			self._printEnd(self);
+		}, 1);
 	},
 
     _getBoundsForAllVisualLayers: function () {
@@ -307,32 +239,11 @@ L.Control.BrowserPrint = L.Control.extend({
 		return fitBounds;
     },
 
-    _onCustomPrintLayerLoaded: function () {
-        var self = this;
-        if (this.options.printLayer) {
-            this.options.printLayer.off("load", this._onCustomPrintLayerLoaded, this);
-        }
-
-		this._preloadTiles(this.options.autoBounds || this.options.origins.bounds, function () {
-			window.print();
-			self._printEnd(self);
-		});
-    },
-
-    _onPrintBoundsLoaded: function () {
-
-        this._map.off("moveend", this._onPrintBoundsLoaded, this);
-
-        if (this.options.printLayer && this.options.printLayer._tilesToLoad) {
-            this.options.printLayer.on("load", this._onCustomPrintLayerLoaded, this);
-        } else {
-            this._onCustomPrintLayerLoaded();
-        }
-    },
-
     _printEnd: function (context) {
 
         var self = context;
+
+		self._map.fire("browser-print-end");
 
         if (self.options.prevLayers) {
             self.options.prevLayers.forEach(function(l) { self._map.addLayer(l); });
@@ -357,12 +268,15 @@ L.Control.BrowserPrint = L.Control.extend({
     },
 
     _validatePrintLayer: function() {
+		var visualLayerForPrinting = null;
+
         var map = this._map;
         var allLayers = map._layers;
 
         this.options.prevLayers = [];
 
         if (this.options.printLayer) {
+			visualLayerForPrinting = this.options.printLayer;
 
             for (var layerId in allLayers){
                 var layer = allLayers[layerId];
@@ -372,9 +286,18 @@ L.Control.BrowserPrint = L.Control.extend({
             }
 
             map.addLayer(this.options.printLayer);
-        }
+        } else {
+            for (var layerId in allLayers){
+                var layer = allLayers[layerId];
+                if (layer._url) {
+                    visualLayerForPrinting = layer;
+                }
+            }
+		}
 
         this.options.prevLayers.forEach(function(l){ map.removeLayer(l); });
+
+		return visualLayerForPrinting;
     },
 
     _addPrintCss: function (printSize) {
