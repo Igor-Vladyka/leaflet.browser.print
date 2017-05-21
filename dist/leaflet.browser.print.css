@@ -5,6 +5,15 @@
 	border-radius: 4px;
 }
 
+.v0-7.leaflet-control-browser-print a#leaflet-browser-print {
+	width: 26px;
+	height: 26px;
+}
+
+.v1.leaflet-control-browser-print a#leaflet-browser-print {
+	background-position-x: 7px;
+}
+
 .browser-print-holder {
 	margin: 0px;
 	padding: 0px;
@@ -30,6 +39,10 @@
 	text-decoration: none;
 	padding: 4px 10px;
 	text-align: center;
+}
+
+.v1 .browser-print-mode {
+	padding: 6px 10px;
 }
 
 .browser-print-mode:hover {

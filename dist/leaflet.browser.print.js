@@ -11,7 +11,8 @@ L.Control.BrowserPrint = L.Control.extend({
 		var container = L.DomUtil.create('div', 'leaflet-control-browser-print leaflet-bar leaflet-control');
 		L.DomEvent.disableClickPropagation(container);
 
-		this.link = L.DomUtil.create('a', '', container);
+		var icon = L.DomUtil.create('a', '', container);
+		this.link = icon;
 		this.link.id = "leaflet-browser-print";
 		this.link.title = this.options.title;
 
@@ -38,6 +39,11 @@ L.Control.BrowserPrint = L.Control.extend({
 		}
 
 		this.options.printModes = domPrintModes;
+
+
+		setTimeout( function () {
+			container.className += icon.clientWidth == 26 ? " v0-7" : " v1";
+		}, 10);
 
 		return container;
 	},
@@ -210,7 +216,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		setTimeout(function(){
 			window.print();
 			self._printEnd(self);
-		}, 1);
+		}, 1000);
 	},
 
     _getBoundsForAllVisualLayers: function () {
