@@ -216,10 +216,6 @@ L.Control.BrowserPrint = L.Control.extend({
 		setTimeout(function(){
 			window.print();
 			self._printEnd(self);
-			if (self.options.origins.printLayer._tilesToLoad < 0) {
-				self.options.origins.printLayer._reset();
-			}
-
 		}, 1000);
 	},
 
@@ -273,6 +269,10 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		self.options.autoBounds = undefined;
         self.options.origins.printCss.remove();
+		
+		if (self.options.origins.printLayer._tilesToLoad < 0) {
+			self.options.origins.printLayer._reset();
+		}
 
         self.options.origins = undefined;
     },
