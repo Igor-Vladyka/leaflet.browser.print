@@ -19,8 +19,7 @@ Check out the [DEMO v0.7.7](https://igor-vladyka.github.io/leaflet.browser.print
 **Step 1.** Include the required js and css files in your document.
 
 ```html
-	<link rel="stylesheet" href="dist/leaflet.browser.print.css"/>
-	<script src="dist/leaflet.browser.print.js"></script>
+	<script src="dist/leaflet.browser.print.min.js"></script>
 ```
 
 **Step 2.** Add the following line of code to your map script

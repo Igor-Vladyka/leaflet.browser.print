@@ -1,9 +1,19 @@
+/**
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Igor Vladyka <igor.vladyka@gmail.com> (https://github.com/Igor-Vladyka/leaflet.browser.print)
+**/
+
 L.Control.BrowserPrint = L.Control.extend({
 	options: {
 		title: 'Print map',
 		position: 'topleft',
         printLayer: null,
 		printModes: ["Portrait", "Landscape", "Auto", "Custom"]
+	},
+
+	initialize: function (options) {
+		this._appendControlStyles();
+		L.Control.prototype.initialize.call(this, options);
 	},
 
 	onAdd: function () {
@@ -360,7 +370,22 @@ L.Control.BrowserPrint = L.Control.extend({
         head.appendChild(printStyleSheet);
 
         return printStyleSheet;
-    }
+    },
+
+	_appendControlStyles:  function () {
+		var printControlStyleSheet = document.createElement('style');
+		printControlStyleSheet.setAttribute('type', 'text/css');
+
+		printControlStyleSheet.innerHTML += " .leaflet-control-browser-print a { background: #fff url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gcCCi8Vjp+aNAAAAGhJREFUOMvFksENgDAMA68RC7BBN+Cf/ZU33QAmYAT6BolAGxB+RrrIsg1BpfNBVXcPMLMDI/ytpKozMHWwK7BJJ7yYWQbGdBea9wTIkRDzKy0MT7r2NiJACRgotCzxykFI34QY2Ea7KmtxGJ+uX4wfAAAAAElFTkSuQmCC') no-repeat 5px; background-size: 16px 16px; display: block; border-radius: 4px; }";
+
+		printControlStyleSheet.innerHTML += " .v0-7.leaflet-control-browser-print a#leaflet-browser-print { width: 26px; height: 26px; } .v1.leaflet-control-browser-print a#leaflet-browser-print { background-position-x: 7px; }";
+		printControlStyleSheet.innerHTML += " .browser-print-holder { margin: 0px; padding: 0px; list-style: none; white-space: nowrap; } .browser-print-holder-left li:last-child { border-top-right-radius: 2px; border-bottom-right-radius: 2px; } .browser-print-holder-right li:first-child { border-top-left-radius: 2px; border-bottom-left-radius: 2px; }";
+		printControlStyleSheet.innerHTML += " .browser-print-mode { display: none; background-color: #919187; color: #FFF; font: 11px/19px 'Helvetica Neue', Arial, Helvetica, sans-serif; text-decoration: none; padding: 4px 10px; text-align: center; } .v1 .browser-print-mode { padding: 6px 10px; } .browser-print-mode:hover { background-color: #757570; cursor: pointer; }";
+		printControlStyleSheet.innerHTML += " .leaflet-browser-print--custom, .leaflet-browser-print--custom path { cursor: crosshair!important; }";
+
+		var head = document.getElementsByTagName('head')[0];
+        head.appendChild(printControlStyleSheet);
+	}
 });
 
 L.browserPrint = function(options) {
