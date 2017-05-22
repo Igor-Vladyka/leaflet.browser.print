@@ -34,10 +34,10 @@ You can pass a number of options to the plugin to control various settings.
 
 | Option        | Type         | Default      | Description   |
 | ------------- |--------------|--------------|---------------|
-| title | string | 'Print map' | Sets the text which appears as the tooltip of the print button |
-| position | [Leaflet control position](http://leafletjs.com/reference.html#control-positions) | 'topleft' | Position the print button |
-| printModes | array | ["Portrait", "Landscape", "Auto", "Custom"] | Collection of page print actions |
-| printLayer | [Leaflet tile layer](http://leafletjs.com/reference-0.7.7.html#tilelayer) | null | A tiles layer to show instead of all current active tile layers |
+| title         | String       | 'Print map'  | Sets the text which appears as the tooltip of the print button |
+| position      | [Leaflet control position](http://leafletjs.com/reference.html#control-positions) | 'topleft' | Position the print button |
+| printModes    | Array        | ["Portrait", "Landscape", "Auto", "Custom"] | Collection of page print actions |
+| printLayer    | [Leaflet tile layer](http://leafletjs.com/reference-0.7.7.html#tilelayer) | null | A tiles layer to show instead of all current active tile layers |
 
 Here's an example of passing through some options.
 ``` js
@@ -52,12 +52,12 @@ L.browserPrint({
 
 ### Print Modes Details
 
-| Mode        | Description   |
-| ------------- |--------------|
-| Portrait | Print currently visual part of the map with Portrait page dimensions |
-| Landscape | Print currently visual part of the map with Landscape page dimensions |
-| Auto | Track all active map layers (markers, lines, polygons, etc. ) and tries to fit them in print page in Portrait or Landscape page dimensions |
-| Custom | Allows you to select rectangle for printing, and then fit it in Portrait or Landscape page dimensions |
+| Mode          | Description    |
+| ------------- | -------------- |
+| Portrait      | Print currently visual part of the map with Portrait page dimensions |
+| Landscape     | Print currently visual part of the map with Landscape page dimensions |
+| Auto          | Track all active map layers (markers, lines, polygons, etc. ) and tries to fit them in print page in Portrait or Landscape page dimensions |
+| Custom        | Allows you to select rectangle for printing, and then fit it in Portrait or Landscape page dimensions |
 
 ````
 	Currently 'Custom' mode is not working correctly in all IE browsers.
@@ -65,10 +65,11 @@ L.browserPrint({
 
 ### Map Events
 
-| Map Event        | Value      | Description   |
-| ------------- |--------------|--------------|
+| Map Event           | Value          | Description    |
+| ------------------- | -------------- | -------------- |
 | browser-print-start | { printLayer } | Fire on print started, before all print calculations is done. |
-| browser-print-end | null | Fire on print end, when we refresh map to show initial view |
+| browser-print       | { printLayer } | Fire right before native print. |
+| browser-print-end   | { printLayer } | Fire on print end, after we refresh map to show initial view. |
 
 ### Acknowledgements
 Thanks to [Rowan Winsemius](https://github.com/rowanwins/leaflet-easyPrint) for general idea with a map print functionality.

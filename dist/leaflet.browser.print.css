@@ -49,3 +49,8 @@
 	background-color: #757570;
 	cursor: pointer;
 }
+
+.leaflet-browser-print--custom,
+.leaflet-browser-print--custom path {
+	cursor: crosshair!important;
+}
