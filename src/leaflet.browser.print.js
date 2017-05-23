@@ -225,11 +225,9 @@ L.Control.BrowserPrint = L.Control.extend({
 			printLayer: L.browserPrintUtils.cloneLayer(this._validatePrintLayer())
         };
 
-		var overlayMap = this._addPrintMapOverlay(this._map, origins);
+		var overlayMap = this._addPrintMapOverlay(this._map, printSize, origins);
 
 		this._map.fire("browser-print-start", { printLayer: origins.printLayer, printMap: overlayMap });
-
-        this._setupMapSize(overlayMap.getContainer(), printSize);
 
 		overlayMap.fitBounds(autoBounds || origins.bounds);
 
@@ -358,7 +356,7 @@ L.Control.BrowserPrint = L.Control.extend({
         head.appendChild(printControlStyleSheet);
 	},
 
-	_addPrintMapOverlay: function (map, origins) {
+	_addPrintMapOverlay: function (map, printSize, origins) {
 		var overlay = document.createElement("div");
 		overlay.id = "leaflet-print-overlay";
 		overlay.className = map.getContainer().className + " leaflet-print-overlay";
@@ -368,6 +366,8 @@ L.Control.BrowserPrint = L.Control.extend({
 		overlayMapDom.id = map.getContainer().id + "-print";
 		overlayMapDom.style.width = origins.width;
 		overlayMapDom.style.height = origins.height;
+		this._setupMapSize(overlayMapDom, printSize);
+
 		overlay.appendChild(overlayMapDom);
 
 		document.body.className += " leaflet--printing";
