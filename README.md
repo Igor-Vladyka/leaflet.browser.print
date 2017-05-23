@@ -1,8 +1,8 @@
 ## leaflet browser print plugin
 
-A [leaflet](http://www.leafletjs.com) plugin which allows users to print the map directly from the browser. Compatible with Leaflet v0.7.7 and v1.0.3.
+A [leaflet](http://www.leafletjs.com) plugin which allows users to print full page map directly from the browser. Compatible with Leaflet v0.7.7 and v1.0.3.
 
-Check out the [DEMO v0.7.7](https://igor-vladyka.github.io/leaflet.browser.print/v0.7.7.html), [DEMO v1.0.3](https://igor-vladyka.github.io/leaflet.browser.print/v1.0.3.html) and a [DEMO with custom print layer](https://igor-vladyka.github.io/leaflet.browser.print/);
+Check out the [DEMO v0.7.7](https://igor-vladyka.github.io/leaflet.browser.print/v0.7.7.html), [DEMO v1.0.3](https://igor-vladyka.github.io/leaflet.browser.print/v1.0.3.html) and a [DEMO with custom print layer and additional page content](https://igor-vladyka.github.io/leaflet.browser.print/);
 
 ### Downloads
 **NPM**
@@ -34,7 +34,7 @@ You can pass a number of options to the plugin to control various settings.
 | Option        | Type         | Default      | Description   |
 | ------------- |--------------|--------------|---------------|
 | title         | String       | 'Print map'  | Sets the text which appears as the tooltip of the print button |
-| position      | [Leaflet control position](http://leafletjs.com/reference.html#control-positions) | 'topleft' | Position the print button |
+| position      | [Leaflet control position](http://leafletjs.com/reference-0.7.7.html#control-position) | 'topleft' | Position the print button |
 | printModes    | Array        | ["Portrait", "Landscape", "Auto", "Custom"] | Collection of page print actions |
 | printLayer    | [Leaflet tile layer](http://leafletjs.com/reference-0.7.7.html#tilelayer) | null | A tiles layer to show instead of all current active tile layers |
 
@@ -59,18 +59,19 @@ L.browserPrint({
 | Custom        | Allows you to select rectangle for printing, and then fit it in Portrait or Landscape page dimensions |
 
 ````
-	Currently 'Custom' mode is not working correctly in all IE browsers.
+	Currently 'Custom' mode is not working correctly for Leaflet v.0.7.7 in all IE browsers.
 ````
 
 ### Map Events
 
-| Map Event           | Value          | Description    |
-| ------------------- | -------------- | -------------- |
-| browser-print-start | { printLayer } | Fire on print started, before all print calculations is done. |
-| browser-print       | { printLayer } | Fire right before native print. |
-| browser-print-end   | { printLayer } | Fire on print end, after we refresh map to show initial view. |
+| Map Event           | Value           		 | Description 													 |
+| ------------------- | ------------------------ | ------------------------------------------------------------- |
+| browser-print-start | { printLayer, printMap } | Fire on print started, before all print calculations is done. |
+| browser-print       | { printLayer, printMap } | Fire right before native print. 								 |
+| browser-print-end   | { printLayer, printMap } | Fire on print end, after we refresh map to show initial view. |
 
 ### Acknowledgements
 Thanks to [Rowan Winsemius](https://github.com/rowanwins/leaflet-easyPrint) for general idea with a map print functionality.
+Thanks to [Jan Pieter Waagmeester](https://github.com/jieter/leaflet-clonelayer) for an idea that helped with map print functionality.
 
 Also thanks to [IcoMoon](http://icomoon.io/) for the print icon.

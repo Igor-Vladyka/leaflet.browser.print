@@ -50,9 +50,8 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		this.options.printModes = domPrintModes;
 
-
 		setTimeout( function () {
-			container.className += icon.clientWidth == 26 ? " v0-7" : " v1";
+			container.className += parseInt(L.version) ? " v1" : " v0-7"; // parseInt(L.version) returns 1 for v1.0.3 and 0 for 0.7.7;
 		}, 10);
 
 		return container;
@@ -108,40 +107,40 @@ L.Control.BrowserPrint = L.Control.extend({
     },
 
     _printLandscape: function () {
-		this._addPrintClassToContainer("leaflet-browser-print--landscape");
+		this._addPrintClassToContainer(this._map, "leaflet-browser-print--landscape");
         this._print("Landscape");
     },
 
     _printPortrait: function () {
-		this._addPrintClassToContainer("leaflet-browser-print--portrait");
+		this._addPrintClassToContainer(this._map, "leaflet-browser-print--portrait");
         this._print("Portrait");
     },
 
     _printAuto: function () {
-		this._addPrintClassToContainer("leaflet-browser-print--auto");
+		this._addPrintClassToContainer(this._map, "leaflet-browser-print--auto");
 
-		this.options.autoBounds = this._getBoundsForAllVisualLayers();
-		this._print(this._getPageSizeFromBounds(this.options.autoBounds));
+		var autoBounds = this._getBoundsForAllVisualLayers();
+		this._print(this._getPageSizeFromBounds(autoBounds), autoBounds);
     },
 
     _printCustom: function () {
 
-		this._addPrintClassToContainer("leaflet-browser-print--custom");
+		this._addPrintClassToContainer(this._map, "leaflet-browser-print--custom");
 
 		this._map.on('mousedown', this._startAutoPoligon, this);
 		this._map.on('mouseup', this._endAutoPoligon, this);
     },
 
-	_addPrintClassToContainer: function (printClassName) {
-		var container = this._map.getContainer();
+	_addPrintClassToContainer: function (map, printClassName) {
+		var container = map.getContainer();
 
 		if (container.className.indexOf(printClassName) === -1) {
 			container.className += " " + printClassName;
 		}
 	},
 
-	_removePrintClassFromContainer: function (printClassName) {
-		var container = this._map.getContainer();
+	_removePrintClassFromContainer: function (map, printClassName) {
+		var container = map.getContainer();
 
 		if (container.className && container.className.indexOf(printClassName) > -1) {
 			container.className = container.className.replace(" " + printClassName, "");
@@ -174,17 +173,19 @@ L.Control.BrowserPrint = L.Control.extend({
 	_endAutoPoligon: function (e) {
 
 		e.originalEvent.preventDefault();
+
 		this._map.off('mousemove', this._moveAutoPoligon, this);
 		this._map.off('mouseup', this._endAutoPoligon, this);
 
 		this._map.removeLayer(this.options.custom.rectangle);
 
-		this.options.autoBounds = this.options.custom.rectangle.getBounds();
-		this.options.custom = undefined;
-
 		this._map.dragging.enable();
 
-		this._print(this._getPageSizeFromBounds(this.options.autoBounds));
+		var autoBounds = this.options.custom.rectangle.getBounds();
+
+		this.options.custom = undefined;
+
+		this._print(this._getPageSizeFromBounds(autoBounds), autoBounds);
 
 	},
 
@@ -212,39 +213,41 @@ L.Control.BrowserPrint = L.Control.extend({
         }
     },
 
-    _print: function (printSize) {
+    _print: function (printSize, autoBounds) {
 		var self = this;
         var mapContainer = this._map.getContainer();
 
-        this.options.origins = {
+        var origins = {
             bounds: this._map.getBounds(),
             width: mapContainer.style.width,
             height: mapContainer.style.height,
             printCss: this._addPrintCss(printSize),
-			printLayer: this._validatePrintLayer()
+			printLayer: L.browserPrintUtils.cloneLayer(this._validatePrintLayer())
         };
 
-		self._map.fire("browser-print-start", { printLayer: this.options.origins.printLayer });
+		var overlayMap = this._addPrintMapOverlay(this._map, origins);
 
-        this._setupMapSize(mapContainer, printSize);
+		this._map.fire("browser-print-start", { printLayer: origins.printLayer, printMap: overlayMap });
 
-        this._map.invalidateSize({reset: true, animate: false, pan: false});
-		this._map.fitBounds(this.options.autoBounds || this.options.origins.bounds);
+        this._setupMapSize(overlayMap.getContainer(), printSize);
 
-		this.options.origins.interval = setInterval(function(){
-			if (self.options.origins.printLayer._tilesToLoad < 1) {
-				clearInterval(self.options.origins.interval);
-				self._completePrinting(self);
+		overlayMap.fitBounds(autoBounds || origins.bounds);
+
+		var interval = setInterval(function(){
+			console.log(overlayMap);
+			if (!overlayMap.isLoading()) {
+				clearInterval(interval);
+				self._completePrinting(overlayMap, origins.printLayer, origins.printCss);
 			}
 		}, 50);
     },
 
-	_completePrinting: function (self) {
-
+	_completePrinting: function (overlayMap, printLayer, printCss) {
+		var self = this;
 		setTimeout(function(){
-			self._map.fire("browser-print", { printLayer: self.options.origins.printLayer });
+			self._map.fire("browser-print", { printLayer: printLayer, printMap: overlayMap });
 			window.print();
-			self._printEnd(self);
+			self._printEnd(overlayMap, printLayer, printCss);
 		}, 1000);
 	},
 
@@ -274,77 +277,43 @@ L.Control.BrowserPrint = L.Control.extend({
 		return fitBounds;
     },
 
-    _printEnd: function (context) {
+    _printEnd: function (overlayMap, printLayer, printCss) {
 
-        var self = context;
+		this._removePrintClassFromContainer(this._map, "leaflet-browser-print--landscape");
+		this._removePrintClassFromContainer(this._map, "leaflet-browser-print--portrait");
+		this._removePrintClassFromContainer(this._map, "leaflet-browser-print--auto");
+		this._removePrintClassFromContainer(this._map, "leaflet-browser-print--custom");
 
-		try {
-
-	        if (self.options.prevLayers) {
-	            self.options.prevLayers.forEach(function(l) { self._map.addLayer(l); });
-	        }
-
-	        if (self.options.printLayer) {
-	            self._map.removeLayer(self.options.printLayer);
-	        }
-
-	        var mapContainer = self._map.getContainer();
-
-	        mapContainer.style.width = self.options.origins.width;
-	        mapContainer.style.height = self.options.origins.height;
-
-	        self._map.invalidateSize();
-	        self._map.fitBounds(self.options.origins.bounds);
-
-			self.options.autoBounds = undefined;
-	        self.options.origins.printCss.remove();
-
-			if (self.options.origins.printLayer._tilesToLoad < 0) {
-				self.options.origins.printLayer._reset();
-			}
-
-			self._removePrintClassFromContainer("leaflet-browser-print--landscape");
-			self._removePrintClassFromContainer("leaflet-browser-print--portrait");
-			self._removePrintClassFromContainer("leaflet-browser-print--auto");
-			self._removePrintClassFromContainer("leaflet-browser-print--custom");
-
-		} catch (exception){ console.info(exception); }
-		finally {
-
-			self._map.fire("browser-print-end", { printLayer: self.options.origins.printLayer });
-        	self.options.origins = undefined;
+		/* Normal browsers */
+		if (printCss.remove) {
+			printCss.remove();
+			overlayMap.getContainer().parentElement.remove();
+		} else {
+			/* IE */
+			printCss.parentNode.removeChild(printCss);
+			var overlay = overlayMap.getContainer().parentElement;
+			overlay.parentElement.removeChild(overlay);
 		}
+
+		document.body.className = document.body.className.replace(" leaflet--printing", "");
+
+		this._map.invalidateSize({reset: true, animate: false, pan: false});
+		this._map.fire("browser-print-end", { printLayer: printLayer, printMap: overlayMap });
     },
 
     _validatePrintLayer: function() {
 		var visualLayerForPrinting = null;
 
-        var map = this._map;
-        var allLayers = map._layers;
-
-        this.options.prevLayers = [];
-
         if (this.options.printLayer) {
 			visualLayerForPrinting = this.options.printLayer;
-
-            for (var layerId in allLayers){
-                var layer = allLayers[layerId];
-                if (layer._url) {
-                    this.options.prevLayers.push(layer);
-                }
-            }
-
-            map.addLayer(this.options.printLayer);
         } else {
-            for (var id in allLayers){
-                var pLayer = allLayers[id];
+            for (var id in this._map._layers){
+                var pLayer = this._map._layers[id];
                 if (pLayer._url) {
                     visualLayerForPrinting = pLayer;
                 }
             }
 		}
-
-        this.options.prevLayers.forEach(function(l){ map.removeLayer(l); });
 
 		return visualLayerForPrinting;
     },
@@ -354,7 +323,7 @@ L.Control.BrowserPrint = L.Control.extend({
         var printStyleSheet = document.createElement('style');
         printStyleSheet.setAttribute('type', 'text/css');
 		printStyleSheet.innerHTML = '@media print { .leaflet-control-container > .leaflet-bottom.leaflet-left, .leaflet-control-container > .leaflet-top.leaflet-left, .leaflet-control-container > .leaflet-top.leaflet-right { display: none!important; } }';
-		printStyleSheet.innerHTML += '@media print { .leaflet-popup-content-wrapper, .leaflet-popup-tip { box-shadow: none; } }';
+		printStyleSheet.innerHTML += '@media print { .leaflet-popup-content-wrapper, .leaflet-popup-tip { box-shadow: none; }';
 
         switch (printSize) {
             case "Landscape":
@@ -382,9 +351,47 @@ L.Control.BrowserPrint = L.Control.extend({
 		printControlStyleSheet.innerHTML += " .browser-print-holder { margin: 0px; padding: 0px; list-style: none; white-space: nowrap; } .browser-print-holder-left li:last-child { border-top-right-radius: 2px; border-bottom-right-radius: 2px; } .browser-print-holder-right li:first-child { border-top-left-radius: 2px; border-bottom-left-radius: 2px; }";
 		printControlStyleSheet.innerHTML += " .browser-print-mode { display: none; background-color: #919187; color: #FFF; font: 11px/19px 'Helvetica Neue', Arial, Helvetica, sans-serif; text-decoration: none; padding: 4px 10px; text-align: center; } .v1 .browser-print-mode { padding: 6px 10px; } .browser-print-mode:hover { background-color: #757570; cursor: pointer; }";
 		printControlStyleSheet.innerHTML += " .leaflet-browser-print--custom, .leaflet-browser-print--custom path { cursor: crosshair!important; }";
+		printControlStyleSheet.innerHTML += " .leaflet-print-overlay { width: 100%; height: 100%; position: absolute; top: 0; background-color: white; left: 0; z-index: 1001; display: block!important; } ";
+		printControlStyleSheet.innerHTML += " .leaflet--printing { overflow: hidden!important; margin: 0px!important; padding: 0px!important; } body.leaflet--printing > * { display: none; }";
 
 		var head = document.getElementsByTagName('head')[0];
         head.appendChild(printControlStyleSheet);
+	},
+
+	_addPrintMapOverlay: function (map, origins) {
+		var overlay = document.createElement("div");
+		overlay.id = "leaflet-print-overlay";
+		overlay.className = map.getContainer().className + " leaflet-print-overlay";
+		document.body.appendChild(overlay);
+
+		var overlayMapDom = document.createElement("div");
+		overlayMapDom.id = map.getContainer().id + "-print";
+		overlayMapDom.style.width = origins.width;
+		overlayMapDom.style.height = origins.height;
+		overlay.appendChild(overlayMapDom);
+
+		document.body.className += " leaflet--printing";
+
+		return this._setupPrintMap(overlayMapDom.id, map.options, origins.printLayer, map._layers);
+	},
+
+	_setupPrintMap: function (id, options, printLayer, allLayers) {
+		var overlayMap = L.map(id, options);
+
+		printLayer.addTo(overlayMap);
+
+		for (var layerId in allLayers){
+			var pLayer = allLayers[layerId];
+			if (!pLayer._url) {
+				L.browserPrintUtils.cloneLayer(pLayer).addTo(overlayMap);
+			}
+		}
+
+		if (!overlayMap.isLoading) {
+			overlayMap.isLoading = function () { return this._tilesToLoad || this._tileLayersToLoad; };
+		}
+
+		return overlayMap;
 	}
 });
 
