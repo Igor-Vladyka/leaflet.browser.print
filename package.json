@@ -1,6 +1,6 @@
 {
   "name": "leaflet.browser.print",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "keywords": [
     "leaflet.js",
     "browser",
@@ -22,6 +22,6 @@
     "webpack": "^2.5.1"
   },
   "scripts": {
-      "prepublishOnly": "webpack"
+    "prepublishOnly": "webpack"
   }
 }

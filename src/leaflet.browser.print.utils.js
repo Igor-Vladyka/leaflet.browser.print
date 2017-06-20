@@ -20,7 +20,7 @@ L.browserPrintUtils = {
 	    return ret;
 	},
 
-	cloneLayer: function(layer) {
+	cloneLayer: function(layer, map) {
 		var utils = this;
 
 		var options = layer.options;//utils.cloneOptions();
@@ -47,6 +47,10 @@ L.browserPrintUtils = {
 		// Marker layers
 		if (layer instanceof L.Marker) {
 		   return L.marker(layer.getLatLng(), options);
+		}
+
+		if (layer instanceof L.Popup){
+			return L.popup().setLatLng(layer.getLatLng()).setContent(layer.getContent());
 		}
 
 		if (layer instanceof L.Circle) {
@@ -83,13 +87,14 @@ L.browserPrintUtils = {
 		   return L.geoJson(layer.toGeoJSON(), options);
 		}
 
-		if (layer instanceof L.LayerGroup) {
-		   return L.layerGroup(utils.cloneInnerLayers(layer));
-		}
 
 		if (layer instanceof L.FeatureGroup) {
-		   return L.FeatureGroup(utils.cloneInnerLayers(layer));
+		   return L.featureGroup(); /*utils.cloneInnerLayers(layer)*/
 		}
+
+		if (layer instanceof L.LayerGroup) {
+		   return L.layerGroup();
+	   }
 
 		console.info('Unknown layer, cannot clone this layer. Leaflet-version: ' + L.version);
    },

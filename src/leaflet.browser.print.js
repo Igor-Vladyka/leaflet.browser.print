@@ -8,7 +8,8 @@ L.Control.BrowserPrint = L.Control.extend({
 		title: 'Print map',
 		position: 'topleft',
         printLayer: null,
-		printModes: ["Portrait", "Landscape", "Auto", "Custom"]
+		printModes: ["Portrait", "Landscape", "Auto", "Custom"],
+		closePopupsOnPrint: true
 	},
 
 	initialize: function (options) {
@@ -232,7 +233,6 @@ L.Control.BrowserPrint = L.Control.extend({
 		overlayMap.fitBounds(autoBounds || origins.bounds);
 
 		var interval = setInterval(function(){
-			console.log(overlayMap);
 			if (!overlayMap.isLoading()) {
 				clearInterval(interval);
 				self._completePrinting(overlayMap, origins.printLayer, origins.printCss);
@@ -300,10 +300,10 @@ L.Control.BrowserPrint = L.Control.extend({
     },
 
     _validatePrintLayer: function() {
-		var visualLayerForPrinting = null;
+			var visualLayerForPrinting = null;
 
         if (this.options.printLayer) {
-			visualLayerForPrinting = this.options.printLayer;
+					visualLayerForPrinting = this.options.printLayer;
         } else {
             for (var id in this._map._layers){
                 var pLayer = this._map._layers[id];
@@ -375,7 +375,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		return this._setupPrintMap(overlayMapDom.id, map.options, origins.printLayer, map._layers);
 	},
 
-	_setupPrintMap: function (id, options, printLayer, allLayers) {
+	_setupPrintMap: function (id, options, printLayer, allLayers, map) {
 		var overlayMap = L.map(id, options);
 
 		printLayer.addTo(overlayMap);
@@ -383,7 +383,19 @@ L.Control.BrowserPrint = L.Control.extend({
 		for (var layerId in allLayers){
 			var pLayer = allLayers[layerId];
 			if (!pLayer._url) {
-				L.browserPrintUtils.cloneLayer(pLayer).addTo(overlayMap);
+				var clone = L.browserPrintUtils.cloneLayer(pLayer, map);
+
+				/* Workaround for propriate handling of popups. */
+				if (pLayer instanceof L.Popup){
+					if(!pLayer.isOpen) {
+						pLayer.isOpen = function () { return this._isOpen; };
+					}
+					if (pLayer.isOpen() && !this.options.closePopupsOnPrint) {
+						clone.openOn(overlayMap);
+					}
+				} else {
+					clone.addTo(overlayMap);
+				}
 			}
 		}
 

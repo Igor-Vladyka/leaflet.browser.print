@@ -172,17 +172,21 @@ Cu congue omnesque reprehendunt sed, dicta insolens ad ius, per erat convenire e
             	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
 
+            var group = L.featureGroup();
+
+            group.addTo(map);
+
             L.circle([51.505, 1], 500000, {
             			color: 'red',
             			fillColor: '#f03',
             			fillOpacity: 0.5
-            		}).addTo(map);
+            		}).addTo(group);
 
             L.circle([55, 5], 50000, {
                         color: 'green',
                         fillColor: 'darkgreen',
                         fillOpacity: 0.8
-                    }).addTo(map);
+                    }).addTo(group);
 
             L.browserPrint({
                 printLayer:  L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png', {
@@ -190,8 +194,11 @@ Cu congue omnesque reprehendunt sed, dicta insolens ad ius, per erat convenire e
                             	subdomains: 'abcd',
                             	minZoom: 0,
                             	maxZoom: 20
-                            })
+                            }),
+                closePopupsOnPrint: false
             }).addTo(map);
+
+            L.popup().setLatLng(L.latLng(55,5)).setContent("Example of content").openOn(map);
 
     	</script>
     </body>
