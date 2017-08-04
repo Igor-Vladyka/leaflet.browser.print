@@ -195,7 +195,9 @@ Cu congue omnesque reprehendunt sed, dicta insolens ad ius, per erat convenire e
                             	minZoom: 0,
                             	maxZoom: 20
                             }),
-                closePopupsOnPrint: false
+                closePopupsOnPrint: false,      
+                printModesNames: {Portrait:"Portrait", Landscape:"Paysage", Auto:"Auto", Custom:"Séléctionnez la zone"}
+
             }).addTo(map);
 
             L.popup().setLatLng(L.latLng(55,5)).setContent("Example of content").openOn(map);
