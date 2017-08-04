@@ -162,7 +162,10 @@ Cu congue omnesque reprehendunt sed, dicta insolens ad ius, per erat convenire e
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet-src.js"></script>
         <script src="dist/leaflet.browser.print.min.js"></script>
-
+        
+        <link rel="stylesheet" href="node_modules/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+        <script src="node_modules/leaflet-routing-machine/dist/leaflet-routing-machine.min.js"></script>
+        
     	<script>
 
     		var map = L.map('map').setView([51.505, 1], 5);
@@ -199,7 +202,19 @@ Cu congue omnesque reprehendunt sed, dicta insolens ad ius, per erat convenire e
                 printModesNames: {Portrait:"Portrait", Landscape:"Paysage", Auto:"Auto", Custom:"Séléctionnez la zone"}
 
             }).addTo(map);
-
+            
+            var routingControl = L.Routing.control({
+                        routeWhileDragging: false,
+                        showAlternatives: false,
+                        useZoomParameter: true,
+                        show: false,
+                        collapsible: true,
+                        lineOptions: {
+                            addWaypoints: true
+                        },
+                            position: 'bottomright'
+                        }).addTo(map);
+            
             L.popup().setLatLng(L.latLng(55,5)).setContent("Example of content").openOn(map);
 
     	</script>

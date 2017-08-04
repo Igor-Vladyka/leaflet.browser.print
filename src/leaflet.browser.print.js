@@ -385,17 +385,19 @@ L.Control.BrowserPrint = L.Control.extend({
 			var pLayer = allLayers[layerId];
 			if (!pLayer._url) {
 				var clone = L.browserPrintUtils.cloneLayer(pLayer, map);
-
-				/* Workaround for propriate handling of popups. */
-				if (pLayer instanceof L.Popup){
-					if(!pLayer.isOpen) {
-						pLayer.isOpen = function () { return this._isOpen; };
+				
+				if (clone) {
+					/* Workaround for propriate handling of popups. */
+					if (pLayer instanceof L.Popup){
+						if(!pLayer.isOpen) {
+							pLayer.isOpen = function () { return this._isOpen; };
+						}
+						if (pLayer.isOpen() && !this.options.closePopupsOnPrint) {
+							clone.openOn(overlayMap);
+						}
+					} else {
+						clone.addTo(overlayMap);
 					}
-					if (pLayer.isOpen() && !this.options.closePopupsOnPrint) {
-						clone.openOn(overlayMap);
-					}
-				} else {
-					clone.addTo(overlayMap);
 				}
 			}
 		}

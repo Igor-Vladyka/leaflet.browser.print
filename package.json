@@ -1,6 +1,6 @@
 {
   "name": "leaflet.browser.print",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "keywords": [
     "leaflet.js",
     "browser",
@@ -23,5 +23,8 @@
   },
   "scripts": {
     "prepublishOnly": "webpack"
+  },
+  "dependencies": {
+    "leaflet-routing-machine": "^3.2.5"
   }
 }

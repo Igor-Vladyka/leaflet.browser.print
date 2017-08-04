@@ -97,16 +97,22 @@ L.browserPrintUtils = {
 	   }
 
 		console.info('Unknown layer, cannot clone this layer. Leaflet-version: ' + L.version);
+		
+		return null;
    },
 
 	cloneInnerLayers: function (layer) {
-	   var utils = this;
-       var layers = [];
+		var utils = this;
+		var layers = [];
 
-       layer.eachLayer(function (inner) {
-           layers.push(utils.cloneLayer(inner));
-       });
+		layer.eachLayer(function (inner) {
+			var l = utils.cloneLayer(inner);
 
-       return layers;
+			if (l) {
+				layers.push(l);
+			}
+		});
+
+		return layers;
 	}
 };
