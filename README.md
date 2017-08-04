@@ -36,7 +36,7 @@ You can pass a number of options to the plugin to control various settings.
 | title         | String       | 'Print map'  | Sets the text which appears as the tooltip of the print button |
 | position      | [Leaflet control position](http://leafletjs.com/reference-0.7.7.html#control-position) | 'topleft' | Position the print button |
 | printModes    | Array        | ["Portrait", "Landscape", "Auto", "Custom"] | Collection of page print actions |
-| printModesNames | Object | {Portrait:"Portrait", Landscape:"Landscape", Auto:"Auto", Custom:"Custom"} | Customize each print mode |
+| printModesNames | Object | { Portrait:"Portrait", Landscape:"Landscape", Auto:"Auto", Custom:"Custom" } | Customize each print mode name |
 | printLayer    | [Leaflet tile layer](http://leafletjs.com/reference-0.7.7.html#tilelayer) | null | A tiles layer to show instead of all current active tile layers |
 | closePopupsOnPrint | Boolean | true | Indicates if we need to force popup closing for printed map |
 

@@ -23,8 +23,5 @@
   },
   "scripts": {
     "prepublishOnly": "webpack"
-  },
-  "dependencies": {
-    "leaflet-routing-machine": "^3.2.5"
   }
 }
