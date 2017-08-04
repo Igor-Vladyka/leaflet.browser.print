@@ -9,6 +9,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		position: 'topleft',
         printLayer: null,
 		printModes: ["Portrait", "Landscape", "Auto", "Custom"],
+		printModesNames: {Portrait:"Portrait", Landscape:"Landscape", Auto:"Auto", Custom:"Custom"},
 		closePopupsOnPrint: true
 	},
 
@@ -41,7 +42,7 @@ L.Control.BrowserPrint = L.Control.extend({
 			if (this["_print" + normilizedName]) {
 				var domMode = L.DomUtil.create('li', 'browser-print-mode', this.holder);
 
-				domMode.innerHTML = normilizedName;
+				domMode.innerHTML = this.options.printModesNames[normilizedName];
 
 				L.DomEvent.addListener(domMode, 'click', this["_print" + normilizedName], this);
 
