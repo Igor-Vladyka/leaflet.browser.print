@@ -87,7 +87,6 @@ L.browserPrintUtils = {
 		   return L.geoJson(layer.toGeoJSON(), options);
 		}
 
-
 		if (layer instanceof L.FeatureGroup) {
 		   return L.featureGroup(); /*utils.cloneInnerLayers(layer)*/
 		}
@@ -99,6 +98,26 @@ L.browserPrintUtils = {
 		console.info('Unknown layer, cannot clone this layer. Leaflet-version: ' + L.version);
 		
 		return null;
+   },
+   
+   getType: function(layer) {	   
+	   if (L.SVG && layer instanceof L.SVG) { return "L.SVG"; } // Renderer
+	   if (L.Canvas && layer instanceof L.Canvas) { return "L.Canvas"; } // Renderer   
+	   if (layer instanceof L.TileLayer) { return "L.TileLayer"; } // Tile layers
+	   if (layer instanceof L.ImageOverlay) { return "L.ImageOverlay"; }
+	   if (layer instanceof L.Marker) { return "L.Marker"; }
+	   if (layer instanceof L.Popup) { return "L.Popup"; }
+	   if (layer instanceof L.Circle) { return "L.Circle"; }
+	   if (layer instanceof L.CircleMarker) { return "L.CircleMarker"; }
+	   if (layer instanceof L.Rectangle) { return "L.Rectangle"; }
+	   if (layer instanceof L.Polygon) { return "L.Polygon"; }	   
+	   if (L.MultiPolyline && layer instanceof L.MultiPolyline) { return "L.MultiPolyline"; } // MultiPolyline is removed in leaflet 1.0.0	   
+	   if (L.MultiPolygon && layer instanceof L.MultiPolygon) { return "L.MultiPolygon"; } // MultiPolygon is removed in leaflet 1.0.0
+	   if (layer instanceof L.Polyline) { return "L.Polyline"; }
+	   if (layer instanceof L.GeoJSON) { return "L.GeoJSON"; }
+	   if (layer instanceof L.FeatureGroup) { return "L.FeatureGroup"; }
+	   if (layer instanceof L.LayerGroup) { return "L.LayerGroup"; }
+	   return null;
    },
 
 	cloneInnerLayers: function (layer) {

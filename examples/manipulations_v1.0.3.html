@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<title>Leaflet browser print plugin for v1.0.3 | Manipulations</title>
+    	<meta charset="utf-8" />
+
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+     	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" /></head>
+
+        <style>
+            html, body, #map { width: 100%; height: 100%; margin: 0px; padding: 0px;}
+        </style>
+     </head>
+
+    <body>
+    	<div id="map"></div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet-src.js"></script>
+        <script src="../dist/leaflet.browser.print.min.js"></script>
+
+    	<script>
+
+    		var map = L.map('map').setView([51.505, 1], 6);
+
+            L.tileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            	maxZoom: 19,
+            	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            var red = L.circle([51.505, 1], 500000, {
+            			color: 'red',
+            			fillColor: '#f03',
+            			fillOpacity: 0.5
+            		}).addTo(map);
+                    
+            L.circle([55, 5], 50000, {
+                        color: 'green',
+                        fillColor: 'darkgreen',
+                        fillOpacity: 0.8
+                    }).addTo(map);                    
+                    
+            L.browserPrint({
+                printLayer:  L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png', {
+                                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                                subdomains: 'abcd',
+                                minZoom: 0,
+                                maxZoom: 20
+                            }),
+                closePopupsOnPrint: false,    
+            }).addTo(map);
+            
+            
+            // Dom manipulation with objects, that you have reference, can be made only here. But you need you revert changes in 'browser-print-end' manually.
+            map.on("browser-pre-print", function(e) {
+                red.setStyle({fill: false});
+            });
+                    
+            map.on("browser-print-start", function(e) {
+                // Green circle;
+                e.printObjects["L.Circle"][1].setStyle({fillColor: "orange"});
+                e.printObjects["L.Circle"][1].setRadius(1312330);
+            });
+            
+            map.on("browser-print-end", function(e) {
+                red.setStyle({fill: true});
+            });
+
+    	</script>
+    </body>
+
+</html>

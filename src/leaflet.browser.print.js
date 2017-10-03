@@ -9,7 +9,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		position: 'topleft',
         printLayer: null,
 		printModes: ["Portrait", "Landscape", "Auto", "Custom"],
-		printModesNames: {Portrait:"Portrait", Landscape:"Landscape", Auto:"Auto", Custom:"Custom"},
+		printModesNames: {Portrait: "Portrait", Landscape: "Landscape", Auto: "Auto", Custom: "Custom"},
 		closePopupsOnPrint: true
 	},
 
@@ -37,14 +37,14 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		for (var i = 0; i < this.options.printModes.length; i++) {
 			var mode = this.options.printModes[i];
-			var normilizedName = mode[0].toUpperCase() + mode.substring(1).toLowerCase();
+			var normalizedName = mode[0].toUpperCase() + mode.substring(1).toLowerCase();
 
-			if (this["_print" + normilizedName]) {
+			if (this["_print" + normalizedName]) {
 				var domMode = L.DomUtil.create('li', 'browser-print-mode', this.holder);
 
-				domMode.innerHTML = this.options.printModesNames[normilizedName];
+				domMode.innerHTML = this.options.printModesNames ? this.options.printModesNames[normalizedName] : normalizedName;
 
-				L.DomEvent.addListener(domMode, 'click', this["_print" + normilizedName], this);
+				L.DomEvent.addListener(domMode, 'click', this["_print" + normalizedName], this);
 
 				domPrintModes.push(domMode);
 			}
@@ -226,27 +226,29 @@ L.Control.BrowserPrint = L.Control.extend({
             printCss: this._addPrintCss(printSize),
 			printLayer: L.browserPrintUtils.cloneLayer(this._validatePrintLayer())
         };
+		
+		this._map.fire("browser-pre-print", { printObjects: this._getPrintObjects() });
+		
+		var overlay = this._addPrintMapOverlay(this._map, printSize, origins);
 
-		var overlayMap = this._addPrintMapOverlay(this._map, printSize, origins);
+		this._map.fire("browser-print-start", { printLayer: origins.printLayer, printMap: overlay.map, printObjects: overlay.objects });
 
-		this._map.fire("browser-print-start", { printLayer: origins.printLayer, printMap: overlayMap });
-
-		overlayMap.fitBounds(autoBounds || origins.bounds);
+		overlay.map.fitBounds(autoBounds || origins.bounds);
 
 		var interval = setInterval(function(){
-			if (!overlayMap.isLoading()) {
+			if (!overlay.map.isLoading()) {
 				clearInterval(interval);
-				self._completePrinting(overlayMap, origins.printLayer, origins.printCss);
+				self._completePrinting(overlay.map, origins.printLayer, overlay.objects, origins.printCss);
 			}
 		}, 50);
     },
 
-	_completePrinting: function (overlayMap, printLayer, printCss) {
+	_completePrinting: function (overlayMap, printLayer, printObjects, printCss) {
 		var self = this;
 		setTimeout(function(){
-			self._map.fire("browser-print", { printLayer: printLayer, printMap: overlayMap });
+			self._map.fire("browser-print", { printLayer: printLayer, printMap: overlayMap, printObjects: printObjects });
 			window.print();
-			self._printEnd(overlayMap, printLayer, printCss);
+			self._printEnd(overlayMap, printLayer, printObjects, printCss);
 		}, 1000);
 	},
 
@@ -276,7 +278,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		return fitBounds;
     },
 
-    _printEnd: function (overlayMap, printLayer, printCss) {
+    _printEnd: function (overlayMap, printLayer, printObjects, printCss) {
 
 		this._removePrintClassFromContainer(this._map, "leaflet-browser-print--landscape");
 		this._removePrintClassFromContainer(this._map, "leaflet-browser-print--portrait");
@@ -297,7 +299,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		document.body.className = document.body.className.replace(" leaflet--printing", "");
 
 		this._map.invalidateSize({reset: true, animate: false, pan: false});
-		this._map.fire("browser-print-end", { printLayer: printLayer, printMap: overlayMap });
+		this._map.fire("browser-print-end", { printLayer: printLayer, printMap: overlayMap, printObjects: printObjects });
     },
 
     _validatePrintLayer: function() {
@@ -316,6 +318,24 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		return visualLayerForPrinting;
     },
+	
+	_getPrintObjects: function() {
+		var printObjects = {};
+		for (var id in this._map._layers){
+			var pLayer = this._map._layers[id];
+			if (!pLayer._url) {
+				var type = L.browserPrintUtils.getType(pLayer);
+				if (type) {
+					if (!printObjects[type]) {
+						printObjects[type] = [];
+					}
+					printObjects[type].push(pLayer);
+				}
+			}
+		}
+		
+		return printObjects;
+	},
 
     _addPrintCss: function (printSize) {
 
@@ -378,7 +398,8 @@ L.Control.BrowserPrint = L.Control.extend({
 
 	_setupPrintMap: function (id, options, printLayer, allLayers, map) {
 		var overlayMap = L.map(id, options);
-
+		var printObjects = {};
+		
 		printLayer.addTo(overlayMap);
 
 		for (var layerId in allLayers){
@@ -387,6 +408,7 @@ L.Control.BrowserPrint = L.Control.extend({
 				var clone = L.browserPrintUtils.cloneLayer(pLayer, map);
 				
 				if (clone) {
+					
 					/* Workaround for propriate handling of popups. */
 					if (pLayer instanceof L.Popup){
 						if(!pLayer.isOpen) {
@@ -398,6 +420,12 @@ L.Control.BrowserPrint = L.Control.extend({
 					} else {
 						clone.addTo(overlayMap);
 					}
+					
+					var type = L.browserPrintUtils.getType(clone);
+					if (!printObjects[type]) {
+						printObjects[type] = [];
+					}
+					printObjects[type].push(clone);
 				}
 			}
 		}
@@ -406,13 +434,13 @@ L.Control.BrowserPrint = L.Control.extend({
 			overlayMap.isLoading = function () { return this._tilesToLoad || this._tileLayersToLoad; };
 		}
 
-		return overlayMap;
+		return {map: overlayMap, objects: printObjects};
 	}
 });
 
 L.browserPrint = function(options) {
 
-	if(options && options.printModes && (!options.printModes.filter || !options.printModes.length)){
+	if (options && options.printModes && (!options.printModes.filter || !options.printModes.length)) {
 		throw "Please specify valid print modes for Print action. Example: printModes: ['Portrait', 'Landscape', 'Auto', 'Custom']";
 	}
 

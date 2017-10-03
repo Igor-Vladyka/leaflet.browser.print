@@ -2,7 +2,12 @@
 
 A [leaflet](http://www.leafletjs.com) plugin which allows users to print full page map directly from the browser. Compatible with Leaflet v0.7.7 and v1.0.3.
 
-Check out the [DEMO v0.7.7](https://igor-vladyka.github.io/leaflet.browser.print/examples/v0.7.7.html), [DEMO v1.0.3](https://igor-vladyka.github.io/leaflet.browser.print/examples/v1.0.3.html) and a [DEMO with custom print layer and additional page content](https://igor-vladyka.github.io/leaflet.browser.print/);
+Check out the 
+[DEMO v0.7.7](https://igor-vladyka.github.io/leaflet.browser.print/examples/v0.7.7.html), 
+[DEMO v1.0.3](https://igor-vladyka.github.io/leaflet.browser.print/examples/v1.0.3.html),
+[DEMO with localization](https://igor-vladyka.github.io/leaflet.browser.print/examples/localization_v1.0.3.html),
+[DEMO with print objects manipulations](https://igor-vladyka.github.io/leaflet.browser.print/examples/manipulations_v1.0.3.html),
+[DEMO with custom print layer and additional page content](https://igor-vladyka.github.io/leaflet.browser.print/);
 
 ### Downloads
 **NPM**
@@ -36,8 +41,8 @@ You can pass a number of options to the plugin to control various settings.
 | title         | String       | 'Print map'  | Sets the text which appears as the tooltip of the print button |
 | position      | [Leaflet control position](http://leafletjs.com/reference-0.7.7.html#control-position) | 'topleft' | Position the print button |
 | printModes    | Array        | ["Portrait", "Landscape", "Auto", "Custom"] | Collection of page print actions |
-| printModesNames | Object | { Portrait:"Portrait", Landscape:"Landscape", Auto:"Auto", Custom:"Custom" } | Customize each print mode name |
-| printLayer    | [Leaflet tile layer](http://leafletjs.com/reference-0.7.7.html#tilelayer) | null | A tiles layer to show instead of all current active tile layers |
+| printModesNames | Object | { Portrait: "Portrait", Landscape: "Landscape", Auto:"Auto", Custom:"Custom" } | Customize each print mode name |
+| printLayer    | [Leaflet tile layer](http://leafletjs.com/reference-0.7.7.html#tilelayer) | null | A tiles layer to show instead of all current active tiles layers |
 | closePopupsOnPrint | Boolean | true | Indicates if we need to force popup closing for printed map |
 
 Here's an example of passing through some options.
@@ -67,11 +72,14 @@ L.browserPrint({
 
 ### Map Events
 
-| Map Event           | Value           		 | Description 													 |
-| ------------------- | ------------------------ | ------------------------------------------------------------- |
-| browser-print-start | { printLayer, printMap } | Fire on print started, before all print calculations is done. |
-| browser-print       | { printLayer, printMap } | Fire right before native print. 								 |
-| browser-print-end   | { printLayer, printMap } | Fire on print end, after we refresh map to show initial view. |
+| Map Event           | Value           		 			   | Description 													 | Purpose |
+| ------------------- | -------------------------------------- | --------------------------------------------------------------- | ------- |
+| browser-pre-print   | { printObjects } 		 			   | Fire before print started, allows manipulation with map objects.| For DOM manipulation with real map objects. |
+| browser-print-start | { printLayer, printMap, printObjects } | Fire on print started, before all print calculations is done.   | For DOM manipulation with print map and print objects. |
+| browser-print       | { printLayer, printMap, printObjects } | Fire right before native print. 								 | For DOM manipulation with print map and print objects. |
+| browser-print-end   | { printLayer, printMap, printObjects } | Fire on print end, after we refresh map to show initial view.   | For DOM manipulation with real map objects after print |
+
+Example can be found here: [DEMO with print objects manipulations](https://igor-vladyka.github.io/leaflet.browser.print/examples/manipulations_v1.0.3.html);
 
 ### Acknowledgements
 Thanks to [Rowan Winsemius](https://github.com/rowanwins/leaflet-easyPrint) for general idea with a map print functionality.
