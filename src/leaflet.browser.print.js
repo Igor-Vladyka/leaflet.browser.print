@@ -41,8 +41,12 @@ L.Control.BrowserPrint = L.Control.extend({
 
 			if (this["_print" + normalizedName]) {
 				var domMode = L.DomUtil.create('li', 'browser-print-mode', this.holder);
-
-				domMode.innerHTML = this.options.printModesNames ? this.options.printModesNames[normalizedName] : normalizedName;
+				
+				if (this.options.printModesNames && this.options.printModesNames[normalizedName]) {
+					domMode.innerHTML = this.options.printModesNames[normalizedName];
+				} else {
+					domMode.innerHTML = normalizedName;
+				}
 
 				L.DomEvent.addListener(domMode, 'click', this["_print" + normalizedName], this);
 
@@ -209,8 +213,8 @@ L.Control.BrowserPrint = L.Control.extend({
                 break;
             default:
             case "Portrait":
-                mapContainer.style.width = "850px";
-                mapContainer.style.height = "1100px";
+                mapContainer.style.width = "715px";
+                mapContainer.style.height = "1040px";
                 break;
         }
     },
@@ -230,11 +234,13 @@ L.Control.BrowserPrint = L.Control.extend({
 		this._map.fire("browser-pre-print", { printObjects: this._getPrintObjects() });
 		
 		var overlay = this._addPrintMapOverlay(this._map, printSize, origins);
-
+		
 		this._map.fire("browser-print-start", { printLayer: origins.printLayer, printMap: overlay.map, printObjects: overlay.objects });
 
 		overlay.map.fitBounds(autoBounds || origins.bounds);
-
+		
+		overlay.map.invalidateSize({reset: true, animate: false, pan: false});
+				
 		var interval = setInterval(function(){
 			if (!overlay.map.isLoading()) {
 				clearInterval(interval);
@@ -370,7 +376,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		printControlStyleSheet.innerHTML += " .browser-print-holder { margin: 0px; padding: 0px; list-style: none; white-space: nowrap; } .browser-print-holder-left li:last-child { border-top-right-radius: 2px; border-bottom-right-radius: 2px; } .browser-print-holder-right li:first-child { border-top-left-radius: 2px; border-bottom-left-radius: 2px; }";
 		printControlStyleSheet.innerHTML += " .browser-print-mode { display: none; background-color: #919187; color: #FFF; font: 11px/19px 'Helvetica Neue', Arial, Helvetica, sans-serif; text-decoration: none; padding: 4px 10px; text-align: center; } .v1 .browser-print-mode { padding: 6px 10px; } .browser-print-mode:hover { background-color: #757570; cursor: pointer; }";
 		printControlStyleSheet.innerHTML += " .leaflet-browser-print--custom, .leaflet-browser-print--custom path { cursor: crosshair!important; }";
-		printControlStyleSheet.innerHTML += " .leaflet-print-overlay { width: 100%; height: 100%; position: absolute; top: 0; background-color: white; left: 0; z-index: 1001; display: block!important; } ";
+		printControlStyleSheet.innerHTML += " .leaflet-print-overlay { width: 100%; height: 100%; position: absolute; top: 0; background-color: white!important; left: 0; z-index: 1001; display: block!important; } ";
 		printControlStyleSheet.innerHTML += " .leaflet--printing { overflow: hidden!important; margin: 0px!important; padding: 0px!important; } body.leaflet--printing > * { display: none; }";
 
 		var head = document.getElementsByTagName('head')[0];
