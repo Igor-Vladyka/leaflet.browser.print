@@ -120,6 +120,7 @@ L.browserPrintUtils = {
 	   if (layer instanceof L.GeoJSON) { return "L.GeoJSON"; }
 	   if (layer instanceof L.FeatureGroup) { return "L.FeatureGroup"; }
 	   if (layer instanceof L.LayerGroup) { return "L.LayerGroup"; }
+	   if (layer instanceof L.Tooltip) { return "L.Tooltip"; }
 	   return null;
    },
 
