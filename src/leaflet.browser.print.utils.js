@@ -23,8 +23,7 @@ L.browserPrintUtils = {
 	cloneLayer: function(layer, map) {
 		var utils = this;
 
-		var options = layer.options;//utils.cloneOptions();
-
+		var options = layer.options;
 
 		// Renderers
 		if (L.SVG && layer instanceof L.SVG) {
@@ -50,7 +49,7 @@ L.browserPrintUtils = {
 		}
 
 		if (layer instanceof L.Popup){
-			return L.popup().setLatLng(layer.getLatLng()).setContent(layer.getContent());
+			return L.popup(options).setLatLng(layer.getLatLng()).setContent(layer.getContent());
 		}
 
 		if (layer instanceof L.Circle) {

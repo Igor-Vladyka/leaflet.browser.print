@@ -22,15 +22,34 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		var container = L.DomUtil.create('div', 'leaflet-control-browser-print leaflet-bar leaflet-control');
 		L.DomEvent.disableClickPropagation(container);
+		
+		L.DomEvent.addListener(container, 'mouseover', this._displayPageSizeButtons, this);
+		L.DomEvent.addListener(container, 'mouseout', this._hidePageSizeButtons, this);
+		
+		if (this.options.position.indexOf("left") > 0) {
+			this._createIcon(container);
+			this._createMenu(container);
+		} else {
+			this._createMenu(container);
+			this._createIcon(container);
+		}
 
+		setTimeout( function () {
+			container.className += parseInt(L.version) ? " v1" : " v0-7"; // parseInt(L.version) returns 1 for v1.0.3 and 0 for 0.7.7;
+		}, 10);
+
+		return container;
+	},
+	
+	_createIcon: function (container) {
 		var icon = L.DomUtil.create('a', '', container);
 		this.link = icon;
 		this.link.id = "leaflet-browser-print";
 		this.link.title = this.options.title;
-
-		L.DomEvent.addListener(container, 'mouseover', this._displayPageSizeButtons, this);
-		L.DomEvent.addListener(container, 'mouseout', this._hidePageSizeButtons, this);
-
+		return this.link;
+	},
+	
+	_createMenu: function (container) {
 		this.holder = L.DomUtil.create('ul', 'browser-print-holder', container);
 
 		var domPrintModes = [];
@@ -55,31 +74,25 @@ L.Control.BrowserPrint = L.Control.extend({
 		}
 
 		this.options.printModes = domPrintModes;
-
-		setTimeout( function () {
-			container.className += parseInt(L.version) ? " v1" : " v0-7"; // parseInt(L.version) returns 1 for v1.0.3 and 0 for 0.7.7;
-		}, 10);
-
-		return container;
 	},
 
     _displayPageSizeButtons: function() {
 
-    	this.holder.style.marginTop = "-" + this.link.clientHeight - 1 + "px";
+    	//this.holder.style.marginTop = "-" + this.link.clientHeight - 1 + "px";
 
 		if (this.options.position.indexOf("left") > 0) {
 
 	        this.link.style.borderTopRightRadius = "0px";
 	    	this.link.style.borderBottomRightRadius = "0px";
 
-			this.holder.style.marginLeft = this.link.clientWidth + "px";
+		//	this.holder.style.marginLeft = this.link.clientWidth + "px";
 
 		} else {
 
 			this.link.style.borderTopLeftRadius = "0px";
 	    	this.link.style.borderBottomLeftRadius = "0px";
 
-			this.holder.style.marginRight = this.link.clientWidth + "px";
+			//this.holder.style.marginRight = this.link.clientWidth + "px";
 
 		}
 
@@ -90,21 +103,21 @@ L.Control.BrowserPrint = L.Control.extend({
 
     _hidePageSizeButtons: function (){
 
-    	this.holder.style.marginTop = "";
+    //	this.holder.style.marginTop = "";
 
 		if (this.options.position.indexOf("left") > 0) {
 
 	    	this.link.style.borderTopRightRadius = "";
 	    	this.link.style.borderBottomRightRadius = "";
 
-			this.holder.style.marginLeft = "";
+			//this.holder.style.marginLeft = "";
 
 		} else {
 
 	    	this.link.style.borderTopLeftRadius = "";
 	    	this.link.style.borderBottomLeftRadius = "";
 
-			this.holder.style.marginRight = "";
+			//this.holder.style.marginRight = "";
 		}
 
 		this.options.printModes.forEach(function(mode){
@@ -370,7 +383,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		var printControlStyleSheet = document.createElement('style');
 		printControlStyleSheet.setAttribute('type', 'text/css');
 
-		printControlStyleSheet.innerHTML += " .leaflet-control-browser-print a { background: #fff url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gcCCi8Vjp+aNAAAAGhJREFUOMvFksENgDAMA68RC7BBN+Cf/ZU33QAmYAT6BolAGxB+RrrIsg1BpfNBVXcPMLMDI/ytpKozMHWwK7BJJ7yYWQbGdBea9wTIkRDzKy0MT7r2NiJACRgotCzxykFI34QY2Ea7KmtxGJ+uX4wfAAAAAElFTkSuQmCC') no-repeat 5px; background-size: 16px 16px; display: block; border-radius: 4px; }";
+		printControlStyleSheet.innerHTML += " .leaflet-control-browser-print { display: flex; } .leaflet-control-browser-print a { background: #fff url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gcCCi8Vjp+aNAAAAGhJREFUOMvFksENgDAMA68RC7BBN+Cf/ZU33QAmYAT6BolAGxB+RrrIsg1BpfNBVXcPMLMDI/ytpKozMHWwK7BJJ7yYWQbGdBea9wTIkRDzKy0MT7r2NiJACRgotCzxykFI34QY2Ea7KmtxGJ+uX4wfAAAAAElFTkSuQmCC') no-repeat 5px; background-size: 16px 16px; display: block; border-radius: 4px; }";
 
 		printControlStyleSheet.innerHTML += " .v0-7.leaflet-control-browser-print a#leaflet-browser-print { width: 26px; height: 26px; } .v1.leaflet-control-browser-print a#leaflet-browser-print { background-position-x: 7px; }";
 		printControlStyleSheet.innerHTML += " .browser-print-holder { margin: 0px; padding: 0px; list-style: none; white-space: nowrap; } .browser-print-holder-left li:last-child { border-top-right-radius: 2px; border-bottom-right-radius: 2px; } .browser-print-holder-right li:first-child { border-top-left-radius: 2px; border-bottom-left-radius: 2px; }";
