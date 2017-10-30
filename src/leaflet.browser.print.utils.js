@@ -92,7 +92,11 @@ L.browserPrintUtils = {
 
 		if (layer instanceof L.LayerGroup) {
 		   return L.layerGroup();
-	   }
+		}
+		
+		if (layer instanceof L.Tooltip) {
+            return L.tooltip();
+        }
 
 		console.info('Unknown layer, cannot clone this layer. Leaflet-version: ' + L.version);
 		
