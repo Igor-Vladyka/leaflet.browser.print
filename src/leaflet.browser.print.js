@@ -412,7 +412,7 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		document.body.className += " leaflet--printing";
 
-		return this._setupPrintMap(overlayMapDom.id, map.options, origins.printLayer, map._layers);
+		return this._setupPrintMap(overlayMapDom.id, L.browserPrintUtils.cloneBasicOptionsWithoutLayers(map.options), origins.printLayer, map._layers);
 	},
 
 	_setupPrintMap: function (id, options, printLayer, allLayers, map) {

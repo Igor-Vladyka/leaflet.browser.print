@@ -6,18 +6,35 @@
 L.browserPrintUtils = {
 	cloneOptions: function(options) {
 		var utils = this;
-	    var ret = {};
-	    for (var i in options) {
-	        var item = options[i];
-	        if (item && item.clone) {
-	            ret[i] = item.clone();
-	        } else if (item.onAdd) {
-	            ret[i] = utils.cloneLayer(item);
-	        } else {
-	            ret[i] = item;
-	        }
+	    var retOptions = {};
+	    for (var name in options) {
+	        var item = options[name];
+			if (item && item.clone) {
+				retOptions[name] = item.clone();
+			} else if (item && item.onAdd) {
+				retOptions[name] = utils.cloneLayer(item);
+			} else {
+				retOptions[name] = item;
+			}	        
 	    }
-	    return ret;
+	    return retOptions;
+	},
+	
+	cloneBasicOptionsWithoutLayers: function(options) {
+	    var retOptions = {};
+		var optionNames = Object.getOwnPropertyNames(options);
+		if (optionNames.length) {
+			for (var i = 0; i < optionNames.length; i++) {
+				var optName = optionNames[i];
+				if (optName && optName != "layers") {
+			        retOptions[optName] = options[optName];
+				}
+			}
+			
+		    return this.cloneOptions(retOptions);
+		}
+		
+		return retOptions;
 	},
 
 	cloneLayer: function(layer, map) {
