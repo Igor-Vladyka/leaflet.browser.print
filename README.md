@@ -87,6 +87,11 @@ L.browserPrint({
 
 Example can be found here: [DEMO with print objects manipulations](https://igor-vladyka.github.io/leaflet.browser.print/examples/manipulations_v1.2.0.html);
 
+### Important notes
+````
+	Currently if you want to use layerGroup or featureGroup to print groups of layers, please create a group, add all items to it and only then add a group on the map. Otherwise it will not work.
+````
+
 ### Acknowledgements
 Thanks to [Rowan Winsemius](https://github.com/rowanwins/leaflet-easyPrint) for general idea with a map print functionality.
 

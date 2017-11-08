@@ -24,7 +24,7 @@
 
         <p>
             Lorem ipsum dolor sit amet, vim ut sale dolor, eros euripidis ex eum, ei vim modus detraxit. Vel eu aliquid dissentiunt. At sit accusata theophrastus, mei dicunt utamur insolens no, audiam appareat mei te. Qui in adhuc movet exerci, cu cum omnis simul euismod.
-
+        
 Quidam platonem usu cu. Quo in laudem fabulas labores. Ea affert perfecto quaerendum mei. Cu mazim graece definitionem sea, legere qualisque ullamcorper et usu. Debet tempor hendrerit ut est.
 
 Vim ex veri latine torquatos. Sea maiestatis assueverit eu. In elitr possit aliquam mel, dolor persequeris pri in. Libris impedit ex sit. Est no sapientem cotidieque, est ad nostrud suavitate, enim wisi referrentur et cum. Te sed eros dolore utroque, molestie menandri honestatis nec cu.
@@ -177,7 +177,6 @@ Cu congue omnesque reprehendunt sed, dicta insolens ad ius, per erat convenire e
 
             var group = L.featureGroup();
 
-            group.addTo(map);
 
             L.circle([51.505, 1], 500000, {
             			color: 'red',
@@ -190,7 +189,9 @@ Cu congue omnesque reprehendunt sed, dicta insolens ad ius, per erat convenire e
                         fillColor: 'darkgreen',
                         fillOpacity: 0.8
                     }).addTo(group);
-
+                    
+            group.addTo(map);
+            
             L.browserPrint({
                 printLayer:  L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png', {
                             	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
