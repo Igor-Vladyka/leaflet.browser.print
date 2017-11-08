@@ -52,6 +52,10 @@ L.browserPrintUtils = {
 		}
 
 		// Tile layers
+		if (layer instanceof L.TileLayer.WMS) {
+		  return L.tileLayer.wms(layer._url, options);
+		}
+		
 		if (layer instanceof L.TileLayer) {
 		   return L.tileLayer(layer._url, options);
 		}
@@ -123,6 +127,7 @@ L.browserPrintUtils = {
    getType: function(layer) {	   
 	   if (L.SVG && layer instanceof L.SVG) { return "L.SVG"; } // Renderer
 	   if (L.Canvas && layer instanceof L.Canvas) { return "L.Canvas"; } // Renderer   
+	   if (layer instanceof L.TileLayer.WMS) { return "L.TileLayer.WMS"; } // WMS layers
 	   if (layer instanceof L.TileLayer) { return "L.TileLayer"; } // Tile layers
 	   if (layer instanceof L.ImageOverlay) { return "L.ImageOverlay"; }
 	   if (layer instanceof L.Marker) { return "L.Marker"; }
