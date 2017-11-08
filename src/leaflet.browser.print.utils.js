@@ -104,11 +104,11 @@ L.browserPrintUtils = {
 		}
 
 		if (layer instanceof L.FeatureGroup) {
-		   return L.featureGroup(); /*utils.cloneInnerLayers(layer)*/
+		   return L.featureGroup(utils.cloneInnerLayers(layer));
 		}
 
 		if (layer instanceof L.LayerGroup) {
-		   return L.layerGroup();
+		   return L.layerGroup(utils.cloneInnerLayers(layer));
 		}
 		
 		if (layer instanceof L.Tooltip) {

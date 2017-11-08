@@ -13,15 +13,12 @@ L.Control.BrowserPrint = L.Control.extend({
 		closePopupsOnPrint: true
 	},
 
-	initialize: function (options) {
-		this._appendControlStyles();
-		L.Control.prototype.initialize.call(this, options);
-	},
-
 	onAdd: function () {
 
 		var container = L.DomUtil.create('div', 'leaflet-control-browser-print leaflet-bar leaflet-control');
 		L.DomEvent.disableClickPropagation(container);
+		
+		this._appendControlStyles(container);
 		
 		L.DomEvent.addListener(container, 'mouseover', this._displayPageSizeButtons, this);
 		L.DomEvent.addListener(container, 'mouseout', this._hidePageSizeButtons, this);
@@ -379,7 +376,7 @@ L.Control.BrowserPrint = L.Control.extend({
         return printStyleSheet;
     },
 
-	_appendControlStyles:  function () {
+	_appendControlStyles:  function (container) {
 		var printControlStyleSheet = document.createElement('style');
 		printControlStyleSheet.setAttribute('type', 'text/css');
 
@@ -392,8 +389,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		printControlStyleSheet.innerHTML += " .leaflet-print-overlay { width: 100%; height: 100%; position: absolute; top: 0; background-color: white!important; left: 0; z-index: 1001; display: block!important; } ";
 		printControlStyleSheet.innerHTML += " .leaflet--printing { overflow: hidden!important; margin: 0px!important; padding: 0px!important; } body.leaflet--printing > * { display: none; }";
 
-		var head = document.getElementsByTagName('head')[0];
-        head.appendChild(printControlStyleSheet);
+        container.appendChild(printControlStyleSheet);
 	},
 
 	_addPrintMapOverlay: function (map, printSize, origins) {
