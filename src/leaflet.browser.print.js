@@ -140,11 +140,8 @@ L.Control.BrowserPrint = L.Control.extend({
     },
 
     _printCustom: function () {
-
 		this._addPrintClassToContainer(this._map, "leaflet-browser-print--custom");
-
 		this._map.on('mousedown', this._startAutoPoligon, this);
-		this._map.on('mouseup', this._endAutoPoligon, this);
     },
 
 	_addPrintClassToContainer: function (map, printClassName) {
@@ -165,44 +162,51 @@ L.Control.BrowserPrint = L.Control.extend({
 
 	_startAutoPoligon: function (e) {
 		e.originalEvent.preventDefault();
+		e.originalEvent.stopPropagation();
 
 		this._map.dragging.disable();
 
-		this._map.off('mousedown', this._startAutoPoligon, this);
-
 		this.options.custom = { start: e.latlng };
+		
+		this._map.off('mousedown', this._startAutoPoligon, this);
+		
 		this._map.on('mousemove', this._moveAutoPoligon, this);
+		this._map.on('mouseup', this._endAutoPoligon, this);
 	},
 
 	_moveAutoPoligon: function (e) {
 		if (this.options.custom) {
 			e.originalEvent.preventDefault();
+			e.originalEvent.stopPropagation();
 			if (this.options.custom.rectangle) {
-				this._map.removeLayer(this.options.custom.rectangle);
-			}
-
-			this.options.custom.rectangle = L.rectangle([this.options.custom.start, e.latlng], { color: "gray", dashArray: '5, 10' });
-			this.options.custom.rectangle.addTo(this._map);
+				this.options.custom.rectangle.setBounds(L.latLngBounds(this.options.custom.start, e.latlng));
+			} else {
+				this.options.custom.rectangle = L.rectangle([this.options.custom.start, e.latlng], { color: "gray", dashArray: '5, 10' });
+				this.options.custom.rectangle.addTo(this._map);
+			}	
 		}
 	},
 
 	_endAutoPoligon: function (e) {
 
 		e.originalEvent.preventDefault();
+		e.originalEvent.stopPropagation();
 
 		this._map.off('mousemove', this._moveAutoPoligon, this);
 		this._map.off('mouseup', this._endAutoPoligon, this);
-
-		this._map.removeLayer(this.options.custom.rectangle);
-
+		
 		this._map.dragging.enable();
+					
+		if (this.options.custom && this.options.custom.rectangle) {
+			var autoBounds = this.options.custom.rectangle.getBounds();
+					
+			this._map.removeLayer(this.options.custom.rectangle);
+			this.options.custom = undefined;
 
-		var autoBounds = this.options.custom.rectangle.getBounds();
-
-		this.options.custom = undefined;
-
-		this._print(this._getPageSizeFromBounds(autoBounds), autoBounds);
-
+			this._print(this._getPageSizeFromBounds(autoBounds), autoBounds);
+		} else {
+			this._clearPrint();
+		}
 	},
 
 	_getPageSizeFromBounds: function(bounds) {
@@ -293,13 +297,17 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		return fitBounds;
     },
-
-    _printEnd: function (overlayMap, printLayer, printObjects, printCss) {
-
+	
+	_clearPrint: function () {
 		this._removePrintClassFromContainer(this._map, "leaflet-browser-print--landscape");
 		this._removePrintClassFromContainer(this._map, "leaflet-browser-print--portrait");
 		this._removePrintClassFromContainer(this._map, "leaflet-browser-print--auto");
 		this._removePrintClassFromContainer(this._map, "leaflet-browser-print--custom");
+	},
+
+    _printEnd: function (overlayMap, printLayer, printObjects, printCss) {
+
+		this._clearPrint();
 
 		/* Normal browsers */
 		if (printCss.remove) {
