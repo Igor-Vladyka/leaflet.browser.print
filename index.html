@@ -9,14 +9,16 @@
      	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin=""/>
 
         <style>
-            html, body, #map { width: 100%; height: 100%; margin: 0px; padding: 0px;}
-            [leaflet-browser-print-content] {
-                display: none;
+            html, body { width: 100%; height: 100%; margin: 0px; padding: 0px;}
+            #map {
+                width: 80%; margin: auto; height: 50%;
             }
         </style>
      </head>
 
     <body>
+        <h1 class="title" leaflet-browser-print-content>Leaflet Browser print TITLE</h1>
+        <h3 class="sub-content" leaflet-browser-print-content>Leaflet browser print plugin v0.4 for map printing with additional controls and content</h3>
     	<div id="map"></div>
 
         <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
@@ -62,7 +64,7 @@
             L.popup({minWidth: 500}).setLatLng(L.latLng(55,5)).setContent("Leaflet browser print plugin with custom print Layer and content").openOn(map);
     	</script>
         
-        <style leaflet-browser-print-content>
+        <style>
             .grid-print-container { 
                 grid-template: auto 1fr auto / 1fr; 
                 margin: 10px;
@@ -71,18 +73,24 @@
             .grid-map-print { 
                 grid-row: 2; 
             }
+            
+            .grid-print-container > .title,
+            .grid-print-container > .sub-content {
+                color: white;
+            }
             .title {
                 grid-row: 1;
                 justify-self: center;
-                color: white;
+                text-align: center;
+                color: grey;
             }
             .sub-content {
                 grid-row: 5;
                 padding-left: 10px;
+                text-align: center;
+                color: grey;
             }
         </style>
-        <h1 class="title" leaflet-browser-print-content>Leaflet Browser print TITLE</h1>
-        <h3 class="sub-content" leaflet-browser-print-content>Leaflet Browser print SUB TITLE text</h3>
     </body>
 
 </html>
