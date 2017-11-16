@@ -1,224 +1,88 @@
 <!DOCTYPE html>
 <html>
     <head>
-    	<title>Leaflet browser print plugin with custom print Layer</title>
+    	<title>Leaflet browser print plugin with custom print Layer and content</title>
     	<meta charset="utf-8" />
 
     	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-     	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" /></head>
+     	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin=""/>
 
         <style>
             html, body, #map { width: 100%; height: 100%; margin: 0px; padding: 0px;}
-            body { color: slategray; }
-            h1, h2, h3, h4, h5, h6 { text-align: center;}
-            small { font-weight: 400; line-height: 1;}
+            [leaflet-browser-print-content] {
+                display: none;
+            }
         </style>
      </head>
 
     <body>
-        <h1>L.browserPrint <small>Just print your map from the browser</small></h1>
-    	<div style="width: 1000px; height: 400px; margin: auto;">
-            <div id="map"></div>
-        </div>
+    	<div id="map"></div>
 
-        <p>
-            Lorem ipsum dolor sit amet, vim ut sale dolor, eros euripidis ex eum, ei vim modus detraxit. Vel eu aliquid dissentiunt. At sit accusata theophrastus, mei dicunt utamur insolens no, audiam appareat mei te. Qui in adhuc movet exerci, cu cum omnis simul euismod.
-        
-Quidam platonem usu cu. Quo in laudem fabulas labores. Ea affert perfecto quaerendum mei. Cu mazim graece definitionem sea, legere qualisque ullamcorper et usu. Debet tempor hendrerit ut est.
+        <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
+        <script src="../src/leaflet.browser.print.js"></script>
+        <script src="../src/leaflet.browser.print.utils.js"></script>
 
-Vim ex veri latine torquatos. Sea maiestatis assueverit eu. In elitr possit aliquam mel, dolor persequeris pri in. Libris impedit ex sit. Est no sapientem cotidieque, est ad nostrud suavitate, enim wisi referrentur et cum. Te sed eros dolore utroque, molestie menandri honestatis nec cu.
-
-Id per vidisse facilis, ea sea scripta diceret similique. Sed suas duis ut, modo saepe at duo. Everti reformidans no sed, cum cibo epicurei scribentur ne. Ut duo debitis feugait accumsan. Ne eum expetenda consequat posidonium, cetero scripta sit cu.
-
-Eius aeque vitae an mei, ut zril rationibus eum. Enim putent melius sea id, idque nulla sed no, est te ferri prodesset mediocritatem. Dico complectitur contentiones pro id, tale ipsum tacimates at duo, nam ea mazim doctus reprimique. Meis putent ex per. Ei est invenire suscipiantur, eos corrumpit patrioque eu.
-
-Facilis conclusionemque vel at, ei verterem vituperata vim. Ad virtute principes his, ea quo vero reprehendunt. Mnesarchum reprehendunt mei an, no qui impedit consequat. Eum ne vivendum erroribus, nam ad nominati iudicabit, sea ad malorum definitionem.
-
-Vide tritani an mei. Mei quas mediocrem id. An erant partem has. Essent utroque ex mel. Pro purto malis evertitur ex, stet delectus scriptorem ea pro, cu lobortis maluisset sed. Eum mandamus maluisset id, ut bonorum equidem delectus vel, ne zril fabulas instructior pri. Ea eum mutat senserit, ut natum iisque bonorum sed, eu stet vituperata vel.
-
-Qui ei option temporibus. Ei vidit delectus sit, graeci delenit periculis pro ei, ad tantas platonem sapientem eum. Sea ea porro appareat invidunt, eros fabulas mea ut. Ei quot aperiri definiebas eam, in eros putant quodsi duo.
-
-Doming equidem an eos, no eruditi scriptorem interpretaris pro, quaerendum scribentur repudiandae mea in. Cu aeque prompta mediocrem qui, at duo delenit habemus. Sanctus vocibus ne his, ad est feugait contentiones. Eum inani euismod mediocrem eu, et vitae pericula sea, pro eirmod partiendo et. Sit cu accusam patrioque. Et duis bonorum mel, ut pri virtute albucius voluptua, ex congue quidam nam.
-
-Utroque torquatos reprehendunt id sit, et nec aliquam noluisse suavitate. Sit in iudicabit voluptatibus, cum te ubique oblique, per in dicam mucius inermis. Ne lucilius dissentiunt accommodare vel, ne civibus tacimates pro. Soleat inermis epicuri ut mei, altera maluisset molestiae in eum, sea odio malis laboramus id. Cu eos facilisis repudiandae.
-
-Cu quidam aliquid vim. His id mutat adolescens adipiscing, vel enim perfecto eu. Homero propriae scribentur ea mea. Latine nominavi accusamus mel id.
-
-Ei electram scriptorem pri. Has regione civibus in, novum aeque te nam, eum utinam philosophia id. Periculis disputationi te eam. Cu aperiam iracundia quaerendum duo, feugiat scaevola petentium et mea. Mea fierent mentitum tincidunt cu, cu vocibus accusamus molestiae pro. Ex mea docendi accusamus, vel docendi antiopam temporibus cu.
-
-Errem bonorum ad nec, ea quo iriure electram gubergren, nemore tamquam vel in. Mea quot debitis no. Salutatus constituto intellegam eam ei. Usu ad malorum dolorum splendide. Mea ad exerci eligendi reformidans, duo ex amet perfecto.
-
-Ea ignota maiestatis vel, est illum dicat cu. Mei quando doctus percipit ut, homero euripidis ut sea, ut ius putent dignissim. Veri iuvaret urbanitas has ex. In appareat contentiones eos, ei quot autem urbanitas est. At lorem dissentias qui, mentitum evertitur in qui. Qui malis principes an, nam in dolorum forensibus. Cu legere dictas denique vel, erat pertinax definiebas ad usu, duis velit decore pri id.
-
-Diceret copiosae in vel, eros offendit reprimique mei te, esse praesent sadipscing in mel. Eu fugit clita legimus sed, ad vivendo indoctum consequuntur pro. Mei ei case scripserit, laudem omnium cu ius. Mei harum constituam eu, quod fierent perpetua id nec.
-
-Sed dolorem pericula definitionem ei. At doming convenire efficiendi nam, ex duo diam equidem assentior. Dolorem epicurei intellegam vis eu, id quis assentior vis. Ex vis detraxit appellantur signiferumque, et eam exerci qualisque constituto. Quo postea delenit laoreet ut, per in habeo everti ornatus, per eu ignota voluptatum liberavisse. Legere salutandi repudiandae at qui.
-
-Id dolore invidunt adversarium sed, vim meliore scaevola no. Ut sea magna novum dicant. Ea nulla scripserit his. Ad vis etiam voluptua. Ne congue utamur constituto est, mea an esse gubergren, ex evertitur dissentias usu.
-
-Eius ocurreret expetendis pri et, no elitr saperet suscipiantur mei. Ferri virtute forensibus cum ex, usu id quando hendrerit elaboraret, ne facilisi salutatus cotidieque cum. Vero summo nostrud mei ne, no ius solum omnium nostrum, latine reformidans ut quo. Ea wisi nonumes atomorum eam. Ius at senserit accommodare.
-
-Sea eu putant principes dissentias. Lorem ullamcorper ex vel, causae animal vim at. Per ei admodum offendit, suscipit antiopam vim ea, postulant adipiscing ea ius. Vim ne idque vocibus.
-
-Quaeque delicata no usu, pri regione ancillae intellegebat et. Qui an erat veritus, reque assueverit mel ut, te eripuit temporibus ius. Cibo nonumy deleniti eos cu, ei tation persecuti eam, quis posse nostro mei in. Ne petentium conclusionemque cum, ea vix animal vocibus. Pro no vero recteque. Et delectus voluptatum sed, in porro quando usu. An eripuit aliquando qui, nam an tota delenit euripidis, aeque iracundia ea quo.
-
-Natum elitr pri te, at eum noster alienum, eius sanctus abhorreant et mea. Ridens fuisset assentior et sit, mea velit facete eleifend eu. Expetendis adipiscing has id, sit et illud definitionem, mei ne veniam graeci partiendo. Inermis detracto definitiones vim at, ex has amet graecis. Duo justo latine ut, cu pro saperet epicuri, nam et recteque interpretaris. Pro vidit vocibus gloriatur in, officiis accusamus nam ex.
-
-Ea quo esse saepe, in quot prompta cum. Diam zril decore te sea, accusata reprimique ei eos. Semper labores temporibus eum ad, libris equidem temporibus ius in. Ut liber adipisci principes nam, vix cu wisi prima atqui, per legimus vocibus ut.
-
-Ne atomorum assentior qui, id novum clita reformidans mea. Etiam definitionem ius id, per te atqui etiam suscipit, eu has aeterno equidem consequuntur. Ad minim consequat democritum eam, legere voluptatibus sed ea, nec no libris appellantur. Ex accumsan gloriatur nec. Eam ne posidonium reprimique, ferri iusto primis est an, eum te quidam interpretaris. Liber luptatum in vel, everti ancillae et usu, ei nam fugit melius timeam. Usu scripta facilisi ea.
-
-Aperiri ceteros reprimique vis ad. Est stet paulo accumsan eu. Ex mea euismod dolorum urbanitas, usu dicam aliquid democritum et. Et alterum verterem vim, his ea possit habemus percipit. Odio percipit fabellas eu sit. Per id nonumes electram.
-
-Simul putant commodo ne qui, vis te utroque voluptaria. Ei qui saepe incorrupte, affert utroque suavitate sea ea. No brute voluptatibus mel. Eos ei delectus appareat imperdiet, et vide tota sit, ut vix solet corrumpit. Ne quot duis necessitatibus has, ea dictas graecis facilisis per, ex everti facilisi consectetuer vel.
-
-Ius ponderum principes adversarium ex. Minimum contentiones ut eum, eos salutatus adversarium ex. Ad liber consulatu has, sit ne euismod aliquid. Pri adhuc luptatum praesent an, ea dolore elaboraret nec, dicit noster mei an. Purto commune cum ne, id facilis recteque iracundia mel. Mel an decore voluptua evertitur, vim eu perfecto inimicus. Eruditi insolens definiebas in ius.
-
-Delenit lobortis pertinax mel ad, sed cu meis prima interesset, at sea esse detraxit. Prompta accusam constituam cum eu, laoreet omnesque corrumpit nam ea, has in ferri copiosae. Ex cibo modus eirmod est, mel causae audiam ad. Te vel vide illud munere, ea dolor oratio elaboraret pro. At sed omnes regione theophrastus, in pri verear inermis. Ad ludus fuisset detraxit mel, epicurei gloriatur theophrastus no mei.
-
-Zril commune antiopam nec eu. Est no quas libris, facer affert graecis mea te, appetere insolens usu ea. Diam deseruisse dissentias eum cu, at nostrud minimum partiendo vis. No facer latine ponderum per. Sea nostro praesent rationibus at, etiam soleat noster eu mea.
-
-Ne sit zril graeco erroribus. Labitur euismod ex has, mea no malis graeco, eu sumo probatus eum. Pro ferri elitr facilisi an. Per modo causae ut, ad mei commodo explicari, at augue iusto utamur his. Ei ius falli nostrud veritus.
-
-Pro discere vituperatoribus in, usu postea iriure ne, latine percipit ea qui. Legimus aliquando dissentiunt duo at. Ceteros consequat te eam. Nam alterum accusata ex, ius everti docendi no.
-
-Sit at nostrum accumsan, nam solet repudiare an. Nec prompta propriae abhorreant ut. Eu erroribus gubergren interpretaris per, unum affert consectetuer usu cu. Eum neglegentur mediocritatem an.
-
-Ius scaevola deserunt an. Usu debet omnesque ne. Ne has prodesset suscipiantur, cu veri aeque iudicabit nec, et ius amet nonumes vituperatoribus. Nec te soleat bonorum atomorum. Usu an vocent percipitur, ex ullum semper vix. Ut nam aperiri iuvaret accusam, ea has melius facilis vivendum. Vix laoreet atomorum te, at sed elit eirmod eligendi.
-
-Id noluisse salutatus usu, ea iisque consequat quo. Quo alia viris bonorum ut. Id regione legendos mel, in probo adipiscing cum, cu eum quis homero. Et eam dolores patrioque quaerendum. Vim ludus interesset an. Ea splendide delicatissimi mea, feugait fabellas ut vis.
-
-Te mei dolores expetenda, usu cu vulputate adversarium neglegentur. Quot principes suscipiantur ex vim. Pro id labore neglegentur. Ex omittam vulputate mei. Eleifend rationibus usu ex. Reprimique honestatis ex sed. Ex iriure rationibus sadipscing pri, nonumy scaevola eum ut.
-
-Vis semper consequat dissentias no. Meis aliquip maluisset duo cu, at duo wisi postulant. Quem rebum reque cu vel, altera facilis salutatus no sed, eum dolor sensibus expetendis ad. Magna audiam labitur eu quo. Quo tota perfecto in, appareat honestatis mel cu. Ne vim verterem adipisci neglegentur.
-
-Vis cu graeci perpetua partiendo, in eos saperet appareat. Vis ei veritus blandit imperdiet, eum eros primis impedit ei, fastidii expetenda no eum. Duo graeco urbanitas ea, pri tantas exerci tamquam ex, quod melius ne mea. An sed rebum democritum sadipscing. An hinc augue instructior nec, ut vel soleat persius labores. Sit at soluta utroque delectus.
-
-Te diam accusamus efficiendi nam, nibh phaedrum atomorum ea pri. Vocent aliquid tractatos vel in. Eius graeci sanctus ius id, eos suas partem singulis ea. No ius corpora moderatius, ex qui vocibus mediocrem, quo an brute tritani nostrum. Sed eu veritus euripidis vulputate.
-
-Pro et melius laoreet disputationi, cibo adipiscing no pri, cu eum iusto consul prompta. Has an nisl unum, quo cu summo graece. Ne est agam ponderum pertinax, ex facete scaevola sed. Usu eu agam nihil, virtute ullamcorper ut pri. Duo an eruditi suscipit repudiandae. Detraxit appellantur vituperatoribus nec no, maiorum maiestatis posidonium ei vim.
-
-Accumsan lucilius ei vis, ea nominati principes cum. Ut gubergren instructior contentiones cum, in assum augue cum. Ex mea cibo voluptatum, ex mea modus definiebas. Ad qui meliore sadipscing contentiones, minim ancillae his et. Quo vidisse temporibus accommodare an, mei primis ornatus albucius ne, te praesent interesset qui. Eu nec vidisse admodum vivendum, erant voluptatibus nec id. No utinam essent ocurreret vix.
-
-Ad munere nonumes pro. Ei nusquam maluisset repudiare his. Inani detraxit nam ei, verear ornatus utroque eu nam. Vide nostro ius ex. Fierent adipiscing ei eam, has ad facilis volutpat dissentiet, semper appareat sensibus eu eos.
-
-Quando doctus te mei. Te mel idque labore, wisi singulis iudicabit ad quo. Ad habemus assueverit disputando est, est at cibo vocent. Vix ex autem homero euripidis, qui summo putent splendide ad. No pro fastidii argumentum, cu his facilisi splendide deseruisse.
-
-Ad splendide deseruisse vix, cum ea putent commodo. Et propriae pericula eam, et tollit iracundia nam. Vix et quis justo repudiandae, mei dicit tamquam reformidans te, at cum inani doming nostrud. Porro molestiae vis ea, nibh harum sententiae nam eu, accusam qualisque sea ut. Eu tollit partiendo his, an animal alienum adipiscing cum. Sea dolore mnesarchum ei.
-
-Pro ad ignota euismod delenit, qui at aliquam phaedrum. Te per modo corpora, et est sonet exerci inermis. Similique repudiandae te nam, nec id nullam accumsan deserunt. Te quo quot pertinax electram, no vis prompta accusam offendit. Cu ius case vitae ullamcorper.
-
-Eum ad amet altera malorum, debet delenit mea at. Quo eu quis alia nullam. Duo ne meliore scribentur, unum elitr pro cu. Eu eam accumsan omnesque conclusionemque, eu eum persius eripuit. Cu persius similique duo, nam esse eruditi salutatus ut. Nobis mediocrem vis ne, eam iriure integre consequuntur eu, sint epicuri complectitur te has.
-
-Id duo facete numquam, sit sonet utroque ea. Mei imperdiet consequat cotidieque in, has facilis reprehendunt ad. Vim ex saepe gubergren scriptorem, mei vide lorem ei. Qui suscipit sapientem dissentiunt at. Vim magna facilis temporibus et, ex tempor ignota sed.
-
-Mea ea erant lucilius, graeci feugait ocurreret eos eu. Quem voluptatibus concludaturque has id. No modo scriptorem mei, quis exerci intellegam mel et. Nam id idque fabulas scaevola, impetus luptatum vituperatoribus ut mea, audiam appellantur qui te. Est cetero pertinax quaerendum ex, putent nonumes sit ei.
-
-Cum eu discere perfecto. Ne eos essent veritus. Nec vidisse numquam deterruisset at, ut duo nulla tollit repudiare, his te vidit justo. His et brute ridens, soleat iuvaret prodesset eam eu.
-
-Pro sonet everti rationibus no, vix alia paulo hendrerit an. Cu per quando ocurreret posidonium. Cu mea utamur electram prodesset, eam dicta altera neglegentur id, te qui tota utinam appareat. Cum ut pertinax periculis. Sumo omnis sententiae ad quo.
-
-Mea aliquip nonumes ut. Et has fugit dissentiunt deterruisset. Postulant voluptatum eum ea, cum ut dico ridens, ex mei ridens concludaturque. Utinam quidam complectitur at mei, vim instructior consequuntur id. Et alienum invidunt mel.
-
-Vis cu feugait docendi assueverit. Pro tation singulis hendrerit ex, sit esse facilis vivendum cu, qui noster fuisset democritum ut. Mazim intellegebat et qui. Ne per veri choro dolor. Pro ex quot prodesset, quot aeterno ius ex.
-
-Pri no oratio volumus principes, usu ad brute vidisse dignissim. Cu accusam perpetua consequat per. Ad eos facer nemore tibique, no est sonet fabulas appareat. Sed paulo causae corpora ne, vis doming salutandi omittantur cu. Animal molestie an sed, mea causae dissentiunt et.
-
-Id sit brute iudico persequeris, no sit debitis delicata contentiones. Sit stet vitae integre eu, iuvaret mentitum laboramus ut usu. Euismod probatus ei ius, usu no minim putant scripserit. Sea in nonumes dignissim. Sed cu prima ubique noluisse, vel ocurreret liberavisse eu. Prompta petentium ius eu.
-
-Cum falli saepe offendit in. Et tempor quidam salutandi duo. Id diceret feugait quo, te modo velit nam. Et aliquid deseruisse eam, ut graeco noluisse temporibus mea. Ne sed aliquid mentitum insolens.
-
-Quis atomorum an sed. Illum dicta facilis eu vim. Mea no quidam semper fierent, vim an enim voluptua indoctum. Eum timeam singulis liberavisse ex, usu ne voluptua pericula voluptatum.
-
-In alii dolorum eos, errem noster vidisse ne pro. Sit dicit principes sententiae cu, per ex docendi moderatius. Eam timeam detracto interesset eu, no duo novum elitr suavitate. Eu his minim regione diceret, everti delenit nostrum nec ex. Id ceteros reformidans mel.
-
-Quo an eius consul. Et consetetur consequuntur sed, eam aliquid blandit adipisci an, sale probatus in sed. Has assum oportere ei. Vim pertinax delicata constituto ad. Quo an causae nominavi consetetur, usu ex impedit habemus.
-
-Dicta clita reprehendunt ea has, est no dignissim complectitur, nam agam vitae denique ea. At his augue voluptaria, partem quaerendum has id, nisl inani nostrum pro ex. Ei qualisque pertinacia vix, an consul insolens tincidunt pri, te labitur atomorum ius. Est cu quot nulla liber, amet iisque splendide vis ei.
-
-An oblique blandit suavitate sea. Vix ad accusam detraxit consulatu. Eum apeirian repudiandae ea, eu nec sanctus definitiones. Alia iuvaret an vim, in vix paulo labitur. Natum vitae propriae vim in, facer iracundia an pri, te usu perpetua voluptatum posidonium. Vix accusamus conceptam contentiones te.
-
-Has eu moderatius reformidans. Ignota feugait sea eu, ubique erroribus voluptatibus pri ut. Adhuc ipsum laboramus his te, eam quot vide legere te. No eum malis option delicatissimi, vim ex eligendi assueverit, ad qui mollis prompta tacimates. Sed eu congue postulant. His in clita putant instructior, nam at nisl tale fierent, sed sint definitiones ei. No ius tantas adversarium signiferumque.
-
-Aliquip debitis an mel. Meis malorum ad vis. Ex pro aeterno diceret. Qui ut posse nostrud, cu qui adhuc dicta eloquentiam, amet dicta option et usu. Omnis verear suavitate eu usu, hendrerit urbanitas argumentum qui ad, ad malis eripuit perpetua cum.
-
-Usu cu possim quaeque omnesque. Nam libris similique dissentias ex. Melius voluptatibus ut qui, enim detraxit reprehendunt ea nam, idque omnes his ex. An eam ullum molestiae, pri at inani admodum consetetur, dicit detraxit delicata eu ius. Ut illud adipiscing pro. Probo habeo partiendo an eos.
-
-Usu et dicit nonumes, id dicam omittam deseruisse per. Velit perfecto ne has. No meis delenit accusata eos. Vis dico minim consectetuer ei, sit an paulo ponderum, natum congue cu mei.
-
-Te partem nusquam vix. Eos eu adhuc nonumy democritum. Ad commodo graecis ceteros nec. Placerat dignissim vis ne, pro an novum verear luptatum. Ei dolorum temporibus mei, eu blandit phaedrum sed, cum vero duis et.
-
-Appetere liberavisse nec ut, ei inani definitionem mea. Perfecto accusata partiendo vel eu, dicat persius sit ut. Utinam legendos deseruisse cu mei, mel id dicant exerci, suas autem expetendis mea id. Tollit tempor utamur at sit, solum dicant volumus cum cu. Postea minimum mei te, zril graeco vel eu, sint iusto equidem eu eos.
-
-Vocibus albucius salutatus est ne, sit ad hinc fabellas reprimique, at duis mediocrem sea. Prima oratio nam in, vim ut summo prompta dissentiet. Dico nulla ei eam. Augue vulputate eum ad.
-
-Pro eu saperet fierent ullamcorper. Id sit vide elitr, et iriure veritus verterem eos. Eius detraxit maiestatis mea ex, eos sale euismod ut, te soleat omnesque detraxit pri. Mel fugit putant appareat et.
-
-Id his ipsum vitae. Dicat ubique persecuti pri ad, sit eruditi voluptatum no. Ea duo vidit ludus. An has homero timeam, sed falli option eleifend at, dicta falli iracundia vim no. Ei veri probo intellegat nam, vix at ullum dissentiunt. Ea nihil interesset vim. No qui adhuc causae honestatis.
-
-Cu congue omnesque reprehendunt sed, dicta insolens ad ius, per erat convenire et. Labore oportere theophrastus mel no.
-</p>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet-src.js"></script>
-        <script src="dist/leaflet.browser.print.min.js"></script>
-        
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.5/leaflet-routing-machine.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.5/leaflet-routing-machine.js"></script>
-        
     	<script>
 
-    		var map = L.map('map').setView([51.505, 1], 5);
+    		var map = L.map('map').setView([51.505, 1], 6);
 
             L.tileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             	maxZoom: 19,
             	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
-
-            var group = L.featureGroup();
-
-
-            L.circle([51.505, 1], 500000, {
+            
+            
+            var red = L.circle([51.505, 1], 500000, {
             			color: 'red',
             			fillColor: '#f03',
             			fillOpacity: 0.5
-            		}).addTo(group);
-
-            L.circle([55, 5], 50000, {
+            		});
+            var green = L.circle([55, 5], 50000, {
                         color: 'green',
                         fillColor: 'darkgreen',
                         fillOpacity: 0.8
-                    }).addTo(group);
+                    });
                     
-            group.addTo(map);
+            L.layerGroup().addLayer(red).addLayer(green).addTo(map);
             
             L.browserPrint({
-                printLayer:  L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png', {
+                printLayer: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
                             	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
                             	subdomains: 'abcd',
-                            	minZoom: 0,
-                            	maxZoom: 20
+                            	minZoom: 1,
+                            	maxZoom: 16,
+                            	ext: 'png'
                             }),
                 closePopupsOnPrint: false,      
                 printModesNames: {Portrait:"Portrait", Landscape:"Paysage", Auto:"Auto", Custom:"Séléctionnez la zone"}
 
             }).addTo(map);
             
-            var routingControl = L.Routing.control({
-                        routeWhileDragging: false,
-                        showAlternatives: false,
-                        useZoomParameter: true,
-                        show: false,
-                        collapsible: true,
-                        lineOptions: {
-                            addWaypoints: true
-                        },
-                            position: 'bottomright'
-                        }).addTo(map);
-            
-            L.popup({minWidth: 500}).setLatLng(L.latLng(55,5)).setContent("Example of content").openOn(map);
-
+            L.popup({minWidth: 500}).setLatLng(L.latLng(55,5)).setContent("Leaflet browser print plugin with custom print Layer and content").openOn(map);
     	</script>
+        
+        <style leaflet-browser-print-content>
+            .grid-print-container { 
+                grid-template: auto 1fr auto / 1fr; 
+                margin: 10px;
+                background-color: orange;
+            }                
+            .grid-map-print { 
+                grid-row: 2; 
+            }
+            .title {
+                grid-row: 1;
+                justify-self: center;
+                color: white;
+            }
+            .sub-content {
+                grid-row: 5;
+                padding-left: 10px;
+            }
+        </style>
+        <h1 class="title" leaflet-browser-print-content>Leaflet Browser print TITLE</h1>
+        <h3 class="sub-content" leaflet-browser-print-content>Leaflet Browser print SUB TITLE text</h3>
     </body>
 
 </html>

@@ -50,15 +50,20 @@ You can pass a number of options to the plugin to control various settings.
 | printModesNames | Object | { Portrait: "Portrait", Landscape: "Landscape", Auto:"Auto", Custom:"Custom" } | Customize each print mode name |
 | printLayer    | [Leaflet tile layer](http://leafletjs.com/reference-0.7.7.html#tilelayer) | null | A tiles layer to show instead of all current active tiles layers |
 | closePopupsOnPrint | Boolean | true | Indicates if we need to force popup closing for printed map |
+| contentSelector | String | "[leaflet-browser-print-content]" | Content selector for printed map, will select and dynamically inject content on printed maps. For full functionality please check "Printing additional content section" |
 
 Here's an example of passing through some options.
 ``` js
 L.browserPrint({
 	title: 'Just print me!',
-	printLayer: L.tileLayer('//{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-					attribution: '&copy; Openstreetmap France | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-					maxZoom: 19
+	printLayer: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
+					attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+					subdomains: 'abcd',
+					minZoom: 1,
+					maxZoom: 16,
+					ext: 'png'
 				}),
+	closePopupsOnPrint: false,      
 	printModesNames: {Portrait:"Portrait", Landscape:"Paysage", Auto:"Auto", Custom:"Séléctionnez la zone"}
 }).addTo(map);
 ```
@@ -86,6 +91,41 @@ L.browserPrint({
 | browser-print-end   | { printLayer, printMap, printObjects } | Fire on print end, after we refresh map to show initial view.   | For DOM manipulation with real map objects after print |
 
 Example can be found here: [DEMO with print objects manipulations](https://igor-vladyka.github.io/leaflet.browser.print/examples/manipulations_v1.2.0.html);
+
+### Printing additional content section
+
+To add additional printing content (in addition to a map itself) we need to specify content that should be added. [Demo](https://igor-vladyka.github.io/leaflet.browser.print/);
+By default contentSelector: '[leaflet-browser-print-content]' so we need a content with an 'leaflet-browser-print-content' attribute.
+
+Code example:
+
+````
+<style leaflet-browser-print-content>
+	.grid-print-container { // grid holder that holds all content (map and any other content)
+		grid-template: auto 1fr auto / 1fr; 
+		margin: 10px;
+		background-color: orange;
+	}
+	.grid-map-print { // map container itself
+		grid-row: 2; 
+	}
+	.title { // Dynamic title styling
+		grid-row: 1;
+		justify-self: center;
+		color: white;
+	}
+	.sub-content { // Dynamic sub content styling
+		grid-row: 5;
+		padding-left: 10px;
+	}
+</style>
+<h1 class="title" leaflet-browser-print-content>Leaflet Browser print TITLE</h1>
+<h3 class="sub-content" leaflet-browser-print-content>Leaflet Browser print SUB TITLE text</h3>
+````
+
+On print, plugin will scan DOM by contentSelector, and will add content to print may.
+
+We are using CSS-GRID to position all controls on a print page. Therefor it's not supportable in all browsers, for more information please visit [caniuse.com](https://caniuse.com/#feat=css-grid).
 
 ### Important notes
 ````
