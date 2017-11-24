@@ -18,12 +18,12 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		var container = L.DomUtil.create('div', 'leaflet-control-browser-print leaflet-bar leaflet-control');
 		L.DomEvent.disableClickPropagation(container);
-		
+
 		this._appendControlStyles(container);
-		
+
 		L.DomEvent.addListener(container, 'mouseover', this._displayPageSizeButtons, this);
 		L.DomEvent.addListener(container, 'mouseout', this._hidePageSizeButtons, this);
-		
+
 		if (this.options.position.indexOf("left") > 0) {
 			this._createIcon(container);
 			this._createMenu(container);
@@ -35,11 +35,11 @@ L.Control.BrowserPrint = L.Control.extend({
 		setTimeout( function () {
 			container.className += parseInt(L.version) ? " v1" : " v0-7"; // parseInt(L.version) returns 1 for v1.0.3 and 0 for 0.7.7;
 		}, 10);
-		
+
 		map.printControl = this; // Make control available from the map object itself;
 		return container;
 	},
-	
+
 	_createIcon: function (container) {
 		var icon = L.DomUtil.create('a', '', container);
 		this.link = icon;
@@ -47,7 +47,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		this.link.title = this.options.title;
 		return this.link;
 	},
-	
+
 	_createMenu: function (container) {
 		this.holder = L.DomUtil.create('ul', 'browser-print-holder', container);
 
@@ -59,7 +59,7 @@ L.Control.BrowserPrint = L.Control.extend({
 
 			if (this["_print" + normalizedName]) {
 				var domMode = L.DomUtil.create('li', 'browser-print-mode', this.holder);
-				
+
 				if (this.options.printModesNames && this.options.printModesNames[normalizedName]) {
 					domMode.innerHTML = this.options.printModesNames[normalizedName];
 				} else {
@@ -148,9 +148,9 @@ L.Control.BrowserPrint = L.Control.extend({
 		this._map.dragging.disable();
 
 		this.options.custom = { start: e.latlng };
-		
+
 		this._map.off('mousedown', this._startAutoPoligon, this);
-		
+
 		this._map.on('mousemove', this._moveAutoPoligon, this);
 		this._map.on('mouseup', this._endAutoPoligon, this);
 	},
@@ -164,7 +164,7 @@ L.Control.BrowserPrint = L.Control.extend({
 			} else {
 				this.options.custom.rectangle = L.rectangle([this.options.custom.start, e.latlng], { color: "gray", dashArray: '5, 10' });
 				this.options.custom.rectangle.addTo(this._map);
-			}	
+			}
 		}
 	},
 
@@ -175,12 +175,12 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		this._map.off('mousemove', this._moveAutoPoligon, this);
 		this._map.off('mouseup', this._endAutoPoligon, this);
-		
+
 		this._map.dragging.enable();
-					
+
 		if (this.options.custom && this.options.custom.rectangle) {
 			var autoBounds = this.options.custom.rectangle.getBounds();
-					
+
 			this._map.removeLayer(this.options.custom.rectangle);
 			this.options.custom = undefined;
 
@@ -224,17 +224,17 @@ L.Control.BrowserPrint = L.Control.extend({
             height: mapContainer.style.height,
 			printLayer: L.browserPrintUtils.cloneLayer(this._validatePrintLayer())
         };
-		
+
 		this._map.fire("browser-pre-print", { printObjects: this._getPrintObjects() });
-		
+
 		var overlay = this._addPrintMapOverlay(this._map, printSize, origins);
-		
+
 		this._map.fire("browser-print-start", { printLayer: origins.printLayer, printMap: overlay.map, printObjects: overlay.objects });
 
 		overlay.map.fitBounds(autoBounds || origins.bounds);
-		
+
 		overlay.map.invalidateSize({reset: true, animate: false, pan: false});
-				
+
 		var interval = setInterval(function(){
 			if (!overlay.map.isLoading()) {
 				clearInterval(interval);
@@ -277,7 +277,7 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		return fitBounds;
     },
-	
+
 	_clearPrint: function () {
 		this._removePrintClassFromContainer(this._map, "leaflet-browser-print--landscape");
 		this._removePrintClassFromContainer(this._map, "leaflet-browser-print--portrait");
@@ -287,10 +287,10 @@ L.Control.BrowserPrint = L.Control.extend({
 
     _printEnd: function (overlayMap, printLayer, printObjects, printCss) {
 		this._clearPrint();
-		
+
 		var overlay = document.getElementById("leaflet-print-overlay");
 		document.body.removeChild(overlay);
-		
+
 		document.body.className = document.body.className.replace(" leaflet--printing", "");
 
 		this._map.invalidateSize({reset: true, animate: false, pan: false});
@@ -313,7 +313,7 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		return visualLayerForPrinting;
     },
-	
+
 	_getPrintObjects: function() {
 		var printObjects = {};
 		for (var id in this._map._layers){
@@ -328,7 +328,7 @@ L.Control.BrowserPrint = L.Control.extend({
 				}
 			}
 		}
-		
+
 		return printObjects;
 	},
 
@@ -338,7 +338,8 @@ L.Control.BrowserPrint = L.Control.extend({
 		printStyleSheet.id = "leaflet-browser-print-css";
         printStyleSheet.setAttribute('type', 'text/css');
 		printStyleSheet.innerHTML = '@media print { .leaflet-control-container > .leaflet-bottom.leaflet-left, .leaflet-control-container > .leaflet-top.leaflet-left, .leaflet-control-container > .leaflet-top.leaflet-right { display: none!important; } }';
-		printStyleSheet.innerHTML += '@media print { .leaflet-popup-content-wrapper, .leaflet-popup-tip { box-shadow: none; }';
+		printStyleSheet.innerHTML += ' @media print { .leaflet-popup-content-wrapper, .leaflet-popup-tip { box-shadow: none; }';
+		printStyleSheet.innerHTML += ' * { -webkit-print-color-adjust: exact; }';
 
         switch (printSize) {
             case "Landscape":
@@ -375,18 +376,18 @@ L.Control.BrowserPrint = L.Control.extend({
 		overlay.id = "leaflet-print-overlay";
 		overlay.className = map.getContainer().className + " leaflet-print-overlay";
 		document.body.appendChild(overlay);
-		
+
 		overlay.appendChild(this._addPrintCss(printSize));
-		
-		var gridContainer = document.createElement("div");		
+
+		var gridContainer = document.createElement("div");
 		gridContainer.id = "grid-print-container";
 		gridContainer.className = "grid-print-container";
 		gridContainer.style.width = origins.width;
 		gridContainer.style.height = origins.height;
 		gridContainer.style.display = "grid";
-		
+
 		this._setupMapSize(gridContainer, printSize);
-		
+
 		if (this.options.contentSelector) {
 			var content = document.querySelectorAll(this.options.contentSelector);
 			if (content && content.length) {
@@ -396,9 +397,9 @@ L.Control.BrowserPrint = L.Control.extend({
 				}
 			}
 		}
-		
+
 		overlay.appendChild(gridContainer);
-		
+
 		var overlayMapDom = document.createElement("div");
 		overlayMapDom.id = map.getContainer().id + "-print";
 		overlayMapDom.className = "grid-map-print";
@@ -415,16 +416,16 @@ L.Control.BrowserPrint = L.Control.extend({
 		options.zoomControl = false;
 		var overlayMap = L.map(id, options);
 		var printObjects = {};
-		
+
 		printLayer.addTo(overlayMap);
 
 		for (var layerId in allLayers){
 			var pLayer = allLayers[layerId];
 			if (!pLayer._url) {
 				var clone = L.browserPrintUtils.cloneLayer(pLayer, map);
-				
+
 				if (clone) {
-					
+
 					/* Workaround for propriate handling of popups. */
 					if (pLayer instanceof L.Popup){
 						if(!pLayer.isOpen) {
@@ -436,7 +437,7 @@ L.Control.BrowserPrint = L.Control.extend({
 					} else {
 						clone.addTo(overlayMap);
 					}
-					
+
 					var type = L.browserPrintUtils.getType(clone);
 					if (!printObjects[type]) {
 						printObjects[type] = [];
@@ -457,7 +458,7 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		return {map: overlayMap, objects: printObjects};
 	},
-	
+
 	_getLoadingLayers: function(map) {
 		for (var l in map._layers) {
 			var layer = map._layers[l];
@@ -465,7 +466,7 @@ L.Control.BrowserPrint = L.Control.extend({
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 });
