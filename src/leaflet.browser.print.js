@@ -339,7 +339,7 @@ L.Control.BrowserPrint = L.Control.extend({
         printStyleSheet.setAttribute('type', 'text/css');
 		printStyleSheet.innerHTML = '@media print { .leaflet-control-container > .leaflet-bottom.leaflet-left, .leaflet-control-container > .leaflet-top.leaflet-left, .leaflet-control-container > .leaflet-top.leaflet-right { display: none!important; } }';
 		printStyleSheet.innerHTML += ' @media print { .leaflet-popup-content-wrapper, .leaflet-popup-tip { box-shadow: none; }';
-		printStyleSheet.innerHTML += ' * { -webkit-print-color-adjust: exact; }';
+		printStyleSheet.innerHTML += ' * { -webkit-print-color-adjust: exact!important; }';
 
         switch (printSize) {
             case "Landscape":
