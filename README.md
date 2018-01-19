@@ -36,7 +36,7 @@ Check out the:
 **Step 2.** Add the following line of code to your map script
 
 ``` js
-	L.browserPrint().addTo(map)
+	L.control.browserPrint().addTo(map)
 ```
 
 **Step 3.**
