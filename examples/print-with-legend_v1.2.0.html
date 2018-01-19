@@ -154,7 +154,7 @@
 	// Here we are creating control to show it on the map;
 	L.legendControl({position: 'bottomright'}).addTo(map);
     
-    L.browserPrint().addTo(map);
+    L.control.browserPrint().addTo(map);
 	
 	map.on("browser-print-start", function(e){
 		/*on print start we already have a print map and we can create new control and add it to the print map to be able to print custom information */
