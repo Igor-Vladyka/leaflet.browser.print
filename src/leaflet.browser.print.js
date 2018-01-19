@@ -471,7 +471,7 @@ L.Control.BrowserPrint = L.Control.extend({
 	}
 });
 
-L.browserPrint = function(options) {
+L.control.browserPrint = function(options) {
 
 	if (options && options.printModes && (!options.printModes.filter || !options.printModes.length)) {
 		throw "Please specify valid print modes for Print action. Example: printModes: ['Portrait', 'Landscape', 'Auto', 'Custom']";
