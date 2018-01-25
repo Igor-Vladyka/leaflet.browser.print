@@ -54,7 +54,7 @@ You can pass a number of options to the plugin to control various settings.
 
 Here's an example of passing through some options.
 ``` js
-L.browserPrint({
+L.control.browserPrint({
 	title: 'Just print me!',
 	printLayer: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
 					attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
