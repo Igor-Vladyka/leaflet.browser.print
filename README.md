@@ -54,7 +54,7 @@ You can pass a number of options to the plugin to control various settings.
 
 Here's an example of passing through some options.
 ``` js
-L.browserPrint({
+L.control.browserPrint({
 	title: 'Just print me!',
 	printLayer: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
 					attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -102,12 +102,12 @@ Code example:
 ````
 <style leaflet-browser-print-content>
 	.grid-print-container { // grid holder that holds all content (map and any other content)
-		grid-template: auto 1fr auto / 1fr; 
+		grid-template: auto 1fr auto / 1fr;
 		margin: 10px;
 		background-color: orange;
 	}
 	.grid-map-print { // map container itself
-		grid-row: 2; 
+		grid-row: 2;
 	}
 	.title { // Dynamic title styling
 		grid-row: 1;

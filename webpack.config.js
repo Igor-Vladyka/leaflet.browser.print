@@ -7,13 +7,16 @@ var banner = '\n ' + PACKAGE.name + ' - v' + PACKAGE.version + ' (' + PACKAGE.ho
              '\n (c) ' + new Date().getFullYear() + '  ' + PACKAGE.author + '\n';
 
 module.exports = {
-    entry: ['./src/leaflet.browser.print.js', './src/leaflet.browser.print.utils.js'],
-    output: {
-        filename: 'leaflet.browser.print.min.js',
-        path: path.resolve(__dirname, 'dist')
-    },
+	entry: {
+	    "leaflet.browser.print": ['./src/leaflet.browser.print.js', './src/leaflet.browser.print.utils.js'],
+	    "leaflet.browser.print.min": ['./src/leaflet.browser.print.js', './src/leaflet.browser.print.utils.js'],
+	},
+	output: { filename: '[name].js', path: path.resolve(__dirname, 'dist') },
     plugins: [
-        new webpack.optimize.UglifyJsPlugin(),
+        new webpack.optimize.UglifyJsPlugin({
+	      include: /\.min\.js$/,
+	      minimize: true
+	    }),
         new webpack.BannerPlugin(banner)
     ]
 };

@@ -3,7 +3,7 @@
 	Author Igor Vladyka <igor.vladyka@gmail.com> (https://github.com/Igor-Vladyka/leaflet.browser.print)
 **/
 
-L.browserPrintUtils = {
+L.Control.BrowserPrint.Utils = {
 	cloneOptions: function(options) {
 		var utils = this;
 	    var retOptions = {};
@@ -15,11 +15,11 @@ L.browserPrintUtils = {
 				retOptions[name] = utils.cloneLayer(item);
 			} else {
 				retOptions[name] = item;
-			}	        
+			}
 	    }
 	    return retOptions;
 	},
-	
+
 	cloneBasicOptionsWithoutLayers: function(options) {
 	    var retOptions = {};
 		var optionNames = Object.getOwnPropertyNames(options);
@@ -30,10 +30,10 @@ L.browserPrintUtils = {
 			        retOptions[optName] = options[optName];
 				}
 			}
-			
+
 		    return this.cloneOptions(retOptions);
 		}
-		
+
 		return retOptions;
 	},
 
@@ -55,7 +55,7 @@ L.browserPrintUtils = {
 		if (L.TileLayer.WMS && layer instanceof L.TileLayer.WMS) {
 			  return L.tileLayer.wms(layer._url, options);
 		}
- 
+
 		if (layer instanceof L.TileLayer) {
 		   return L.tileLayer(layer._url, options);
 		}
@@ -114,17 +114,17 @@ L.browserPrintUtils = {
 		if (layer instanceof L.LayerGroup) {
 		   return L.layerGroup(utils.cloneInnerLayers(layer));
 		}
-		
+
 		if (layer instanceof L.Tooltip) {
             return L.tooltip(options);
         }
 
 		console.info('Unknown layer, cannot clone this layer. Leaflet-version: ' + L.version);
-		
+
 		return null;
    },
-   
-   getType: function(layer) {	   
+
+   getType: function(layer) {
 	   if (L.SVG && layer instanceof L.SVG) { return "L.SVG"; } // Renderer
 	   if (L.Canvas && layer instanceof L.Canvas) { return "L.Canvas"; } // Renderer
 	   if (layer instanceof L.TileLayer.WMS) { return "L.TileLayer.WMS"; } // WMS layers
@@ -135,8 +135,8 @@ L.browserPrintUtils = {
 	   if (layer instanceof L.Circle) { return "L.Circle"; }
 	   if (layer instanceof L.CircleMarker) { return "L.CircleMarker"; }
 	   if (layer instanceof L.Rectangle) { return "L.Rectangle"; }
-	   if (layer instanceof L.Polygon) { return "L.Polygon"; }	   
-	   if (L.MultiPolyline && layer instanceof L.MultiPolyline) { return "L.MultiPolyline"; } // MultiPolyline is removed in leaflet 1.0.0	   
+	   if (layer instanceof L.Polygon) { return "L.Polygon"; }
+	   if (L.MultiPolyline && layer instanceof L.MultiPolyline) { return "L.MultiPolyline"; } // MultiPolyline is removed in leaflet 1.0.0
 	   if (L.MultiPolygon && layer instanceof L.MultiPolygon) { return "L.MultiPolygon"; } // MultiPolygon is removed in leaflet 1.0.0
 	   if (layer instanceof L.Polyline) { return "L.Polyline"; }
 	   if (layer instanceof L.GeoJSON) { return "L.GeoJSON"; }
