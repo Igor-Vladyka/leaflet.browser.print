@@ -51,6 +51,7 @@ You can pass a number of options to the plugin to control various settings.
 | printLayer    | [Leaflet tile layer](http://leafletjs.com/reference-0.7.7.html#tilelayer) | null | A tiles layer to show instead of all current active tiles layers |
 | closePopupsOnPrint | Boolean | true | Indicates if we need to force popup closing for printed map |
 | contentSelector | String | "[leaflet-browser-print-content]" | Content selector for printed map, will select and dynamically inject content on printed maps. For full functionality please check "Printing additional content section" |
+| pagesSelector | String | "[leaflet-browser-print-pages]" | Pages selector for printed map, will select and dynamically inject additional pages content on printed maps. |
 
 Here's an example of passing through some options.
 ``` js
@@ -103,7 +104,6 @@ Code example:
 <style leaflet-browser-print-content>
 	.grid-print-container { // grid holder that holds all content (map and any other content)
 		grid-template: auto 1fr auto / 1fr;
-		margin: 10px;
 		background-color: orange;
 	}
 	.grid-map-print { // map container itself

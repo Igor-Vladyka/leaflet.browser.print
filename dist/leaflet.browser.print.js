@@ -1,6 +1,6 @@
 /*!
  * 
- *  leaflet.browser.print - v0.5.0 (https://github.com/Igor-Vladyka/leaflet.browser.print) 
+ *  leaflet.browser.print - v0.5.1 (https://github.com/Igor-Vladyka/leaflet.browser.print) 
  *  A leaflet plugin which allows users to print the map directly from the browser
  *  
  *  MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -93,6 +93,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		printModesNames: {Portrait: "Portrait", Landscape: "Landscape", Auto: "Auto", Custom: "Custom"},
 		closePopupsOnPrint: true,
 		contentSelector: "[leaflet-browser-print-content]",
+		pagesSelector: "[leaflet-browser-print-pages]",
 	},
 
 	onAdd: function (map) {
@@ -295,6 +296,30 @@ L.Control.BrowserPrint = L.Control.extend({
         }
     },
 
+	_setupPrintPagesWidth: function(pagesContainer, printSize) {
+		switch (printSize) {
+			case "Landscape":
+				pagesContainer.style.width = "1040px";
+				break;
+			default:
+			case "Portrait":
+				pagesContainer.style.width = "715px";
+				break;
+		}
+	},
+
+	_setupPrintMapHeight: function(mapContainer, printSize) {
+		switch (printSize) {
+			case "Landscape":
+				mapContainer.style.height = "715px";
+				break;
+			default:
+			case "Portrait":
+				mapContainer.style.height = "1040px";
+				break;
+		}
+	},
+
     _print: function (printSize, autoBounds) {
 		var self = this;
         var mapContainer = this._map.getContainer();
@@ -445,9 +470,10 @@ L.Control.BrowserPrint = L.Control.extend({
 		printControlStyleSheet.innerHTML += " .browser-print-holder { margin: 0px; padding: 0px; list-style: none; white-space: nowrap; } .browser-print-holder-left li:last-child { border-top-right-radius: 2px; border-bottom-right-radius: 2px; } .browser-print-holder-right li:first-child { border-top-left-radius: 2px; border-bottom-left-radius: 2px; }";
 		printControlStyleSheet.innerHTML += " .browser-print-mode { display: none; background-color: #919187; color: #FFF; font: 11px/19px 'Helvetica Neue', Arial, Helvetica, sans-serif; text-decoration: none; padding: 4px 10px; text-align: center; } .v1 .browser-print-mode { padding: 6px 10px; } .browser-print-mode:hover { background-color: #757570; cursor: pointer; }";
 		printControlStyleSheet.innerHTML += " .leaflet-browser-print--custom, .leaflet-browser-print--custom path { cursor: crosshair!important; }";
-		printControlStyleSheet.innerHTML += " .leaflet-print-overlay { width: 100%; height: 100%; position: absolute; top: 0; background-color: white!important; left: 0; z-index: 1001; display: block!important; } ";
-		printControlStyleSheet.innerHTML += " .leaflet--printing { overflow: hidden!important; margin: 0px!important; padding: 0px!important; } body.leaflet--printing > * { display: none; }";
-		printControlStyleSheet.innerHTML += " .grid-print-container { grid-template: 1fr / 1fr; } .grid-map-print { grid-row: 1; grid-column: 1; } body.leaflet--printing [leaflet-browser-print-content]:not(style) { display: unset!important; }";
+		printControlStyleSheet.innerHTML += " .leaflet-print-overlay { width: 100%; height:auto; min-height: 100%; position: absolute; top: 0; background-color: white!important; left: 0; z-index: 1001; display: block!important; } ";
+		printControlStyleSheet.innerHTML += " .leaflet--printing { height:auto; min-height: 100%; margin: 0px!important; padding: 0px!important; } body.leaflet--printing > * { display: none; }";
+		printControlStyleSheet.innerHTML += " .grid-print-container { grid-template: 1fr / 1fr; box-sizing: border-box; } .grid-map-print { grid-row: 1; grid-column: 1; } body.leaflet--printing .grid-print-container [leaflet-browser-print-content]:not(style) { display: unset!important; }";
+		printControlStyleSheet.innerHTML += " .pages-print-container { box-sizing: border-box; }";
 
         container.appendChild(printControlStyleSheet);
 	},
@@ -460,14 +486,20 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		overlay.appendChild(this._addPrintCss(printSize));
 
+		var pagesContainer = document.createElement("div");
+		pagesContainer.id = "pages-print-container";
+		pagesContainer.className = "pages-print-container";
+		pagesContainer.style.margin = "0!important";
+		this._setupPrintPagesWidth(pagesContainer, printSize);
+
+		overlay.appendChild(pagesContainer);
+
 		var gridContainer = document.createElement("div");
 		gridContainer.id = "grid-print-container";
 		gridContainer.className = "grid-print-container";
-		gridContainer.style.width = origins.width;
-		gridContainer.style.height = origins.height;
+		gridContainer.style.width = "100%";
 		gridContainer.style.display = "grid";
-
-		this._setupMapSize(gridContainer, printSize);
+		this._setupPrintMapHeight(gridContainer, printSize);
 
 		if (this.options.contentSelector) {
 			var content = document.querySelectorAll(this.options.contentSelector);
@@ -479,7 +511,17 @@ L.Control.BrowserPrint = L.Control.extend({
 			}
 		}
 
-		overlay.appendChild(gridContainer);
+		pagesContainer.appendChild(gridContainer);
+
+		if (this.options.pagesSelector) {
+			var pages = document.querySelectorAll(this.options.pagesSelector);
+			if (pages && pages.length) {
+				for (var i = 0; i < pages.length; i++) {
+					var printPageItem = pages[i].cloneNode(true);
+					pagesContainer.appendChild(printPageItem);
+				}
+			}
+		}
 
 		var overlayMapDom = document.createElement("div");
 		overlayMapDom.id = map.getContainer().id + "-print";
