@@ -261,7 +261,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		overlay.map.invalidateSize({reset: true, animate: false, pan: false});
 
 		var interval = setInterval(function(){
-			if (!overlay.map.isLoading()) {
+			if (!overlay.map.isLoading() && !origins.printLayer.isLoading()) {
 				clearInterval(interval);
 				self._completePrinting(overlay.map, origins.printLayer, overlay.objects);
 			}
