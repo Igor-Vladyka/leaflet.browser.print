@@ -261,7 +261,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		overlay.map.invalidateSize({reset: true, animate: false, pan: false});
 
 		var interval = setInterval(function(){
-			if (!overlay.map.isLoading()) {
+			if (!self._isTilesLoading(overlay.map, origins.printLayer)) {
 				clearInterval(interval);
 				self._completePrinting(overlay.map, origins.printLayer, overlay.objects);
 			}
@@ -489,22 +489,26 @@ L.Control.BrowserPrint = L.Control.extend({
 			}
 		}
 
-		if (!overlayMap.isLoading) {
-			if (L.version == "1.2.0") {
-				var self = this;
-				overlayMap.isLoading = function () { return self._getLoadingLayers(this); }; // Get all layers that is tile layers and is still loading;
-			} else {
-				overlayMap.isLoading = function () { return this._tilesToLoad || this._tileLayersToLoad; };
-			}
+		return {map: overlayMap, objects: printObjects};
+	},
+
+	// Get all layers that is tile layers and is still loading;
+	_isTilesLoading: function(overlayMap, printLayer){
+		var isLoading = false;
+		var mapMajorVersion = parseFloat(L.version);
+		if (mapMajorVersion > 1) {
+			isLoading = this._getLoadingLayers(overlayMap);
+		} else {
+			isLoading = overlayMap._tilesToLoad || overlayMap._tileLayersToLoad;
 		}
 
-		return {map: overlayMap, objects: printObjects};
+		return isLoading;
 	},
 
 	_getLoadingLayers: function(map) {
 		for (var l in map._layers) {
 			var layer = map._layers[l];
-			if (layer._url && layer._loading) {
+			if (layer.isLoading && layer.isLoading()) {
 				return true;
 			}
 		}
