@@ -80,12 +80,44 @@
 
     	<script>
 
-    		var map = L.map('map').setView([51.505, 1], 6);
+					//Layers
+					var cities = L.layerGroup();
 
-            L.tileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            	maxZoom: 19,
-            	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            }).addTo(map);
+					L.marker([39.61, -105.02]).bindPopup('This is Littleton, CO.').addTo(cities),
+					L.marker([39.74, -104.99]).bindPopup('This is Denver, CO.').addTo(cities),
+					L.marker([39.73, -104.8]).bindPopup('This is Aurora, CO.').addTo(cities),
+					L.marker([39.77, -105.23]).bindPopup('This is Golden, CO.').addTo(cities);
+
+
+					var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+							'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+							'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+						mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+
+					var grayscale   = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
+						streets  = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr}),
+						originLayer = L.tileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			            	maxZoom: 19,
+			            	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+			            });
+
+					var map = L.map('map', {
+						center: [39.73, -104.99],
+						zoom: 10,
+						layers: [grayscale, cities]
+					});
+
+					var baseLayers = {
+						"Grayscale": grayscale,
+						"Streets": streets,
+						"Origin": originLayer
+					};
+
+					var overlays = {
+						"Cities": cities
+					};
+
+					L.control.layers(baseLayers, overlays).addTo(map);
 
 			var drawnItems = new L.FeatureGroup();
 
@@ -114,33 +146,31 @@
 				map.addLayer(drawnItems);
 			});
 
-            var red = L.circle([51.505, 1], 500000, {
-            			color: 'red',
-            			fillColor: '#f03',
-            			fillOpacity: 0.5
-            		});
-            var green = L.circle([55, 5], 50000, {
+            var green = L.circle([39.73, -104.99], 5000, {
                         color: 'green',
                         fillColor: 'darkgreen',
                         fillOpacity: 0.8
                     });
 
-            L.layerGroup().addLayer(red).addLayer(green).addTo(map);
+            L.layerGroup().addLayer(green).addTo(map);
 
             L.control.browserPrint({
-                printLayer: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
+                /*printLayer: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
                             	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
                             	subdomains: 'abcd',
                             	minZoom: 1,
                             	maxZoom: 16,
                             	ext: 'png'
-                            }),
+                            }),*/
                 closePopupsOnPrint: false,
                 printModesNames: {Portrait:"Portrait", Landscape:"Paysage", Auto:"Auto", Custom:"Séléctionnez la zone"}
 
             }).addTo(map);
 
-            L.popup({minWidth: 500}).setLatLng(L.latLng(55,5)).setContent("Leaflet browser print plugin with custom print Layer and content").openOn(map);
+            L.popup({minWidth: 500}).setLatLng(L.latLng(39.73, -104.99)).setContent("Leaflet browser print plugin with custom print Layer and content").openOn(map);
+
+
+
     	</script>
 
         <style>

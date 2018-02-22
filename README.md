@@ -44,7 +44,7 @@ You can pass a number of options to the plugin to control various settings.
 
 | Option        | Type         | Default      | Description   |
 | ------------- |--------------|--------------|---------------|
-| title         | String       | 'Print map'  | Sets the text which appears as the tooltip of the print button |
+| title         | String       | ''  | Sets the text which appears as the tooltip of the print button as well as print page title |
 | position      | [Leaflet control position](http://leafletjs.com/reference-0.7.7.html#control-position) | 'topleft' | Position the print button |
 | printModes    | Array        | ["Portrait", "Landscape", "Auto", "Custom"] | Collection of page print actions |
 | printModesNames | Object | { Portrait: "Portrait", Landscape: "Landscape", Auto:"Auto", Custom:"Custom" } | Customize each print mode name |
