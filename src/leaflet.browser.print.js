@@ -419,7 +419,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		manualPrintButton.style.position = "absolute";
 		manualPrintButton.style.top = "20px";
 		manualPrintButton.style.right = "20px";
-		document.querySelector("#pages-print-container").appendChild(manualPrintButton);
+		document.querySelector("#leaflet-print-overlay").appendChild(manualPrintButton);
 
 		var self = this;
 		L.DomEvent.addListener(manualPrintButton, 'click', function () {
@@ -434,14 +434,6 @@ L.Control.BrowserPrint = L.Control.extend({
 		document.body.appendChild(overlay);
 
 		overlay.appendChild(this._addPrintCss(printSize));
-
-		var pagesContainer = document.createElement("div");
-		pagesContainer.id = "pages-print-container";
-		pagesContainer.className = "pages-print-container";
-		pagesContainer.style.margin = "0!important";
-		this._setupPrintPagesWidth(pagesContainer, printSize);
-
-		overlay.appendChild(pagesContainer);
 
 		var gridContainer = document.createElement("div");
 		gridContainer.id = "grid-print-container";
@@ -460,9 +452,17 @@ L.Control.BrowserPrint = L.Control.extend({
 			}
 		}
 
-		pagesContainer.appendChild(gridContainer);
+		var isMultipage = this.options.pagesSelector && document.querySelectorAll(this.options.pagesSelector).length;
+		if (isMultipage) {
+			var pagesContainer = document.createElement("div");
+			pagesContainer.id = "pages-print-container";
+			pagesContainer.className = "pages-print-container";
+			pagesContainer.style.margin = "0!important";
+			this._setupPrintPagesWidth(pagesContainer, printSize);
 
-		if (this.options.pagesSelector) {
+			overlay.appendChild(pagesContainer);
+			pagesContainer.appendChild(gridContainer);
+
 			var pages = document.querySelectorAll(this.options.pagesSelector);
 			if (pages && pages.length) {
 				for (var i = 0; i < pages.length; i++) {
@@ -470,6 +470,9 @@ L.Control.BrowserPrint = L.Control.extend({
 					pagesContainer.appendChild(printPageItem);
 				}
 			}
+		} else {
+			this._setupPrintPagesWidth(gridContainer, printSize);
+			overlay.appendChild(gridContainer);
 		}
 
 		var overlayMapDom = document.createElement("div");
