@@ -13,6 +13,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		closePopupsOnPrint: true,
 		contentSelector: "[leaflet-browser-print-content]",
 		pagesSelector: "[leaflet-browser-print-pages]",
+		manualMode: false,
 	},
 
 	onAdd: function (map) {
@@ -269,7 +270,11 @@ L.Control.BrowserPrint = L.Control.extend({
 		var interval = setInterval(function(){
 			if (!self._isTilesLoading(overlay.map, origins.printLayer)) {
 				clearInterval(interval);
-				self._completePrinting(overlay.map, origins, overlay.objects);
+				if (self.options.manualMode) {
+					self._setupManualPrintButton(overlay.map, origins, overlay.objects);
+				} else {
+					self._completePrinting(overlay.map, origins, overlay.objects);
+				}
 			}
 		}, 50);
     },
@@ -373,15 +378,16 @@ L.Control.BrowserPrint = L.Control.extend({
         printStyleSheet.setAttribute('type', 'text/css');
 		printStyleSheet.innerHTML = '@media print { .leaflet-control-container > .leaflet-bottom.leaflet-left, .leaflet-control-container > .leaflet-top.leaflet-left, .leaflet-control-container > .leaflet-top.leaflet-right { display: none!important; } }';
 		printStyleSheet.innerHTML += ' @media print { .leaflet-popup-content-wrapper, .leaflet-popup-tip { box-shadow: none; }';
+		printStyleSheet.innerHTML += ' @media print { #leaflet-browser-print--manualMode-button { display: none; }';
 		printStyleSheet.innerHTML += ' * { -webkit-print-color-adjust: exact!important; }';
 
         switch (printSize) {
             case "Landscape":
-                printStyleSheet.innerText += "@media print { @page { size : A4 landscape; }}";
+                printStyleSheet.innerText += "@media print { @page { size : landscape; }}";
                 break;
             default:
             case "Portrait":
-                printStyleSheet.innerText += "@media print { @page { size : A4 portrait; }}";
+                printStyleSheet.innerText += "@media print { @page { size : portrait; }}";
                 break;
         }
 
@@ -400,10 +406,25 @@ L.Control.BrowserPrint = L.Control.extend({
 		printControlStyleSheet.innerHTML += " .leaflet-browser-print--custom, .leaflet-browser-print--custom path { cursor: crosshair!important; }";
 		printControlStyleSheet.innerHTML += " .leaflet-print-overlay { width: 100%; height:auto; min-height: 100%; position: absolute; top: 0; background-color: white!important; left: 0; z-index: 1001; display: block!important; } ";
 		printControlStyleSheet.innerHTML += " .leaflet--printing { height:auto; min-height: 100%; margin: 0px!important; padding: 0px!important; } body.leaflet--printing > * { display: none; }";
-		printControlStyleSheet.innerHTML += " .grid-print-container { grid-template: 1fr / 1fr; box-sizing: border-box; page-break-after: always; } .grid-map-print { grid-row: 1; grid-column: 1; } body.leaflet--printing .grid-print-container [leaflet-browser-print-content]:not(style) { display: unset!important; }";
+		printControlStyleSheet.innerHTML += " .grid-print-container { grid-template: 1fr / 1fr; box-sizing: border-box; } .grid-map-print { grid-row: 1; grid-column: 1; } body.leaflet--printing .grid-print-container [leaflet-browser-print-content]:not(style) { display: unset!important; }";
 		printControlStyleSheet.innerHTML += " .pages-print-container { box-sizing: border-box; }";
 
         container.appendChild(printControlStyleSheet);
+	},
+
+	_setupManualPrintButton: function(map, origins, objects) {
+		var manualPrintButton = document.createElement('button');
+		manualPrintButton.id = "leaflet-browser-print--manualMode-button";
+		manualPrintButton.innerHTML = "Print";
+		manualPrintButton.style.position = "absolute";
+		manualPrintButton.style.top = "20px";
+		manualPrintButton.style.right = "20px";
+		document.querySelector("#pages-print-container").appendChild(manualPrintButton);
+
+		var self = this;
+		L.DomEvent.addListener(manualPrintButton, 'click', function () {
+			self._completePrinting(map, origins, objects);
+		});
 	},
 
 	_addPrintMapOverlay: function (map, printSize, origins) {
