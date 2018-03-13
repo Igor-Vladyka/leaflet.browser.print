@@ -1,6 +1,6 @@
 /*!
  * 
- *  leaflet.browser.print - v0.5.7 (https://github.com/Igor-Vladyka/leaflet.browser.print) 
+ *  leaflet.browser.print - v0.5.8 (https://github.com/Igor-Vladyka/leaflet.browser.print) 
  *  A leaflet plugin which allows users to print the map directly from the browser
  *  
  *  MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -322,19 +322,35 @@ L.Control.BrowserPrint = L.Control.extend({
 		}
 	},
 
+	/* Intended to cancel next printing*/
+	cancel: function(cancelNextPrinting){
+		this.cancelNextPrinting = cancelNextPrinting;
+	},
+
+	print: function(printSize, autoBounds) {
+		if (printSize == "Landscape" || printSize == "Portrait") {
+			this._print(printSize, autoBounds);
+		}
+	},
+
     _print: function (printSize, autoBounds) {
 		var self = this;
         var mapContainer = this._map.getContainer();
 
         var origins = {
-            bounds: this._map.getBounds(),
+            bounds: autoBounds || this._map.getBounds(),
             width: mapContainer.style.width,
             height: mapContainer.style.height,
 			title: document.title,
 			printLayer: L.Control.BrowserPrint.Utils.cloneLayer(this._validatePrintLayer())
         };
 
-		this._map.fire("browser-pre-print", { printObjects: this._getPrintObjects() });
+		this._map.fire(L.Control.BrowserPrint.Event.PrePrint, { printObjects: this._getPrintObjects(), pageSize: printSize, pageBounds: origins.bounds});
+
+		if (this.cancelNextPrinting) {
+			delete this.cancelNextPrinting;
+			return;
+		}
 
 		var overlay = this._addPrintMapOverlay(this._map, printSize, origins);
 
@@ -342,9 +358,9 @@ L.Control.BrowserPrint = L.Control.extend({
 			document.title = this.options.title;
 		}
 
-		this._map.fire("browser-print-start", { printLayer: origins.printLayer, printMap: overlay.map, printObjects: overlay.objects });
+		this._map.fire(L.Control.BrowserPrint.Event.PrintStart, { printLayer: origins.printLayer, printMap: overlay.map, printObjects: overlay.objects });
 
-		overlay.map.fitBounds(autoBounds || origins.bounds);
+		overlay.map.fitBounds(origins.bounds);
 
 		overlay.map.invalidateSize({reset: true, animate: false, pan: false});
 
@@ -363,10 +379,10 @@ L.Control.BrowserPrint = L.Control.extend({
 	_completePrinting: function (overlayMap, origins, printObjects) {
 		var self = this;
 		setTimeout(function(){
-			self._map.fire("browser-print", { printLayer: origins.printLayer, printMap: overlayMap, printObjects: printObjects });
+			self._map.fire(L.Control.BrowserPrint.Event.Print, { printLayer: origins.printLayer, printMap: overlayMap, printObjects: printObjects });
 			window.print();
 			self._printEnd(origins);
-			self._map.fire("browser-print-end", { printLayer: origins.printLayer, printMap: overlayMap, printObjects: printObjects });
+			self._map.fire(L.Control.BrowserPrint.Event.PrintEnd, { printLayer: origins.printLayer, printMap: overlayMap, printObjects: printObjects });
 		}, 1000);
 	},
 
@@ -630,6 +646,13 @@ L.Control.BrowserPrint = L.Control.extend({
 		return false;
 	}
 });
+
+L.Control.BrowserPrint.Event =  {
+	PrePrint: 'browser-pre-print',
+	PrintStart: 'browser-print-start',
+	Print: 'browser-print',
+	PrintEnd: 'browser-print-end'
+},
 
 L.control.browserPrint = function(options) {
 
