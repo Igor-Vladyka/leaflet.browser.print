@@ -395,7 +395,6 @@ L.Control.BrowserPrint = L.Control.extend({
         var printStyleSheet = document.createElement('style');
 		printStyleSheet.id = "leaflet-browser-print-css";
         printStyleSheet.setAttribute('type', 'text/css');
-		printStyleSheet.innerHTML = '@media print { .leaflet-control-container > .leaflet-bottom.leaflet-left, .leaflet-control-container > .leaflet-top.leaflet-left, .leaflet-control-container > .leaflet-top.leaflet-right { display: none!important; } }';
 		printStyleSheet.innerHTML += ' @media print { .leaflet-popup-content-wrapper, .leaflet-popup-tip { box-shadow: none; }';
 		printStyleSheet.innerHTML += ' @media print { #leaflet-browser-print--manualMode-button { display: none; }';
 		printStyleSheet.innerHTML += ' * { -webkit-print-color-adjust: exact!important; }';
