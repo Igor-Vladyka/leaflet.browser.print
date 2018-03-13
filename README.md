@@ -87,7 +87,7 @@ L.control.browserPrint({
 
 | Map Event           | Value           		 			   | Description 													 | Purpose |
 | ------------------- | -------------------------------------- | --------------------------------------------------------------- | ------- |
-| browser-pre-print   | { printObjects } 		 			   | Fire before print started, allows manipulation with map objects.| For DOM manipulation with real map objects. |
+| browser-pre-print   | { pageSize, pageBounds, printObjects } | Fire before print started, allows manipulation with map objects.| For DOM manipulation with real map objects. |
 | browser-print-start | { printLayer, printMap, printObjects } | Fire on print started, before all print calculations is done.   | For DOM manipulation with print map and print objects. |
 | browser-print       | { printLayer, printMap, printObjects } | Fire right before native print. 								 | For DOM manipulation with print map and print objects. |
 | browser-print-end   | { printLayer, printMap, printObjects } | Fire on print end, after we refresh map to show initial view.   | For DOM manipulation with real map objects after print |

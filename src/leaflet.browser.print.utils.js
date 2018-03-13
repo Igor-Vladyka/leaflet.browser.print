@@ -37,7 +37,7 @@ L.Control.BrowserPrint.Utils = {
 		return retOptions;
 	},
 
-	cloneLayer: function(layer, map) {
+	cloneLayer: function(layer) {
 		var utils = this;
 
 		var options = layer.options;

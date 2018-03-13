@@ -265,14 +265,16 @@ L.Control.BrowserPrint = L.Control.extend({
 			printLayer: L.Control.BrowserPrint.Utils.cloneLayer(this._validatePrintLayer())
         };
 
-		this._map.fire(L.Control.BrowserPrint.Event.PrePrint, { printObjects: this._getPrintObjects(), pageSize: printSize, pageBounds: origins.bounds});
+		origins.printObjects = this._getPrintObjects(origins.printLayer);
+
+		this._map.fire(L.Control.BrowserPrint.Event.PrePrint, { printLayer: origins.printLayer, printObjects: origins.printObjects, pageSize: printSize, pageBounds: origins.bounds});
 
 		if (this.cancelNextPrinting) {
 			delete this.cancelNextPrinting;
 			return;
 		}
 
-		var overlay = this._addPrintMapOverlay(this._map, printSize, origins);
+		var overlay = this._addPrintMapOverlay(printSize, origins);
 
 		if (this.options.documentTitle) {
 			document.title = this.options.documentTitle;
@@ -370,11 +372,11 @@ L.Control.BrowserPrint = L.Control.extend({
 		return visualLayerForPrinting;
     },
 
-	_getPrintObjects: function() {
+	_getPrintObjects: function(printLayer) {
 		var printObjects = {};
 		for (var id in this._map._layers){
 			var pLayer = this._map._layers[id];
-			if (!pLayer._url) {
+			if (!pLayer._url || printLayer._url !== pLayer._url) {
 				var type = L.Control.BrowserPrint.Utils.getType(pLayer);
 				if (type) {
 					if (!printObjects[type]) {
@@ -444,10 +446,10 @@ L.Control.BrowserPrint = L.Control.extend({
 		});
 	},
 
-	_addPrintMapOverlay: function (map, printSize, origins) {
+	_addPrintMapOverlay: function (printSize, origins) {
 		var overlay = document.createElement("div");
 		overlay.id = "leaflet-print-overlay";
-		overlay.className = map.getContainer().className + " leaflet-print-overlay";
+		overlay.className = this._map.getContainer().className + " leaflet-print-overlay";
 		document.body.appendChild(overlay);
 
 		overlay.appendChild(this._addPrintCss(printSize));
@@ -493,7 +495,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		}
 
 		var overlayMapDom = document.createElement("div");
-		overlayMapDom.id = map.getContainer().id + "-print";
+		overlayMapDom.id = this._map.getContainer().id + "-print";
 		overlayMapDom.className = "grid-map-print";
 		overlayMapDom.style.width = "100%";
 		overlayMapDom.style.height = "100%";
@@ -501,42 +503,36 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		document.body.className += " leaflet--printing";
 
-		return this._setupPrintMap(overlayMapDom.id, L.Control.BrowserPrint.Utils.cloneBasicOptionsWithoutLayers(map.options), origins.printLayer, map._layers);
+		return this._setupPrintMap(overlayMapDom.id, L.Control.BrowserPrint.Utils.cloneBasicOptionsWithoutLayers(this._map.options), origins.printLayer, origins.printObjects);
 	},
 
-	_setupPrintMap: function (id, options, printLayer, allLayers, map) {
+	_setupPrintMap: function (id, options, printLayer, printObjects) {
 		options.zoomControl = false;
 		var overlayMap = L.map(id, options);
-		var printObjects = {};
 
 		printLayer.addTo(overlayMap);
 
-		for (var layerId in allLayers){
-			var pLayer = allLayers[layerId];
-			if (!pLayer._url) {
-				var clone = L.Control.BrowserPrint.Utils.cloneLayer(pLayer, map);
+		for (var type in printObjects){
+			var closePopupsOnPrint = this.options.closePopupsOnPrint;
+			printObjects[type] = printObjects[type].map(function(pLayer){
+				var clone = L.Control.BrowserPrint.Utils.cloneLayer(pLayer);
 
 				if (clone) {
-
 					/* Workaround for propriate handling of popups. */
 					if (pLayer instanceof L.Popup){
 						if(!pLayer.isOpen) {
 							pLayer.isOpen = function () { return this._isOpen; };
 						}
-						if (pLayer.isOpen() && !this.options.closePopupsOnPrint) {
+						if (pLayer.isOpen() && !closePopupsOnPrint) {
 							clone.openOn(overlayMap);
 						}
 					} else {
 						clone.addTo(overlayMap);
 					}
 
-					var type = L.Control.BrowserPrint.Utils.getType(clone);
-					if (!printObjects[type]) {
-						printObjects[type] = [];
-					}
-					printObjects[type].push(clone);
+					return clone;
 				}
-			}
+			});
 		}
 
 		return {map: overlayMap, objects: printObjects};
