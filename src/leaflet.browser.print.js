@@ -5,7 +5,8 @@
 
 L.Control.BrowserPrint = L.Control.extend({
 	options: {
-		title: '',
+		title: 'Print map',
+		documentTitle: '',
 		position: 'topleft',
         printLayer: null,
 		printModes: ["Portrait", "Landscape", "Auto", "Custom"],
@@ -260,7 +261,7 @@ L.Control.BrowserPrint = L.Control.extend({
             bounds: autoBounds || this._map.getBounds(),
             width: mapContainer.style.width,
             height: mapContainer.style.height,
-			title: document.title,
+			documentTitle: document.title,
 			printLayer: L.Control.BrowserPrint.Utils.cloneLayer(this._validatePrintLayer())
         };
 
@@ -273,8 +274,8 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		var overlay = this._addPrintMapOverlay(this._map, printSize, origins);
 
-		if (this.options.title) {
-			document.title = this.options.title;
+		if (this.options.documentTitle) {
+			document.title = this.options.documentTitle;
 		}
 
 		this._map.fire(L.Control.BrowserPrint.Event.PrintStart, { printLayer: origins.printLayer, printMap: overlay.map, printObjects: overlay.objects });
@@ -345,8 +346,8 @@ L.Control.BrowserPrint = L.Control.extend({
 		document.body.removeChild(overlay);
 
 		document.body.className = document.body.className.replace(" leaflet--printing", "");
-		if (this.options.title) {
-			document.title = origins.title;
+		if (this.options.documentTitle) {
+			document.title = origins.documentTitle;
 		}
 
 		this._map.invalidateSize({reset: true, animate: false, pan: false});
