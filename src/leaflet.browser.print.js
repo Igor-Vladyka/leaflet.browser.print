@@ -526,7 +526,18 @@ L.Control.BrowserPrint = L.Control.extend({
 							clone.openOn(overlayMap);
 						}
 					} else {
+						console.log(clone);
 						clone.addTo(overlayMap);
+					}
+
+					if (pLayer instanceof L.Layer) {
+						var tooltip = pLayer.getTooltip();
+						if (tooltip) {
+							clone.bindTooltip(tooltip.getContent(), tooltip.options);
+							if (pLayer.isTooltipOpen()) {
+								clone.openTooltip(tooltip.getLatLng());
+							}
+						}
 					}
 
 					return clone;

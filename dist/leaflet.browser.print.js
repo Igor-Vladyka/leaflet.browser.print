@@ -1,6 +1,6 @@
 /*!
  * 
- *  leaflet.browser.print - v0.5.11 (https://github.com/Igor-Vladyka/leaflet.browser.print) 
+ *  leaflet.browser.print - v0.5.12 (https://github.com/Igor-Vladyka/leaflet.browser.print) 
  *  A leaflet plugin which allows users to print the map directly from the browser
  *  
  *  MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -607,7 +607,18 @@ L.Control.BrowserPrint = L.Control.extend({
 							clone.openOn(overlayMap);
 						}
 					} else {
+						console.log(clone);
 						clone.addTo(overlayMap);
+					}
+
+					if (pLayer instanceof L.Layer) {
+						var tooltip = pLayer.getTooltip();
+						if (tooltip) {
+							clone.bindTooltip(tooltip.getContent(), tooltip.options);
+							if (pLayer.isTooltipOpen()) {
+								clone.openTooltip(tooltip.getLatLng());
+							}
+						}
 					}
 
 					return clone;
@@ -787,7 +798,7 @@ L.Control.BrowserPrint.Utils = {
 		}
 
 		if (layer instanceof L.Tooltip) {
-            return L.tooltip(options);
+            return null;// There is no point to clone tooltips here;  L.tooltip(options);
         }
 
 		console.info('Unknown layer, cannot clone this layer. Leaflet-version: ' + L.version);

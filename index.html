@@ -82,11 +82,14 @@
 
 					//Layers
 					var cities = L.layerGroup();
+					var arrayOfPoints = [[39.61, -105.02], [39.73, -104.8], [39.77, -105.23]];
 
-					L.marker([39.61, -105.02]).bindPopup('This is Littleton, CO.').addTo(cities),
-					L.marker([39.74, -104.99]).bindPopup('This is Denver, CO.').addTo(cities),
-					L.marker([39.73, -104.8]).bindPopup('This is Aurora, CO.').addTo(cities),
-					L.marker([39.77, -105.23]).bindPopup('This is Golden, CO.').addTo(cities);
+					L.marker(arrayOfPoints[0]).bindPopup('This is Littleton, CO.').addTo(cities),
+					L.marker(arrayOfPoints[1]).bindPopup('This is Aurora, CO.').addTo(cities),
+					L.marker(arrayOfPoints[2]).bindPopup('This is Golden, CO.').addTo(cities);
+
+				var p =	L.polygon(arrayOfPoints, {color: 'yellow'}).bindTooltip("polygon").addTo(cities);
+
 
 
 					var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +

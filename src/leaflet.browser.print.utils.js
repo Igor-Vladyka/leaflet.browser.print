@@ -116,7 +116,7 @@ L.Control.BrowserPrint.Utils = {
 		}
 
 		if (layer instanceof L.Tooltip) {
-            return L.tooltip(options);
+            return null;// There is no point to clone tooltips here;  L.tooltip(options);
         }
 
 		console.info('Unknown layer, cannot clone this layer. Leaflet-version: ' + L.version);
