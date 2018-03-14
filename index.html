@@ -137,6 +137,8 @@
 			});
 			map.addControl(drawControl);
 
+			map.createPane("new-pane");
+
 			map.on(L.Draw.Event.CREATED, function (e) {
 			    var type = e.layerType,
 			        layer = e.layer;
@@ -152,7 +154,8 @@
             var green = L.circle([39.73, -104.99], 5000, {
                         color: 'green',
                         fillColor: 'darkgreen',
-                        fillOpacity: 0.8
+                        fillOpacity: 0.8,
+						pane: "new-pane"
                     });
 
             L.layerGroup().addLayer(green).addTo(map);

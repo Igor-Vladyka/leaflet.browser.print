@@ -262,8 +262,14 @@ L.Control.BrowserPrint = L.Control.extend({
             width: mapContainer.style.width,
             height: mapContainer.style.height,
 			documentTitle: document.title,
-			printLayer: L.Control.BrowserPrint.Utils.cloneLayer(this.options.printLayer)
+			printLayer: L.Control.BrowserPrint.Utils.cloneLayer(this.options.printLayer),
+			panes: []
         };
+
+		var mapPanes = this._map.getPanes();
+		for (var pane in mapPanes) {
+			origins.panes.push({name: pane, container: undefined});
+		}
 
 		origins.printObjects = this._getPrintObjects(origins.printLayer);
 
@@ -503,16 +509,18 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		document.body.className += " leaflet--printing";
 
-		return this._setupPrintMap(overlayMapDom.id, L.Control.BrowserPrint.Utils.cloneBasicOptionsWithoutLayers(this._map.options), origins.printLayer, origins.printObjects);
+		return this._setupPrintMap(overlayMapDom.id, L.Control.BrowserPrint.Utils.cloneBasicOptionsWithoutLayers(this._map.options), origins.printLayer, origins.printObjects, origins.panes);
 	},
 
-	_setupPrintMap: function (id, options, printLayer, printObjects) {
+	_setupPrintMap: function (id, options, printLayer, printObjects, panes) {
 		options.zoomControl = false;
 		var overlayMap = L.map(id, options);
 
 		if (printLayer) {
 			printLayer.addTo(overlayMap);
 		}
+
+		panes.forEach(function(p) { overlayMap.createPane(p.name, p.container); });
 
 		for (var type in printObjects){
 			var closePopupsOnPrint = this.options.closePopupsOnPrint;
