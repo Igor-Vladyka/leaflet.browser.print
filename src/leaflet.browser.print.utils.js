@@ -38,8 +38,10 @@ L.Control.BrowserPrint.Utils = {
 	},
 
 	cloneLayer: function(layer) {
-		var utils = this;
+		if (!layer) return null;
 
+		var utils = this;
+		
 		var options = layer.options;
 
 		// Renderers

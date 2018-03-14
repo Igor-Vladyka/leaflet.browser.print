@@ -262,7 +262,7 @@ L.Control.BrowserPrint = L.Control.extend({
             width: mapContainer.style.width,
             height: mapContainer.style.height,
 			documentTitle: document.title,
-			printLayer: L.Control.BrowserPrint.Utils.cloneLayer(this._validatePrintLayer())
+			printLayer: L.Control.BrowserPrint.Utils.cloneLayer(this.options.printLayer)
         };
 
 		origins.printObjects = this._getPrintObjects(origins.printLayer);
@@ -287,7 +287,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		overlay.map.invalidateSize({reset: true, animate: false, pan: false});
 
 		var interval = setInterval(function(){
-			if (!self._isTilesLoading(overlay.map, origins.printLayer)) {
+			if (!self._isTilesLoading(overlay.map)) {
 				clearInterval(interval);
 				if (self.options.manualMode) {
 					self._setupManualPrintButton(overlay.map, origins, overlay.objects);
@@ -355,7 +355,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		this._map.invalidateSize({reset: true, animate: false, pan: false});
     },
 
-    _validatePrintLayer: function() {
+    /*_validatePrintLayer: function() {
 		var visualLayerForPrinting = null;
 
         if (this.options.printLayer) {
@@ -365,18 +365,19 @@ L.Control.BrowserPrint = L.Control.extend({
                 var pLayer = this._map._layers[id];
                 if (pLayer._url) {
                     visualLayerForPrinting = pLayer;
+					break;
                 }
             }
 		}
 
 		return visualLayerForPrinting;
-    },
+    },*/
 
 	_getPrintObjects: function(printLayer) {
 		var printObjects = {};
 		for (var id in this._map._layers){
 			var pLayer = this._map._layers[id];
-			if (!pLayer._url || printLayer._url !== pLayer._url) {
+			if (!printLayer || !pLayer._url || printLayer._url !== pLayer._url) {
 				var type = L.Control.BrowserPrint.Utils.getType(pLayer);
 				if (type) {
 					if (!printObjects[type]) {
@@ -509,7 +510,9 @@ L.Control.BrowserPrint = L.Control.extend({
 		options.zoomControl = false;
 		var overlayMap = L.map(id, options);
 
-		printLayer.addTo(overlayMap);
+		if (printLayer) {
+			printLayer.addTo(overlayMap);
+		}
 
 		for (var type in printObjects){
 			var closePopupsOnPrint = this.options.closePopupsOnPrint;
@@ -517,7 +520,7 @@ L.Control.BrowserPrint = L.Control.extend({
 				var clone = L.Control.BrowserPrint.Utils.cloneLayer(pLayer);
 
 				if (clone) {
-					/* Workaround for propriate handling of popups. */
+					/* Workaround for apropriate handling of popups. */
 					if (pLayer instanceof L.Popup){
 						if(!pLayer.isOpen) {
 							pLayer.isOpen = function () { return this._isOpen; };
@@ -526,7 +529,6 @@ L.Control.BrowserPrint = L.Control.extend({
 							clone.openOn(overlayMap);
 						}
 					} else {
-						console.log(clone);
 						clone.addTo(overlayMap);
 					}
 
@@ -549,7 +551,7 @@ L.Control.BrowserPrint = L.Control.extend({
 	},
 
 	// Get all layers that is tile layers and is still loading;
-	_isTilesLoading: function(overlayMap, printLayer){
+	_isTilesLoading: function(overlayMap){
 		var isLoading = false;
 		var mapMajorVersion = parseFloat(L.version);
 		if (mapMajorVersion > 1) {
