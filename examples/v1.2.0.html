@@ -19,6 +19,7 @@
         <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
         <script src="../src/leaflet.browser.print.js"></script>
         <script src="../src/leaflet.browser.print.utils.js"></script>
+        <script src="../src/leaflet.browser.print.sizes.js"></script>
 
     	<script>
 
@@ -28,8 +29,8 @@
             	maxZoom: 19,
             	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
-            
-            
+
+
             var red = L.circle([51.505, 1], 500000, {
             			color: 'red',
             			fillColor: '#f03',
@@ -40,9 +41,9 @@
                         fillColor: 'darkgreen',
                         fillOpacity: 0.8
                     });
-                    
+
             L.layerGroup().addLayer(red).addLayer(green).addTo(map);
-            
+
             L.control.browserPrint().addTo(map);
 
     	</script>

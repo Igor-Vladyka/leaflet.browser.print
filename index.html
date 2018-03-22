@@ -77,6 +77,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.js"></script>
         <script src="src/leaflet.browser.print.js"></script>
         <script src="src/leaflet.browser.print.utils.js"></script>
+        <script src="src/leaflet.browser.print.sizes.js"></script>
 
     	<script>
 
@@ -169,7 +170,13 @@
                             	ext: 'png'
                             }),*/
                 closePopupsOnPrint: false,
-                printModesNames: {Portrait:"Portrait", Landscape:"Paysage", Auto:"Auto", Custom:"Séléctionnez la zone"}
+				printModes: [
+					L.control.browserPrint.mode("Landscape", "Landscape A3", "a3"),
+					L.control.browserPrint.mode("Landscape", "Landscape A4", "a4"),
+					L.control.browserPrint.mode("Portrait", "Portrait A5", "a5"),
+					L.control.browserPrint.mode("Auto", "Auto B4", "B4"),
+					L.control.browserPrint.mode("Custom", "Séléctionnez la zone B5", "B5")
+				]
 
             }).addTo(map);
 
@@ -197,12 +204,14 @@
                 justify-self: center;
                 text-align: center;
                 color: grey;
+				box-sizing: border-box;
             }
             .sub-content {
                 grid-row: 5;
                 padding-left: 10px;
                 text-align: center;
                 color: grey;
+				box-sizing: border-box;
             }
         </style>
 		<style>

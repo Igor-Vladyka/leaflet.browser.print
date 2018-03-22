@@ -60,24 +60,42 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		for (var i = 0; i < this.options.printModes.length; i++) {
 			var mode = this.options.printModes[i];
-			var normalizedName = mode[0].toUpperCase() + mode.substring(1).toLowerCase();
 
-			if (this["_print" + normalizedName]) {
-				var domMode = L.DomUtil.create('li', 'browser-print-mode', this.holder);
+			/*
+				Mode:
+					Mode: Portrait/Landscape/Auto/Custom
+					Title: 'Portrait'/'Landscape'/'Auto'/'Custom'
+					Type: 'A3'/'A4'
+					Action: '_printPortrait'/...
+					Element: DOM element
+			*/
+			if (mode.length) {
+				var key = mode[0].toUpperCase() + mode.substring(1).toLowerCase();
 
-				if (this.options.printModesNames && this.options.printModesNames[normalizedName]) {
-					domMode.innerHTML = this.options.printModesNames[normalizedName];
-				} else {
-					domMode.innerHTML = normalizedName;
+				mode = L.control.browserPrint.mode(key, this._getDefaultTitle(key));
+
+			} else if (mode instanceof L.Control.BrowserPrint.Mode) {
+				if (!mode.Mode) {
+					continue;
 				}
-
-				L.DomEvent.addListener(domMode, 'click', this["_print" + normalizedName], this);
-
-				domPrintModes.push(domMode);
+				mode.Title = mode.Title || this._getDefaultTitle(mode.Mode);
+				mode.PageSize = mode.PageSize || "A4";
+				mode.Action = mode.Action || '_print' + mode.Mode;
 			}
+
+			mode.Element = L.DomUtil.create('li', 'browser-print-mode', this.holder);
+			mode.Element.innerHTML = mode.Title;
+
+			L.DomEvent.addListener(mode.Element, 'click', this[mode.Action], this);
+
+			domPrintModes.push(mode);
 		}
 
 		this.options.printModes = domPrintModes;
+	},
+
+	_getDefaultTitle: function(key) {
+		return this.options.printModesNames && this.options.printModesNames[key] || key;
 	},
 
     _displayPageSizeButtons: function() {
@@ -90,7 +108,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		}
 
 		this.options.printModes.forEach(function(mode){
-			mode.style.display = "inline-block";
+			mode.Element.style.display = "inline-block";
 		});
     },
 
@@ -104,25 +122,34 @@ L.Control.BrowserPrint = L.Control.extend({
 		}
 
 		this.options.printModes.forEach(function(mode){
-			mode.style.display = "";
+			mode.Element.style.display = "";
 		});
     },
 
+	_getMode: function(name){
+		return this.options.printModes.filter(function(f){
+			return f.Mode == name;
+		})[0];
+	},
+
     _printLandscape: function () {
 		this._addPrintClassToContainer(this._map, "leaflet-browser-print--landscape");
-        this._print("Landscape");
+		var orientation = "Landscape";
+        this._print(this._getMode(orientation), orientation);
     },
 
     _printPortrait: function () {
 		this._addPrintClassToContainer(this._map, "leaflet-browser-print--portrait");
-        this._print("Portrait");
+		var orientation = "Portrait";
+        this._print(this._getMode(orientation), orientation);
     },
 
     _printAuto: function () {
 		this._addPrintClassToContainer(this._map, "leaflet-browser-print--auto");
 
 		var autoBounds = this._getBoundsForAllVisualLayers();
-		this._print(this._getPageSizeFromBounds(autoBounds), autoBounds);
+		var orientation = this._getPageSizeFromBounds(autoBounds);
+		this._print(this._getMode(orientation), orientation, autoBounds);
     },
 
     _printCustom: function () {
@@ -188,7 +215,8 @@ L.Control.BrowserPrint = L.Control.extend({
 			this._map.removeLayer(this.options.custom.rectangle);
 			this.options.custom = undefined;
 
-			this._print(this._getPageSizeFromBounds(autoBounds), autoBounds);
+			var orientation = this._getPageSizeFromBounds(autoBounds);
+			this._print(this._getMode(orientation), orientation, autoBounds);
 		} else {
 			this._clearPrint();
 		}
@@ -204,40 +232,26 @@ L.Control.BrowserPrint = L.Control.extend({
 		}
 	},
 
-    _setupMapSize: function (mapContainer, printSize) {
-        switch (printSize) {
-            case "Landscape":
-                mapContainer.style.width = "1040px";
-                mapContainer.style.height = "715px";
-                break;
-            default:
-            case "Portrait":
-                mapContainer.style.width = "715px";
-                mapContainer.style.height = "1040px";
-                break;
-        }
-    },
-
-	_setupPrintPagesWidth: function(pagesContainer, printSize) {
-		switch (printSize) {
+	_setupPrintPagesWidth: function(pagesContainer, size, pageOrientation) {
+		switch (pageOrientation) {
 			case "Landscape":
-				pagesContainer.style.width = "1040px";
+				pagesContainer.style.width = size.Height;
 				break;
 			default:
 			case "Portrait":
-				pagesContainer.style.width = "715px";
+				pagesContainer.style.width = size.Width;
 				break;
 		}
 	},
 
-	_setupPrintMapHeight: function(mapContainer, printSize) {
-		switch (printSize) {
+	_setupPrintMapHeight: function(mapContainer, size, pageOrientation) {
+		switch (pageOrientation) {
 			case "Landscape":
-				mapContainer.style.height = "715px";
+				mapContainer.style.height = size.Width;
 				break;
 			default:
 			case "Portrait":
-				mapContainer.style.height = "1040px";
+				mapContainer.style.height = size.Height;
 				break;
 		}
 	},
@@ -247,13 +261,13 @@ L.Control.BrowserPrint = L.Control.extend({
 		this.cancelNextPrinting = cancelNextPrinting;
 	},
 
-	print: function(printSize, autoBounds) {
-		if (printSize == "Landscape" || printSize == "Portrait") {
-			this._print(printSize, autoBounds);
+	print: function(pageOrientation, autoBounds) {
+		if (pageOrientation == "Landscape" || pageOrientation == "Portrait") {
+			this._print(this._getMode(pageOrientation), pageOrientation, autoBounds);
 		}
 	},
 
-    _print: function (printSize, autoBounds) {
+    _print: function (printMode, pageOrientation, autoBounds) {
 		var self = this;
         var mapContainer = this._map.getContainer();
 
@@ -273,14 +287,14 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		origins.printObjects = this._getPrintObjects(origins.printLayer);
 
-		this._map.fire(L.Control.BrowserPrint.Event.PrePrint, { printLayer: origins.printLayer, printObjects: origins.printObjects, pageSize: printSize, pageBounds: origins.bounds});
+		this._map.fire(L.Control.BrowserPrint.Event.PrePrint, { printLayer: origins.printLayer, printObjects: origins.printObjects, pageOrientation: pageOrientation, printMode: printMode.Mode, pageBounds: origins.bounds});
 
 		if (this.cancelNextPrinting) {
 			delete this.cancelNextPrinting;
 			return;
 		}
 
-		var overlay = this._addPrintMapOverlay(printSize, origins);
+		var overlay = this._addPrintMapOverlay(printMode.PageSize, printMode.getPageMargin(), printMode.getSize(), pageOrientation, origins);
 
 		if (this.options.documentTitle) {
 			document.title = this.options.documentTitle;
@@ -397,22 +411,26 @@ L.Control.BrowserPrint = L.Control.extend({
 		return printObjects;
 	},
 
-    _addPrintCss: function (printSize) {
+    _addPrintCss: function (pageSize, pageMargin, pageOrientation) {
 
         var printStyleSheet = document.createElement('style');
 		printStyleSheet.id = "leaflet-browser-print-css";
         printStyleSheet.setAttribute('type', 'text/css');
-		printStyleSheet.innerHTML += ' @media print { .leaflet-popup-content-wrapper, .leaflet-popup-tip { box-shadow: none; }';
-		printStyleSheet.innerHTML += ' @media print { #leaflet-browser-print--manualMode-button { display: none; }';
+		printStyleSheet.innerHTML = ' @media print { .leaflet-popup-content-wrapper, .leaflet-popup-tip { box-shadow: none; }';
+		printStyleSheet.innerHTML += ' #leaflet-browser-print--manualMode-button { display: none; }';
 		printStyleSheet.innerHTML += ' * { -webkit-print-color-adjust: exact!important; }';
+		if (pageMargin) {
+			printStyleSheet.innerHTML += ' @page { margin: ' + pageMargin + '; }';
+		}
+		printStyleSheet.innerHTML += ' @page :first { page-break-after: always; }';
 
-        switch (printSize) {
+        switch (pageOrientation) {
             case "Landscape":
-                printStyleSheet.innerText += "@media print { @page { size : landscape; }}";
+                printStyleSheet.innerText += " @page { size : " + pageSize + " landscape; }";
                 break;
             default:
             case "Portrait":
-                printStyleSheet.innerText += "@media print { @page { size : portrait; }}";
+                printStyleSheet.innerText += " @page { size : " + pageSize + " portrait; }";
                 break;
         }
 
@@ -430,7 +448,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		printControlStyleSheet.innerHTML += " .browser-print-mode { display: none; background-color: #919187; color: #FFF; font: 11px/19px 'Helvetica Neue', Arial, Helvetica, sans-serif; text-decoration: none; padding: 4px 10px; text-align: center; } .v1 .browser-print-mode { padding: 6px 10px; } .browser-print-mode:hover { background-color: #757570; cursor: pointer; }";
 		printControlStyleSheet.innerHTML += " .leaflet-browser-print--custom, .leaflet-browser-print--custom path { cursor: crosshair!important; }";
 		printControlStyleSheet.innerHTML += " .leaflet-print-overlay { width: 100%; height:auto; min-height: 100%; position: absolute; top: 0; background-color: white!important; left: 0; z-index: 1001; display: block!important; } ";
-		printControlStyleSheet.innerHTML += " .leaflet--printing { height:auto; min-height: 100%; margin: 0px!important; padding: 0px!important; } body.leaflet--printing > * { display: none; }";
+		printControlStyleSheet.innerHTML += " .leaflet--printing { height:auto; min-height: 100%; margin: 0px!important; padding: 0px!important; } body.leaflet--printing > * { display: none; box-sizing: border-box; }";
 		printControlStyleSheet.innerHTML += " .grid-print-container { grid-template: 1fr / 1fr; box-sizing: border-box; } .grid-map-print { grid-row: 1; grid-column: 1; } body.leaflet--printing .grid-print-container [leaflet-browser-print-content]:not(style) { display: unset!important; }";
 		printControlStyleSheet.innerHTML += " .pages-print-container { box-sizing: border-box; }";
 
@@ -452,20 +470,20 @@ L.Control.BrowserPrint = L.Control.extend({
 		});
 	},
 
-	_addPrintMapOverlay: function (printSize, origins) {
+	_addPrintMapOverlay: function (pageSize, pageMargin, printSize, pageOrientation, origins) {
 		var overlay = document.createElement("div");
 		overlay.id = "leaflet-print-overlay";
 		overlay.className = this._map.getContainer().className + " leaflet-print-overlay";
 		document.body.appendChild(overlay);
 
-		overlay.appendChild(this._addPrintCss(printSize));
+		overlay.appendChild(this._addPrintCss(pageSize, pageMargin, pageOrientation));
 
 		var gridContainer = document.createElement("div");
 		gridContainer.id = "grid-print-container";
 		gridContainer.className = "grid-print-container";
 		gridContainer.style.width = "100%";
 		gridContainer.style.display = "grid";
-		this._setupPrintMapHeight(gridContainer, printSize);
+		this._setupPrintMapHeight(gridContainer, printSize, pageOrientation);
 
 		if (this.options.contentSelector) {
 			var content = document.querySelectorAll(this.options.contentSelector);
@@ -483,7 +501,7 @@ L.Control.BrowserPrint = L.Control.extend({
 			pagesContainer.id = "pages-print-container";
 			pagesContainer.className = "pages-print-container";
 			pagesContainer.style.margin = "0!important";
-			this._setupPrintPagesWidth(pagesContainer, printSize);
+			this._setupPrintPagesWidth(pagesContainer, printSize, pageOrientation);
 
 			overlay.appendChild(pagesContainer);
 			pagesContainer.appendChild(gridContainer);
@@ -496,7 +514,7 @@ L.Control.BrowserPrint = L.Control.extend({
 				}
 			}
 		} else {
-			this._setupPrintPagesWidth(gridContainer, printSize);
+			this._setupPrintPagesWidth(gridContainer, printSize, pageOrientation);
 			overlay.appendChild(gridContainer);
 		}
 
