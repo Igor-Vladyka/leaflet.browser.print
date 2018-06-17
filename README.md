@@ -82,7 +82,7 @@ L.control.browserPrint({
 	printModes: [
 		L.control.browserPrint.mode("Alert", "User specified print action", "A6", customActionToPrint, false),
 		L.control.browserPrint.mode.landscape(),
-		L.control.browserPrint.mode.portrait("Portrait", "A5"),
+		"Portrait",
 		L.control.browserPrint.mode.auto("Automatico", "B4"),
 		L.control.browserPrint.mode.custom("Séléctionnez la zone", "B5")
 	],
