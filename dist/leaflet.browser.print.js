@@ -1,6 +1,6 @@
 /*!
  * 
- *  leaflet.browser.print - v0.6.5 (https://github.com/Igor-Vladyka/leaflet.browser.print) 
+ *  leaflet.browser.print - v0.6.6 (https://github.com/Igor-Vladyka/leaflet.browser.print) 
  *  A leaflet plugin which allows users to print the map directly from the browser
  *  
  *  MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -940,7 +940,7 @@ L.Control.BrowserPrint.Utils = {
    getType: function(layer) {
 	   if (L.SVG && layer instanceof L.SVG) { return "L.SVG"; } // Renderer
 	   if (L.Canvas && layer instanceof L.Canvas) { return "L.Canvas"; } // Renderer
-	   if (layer instanceof L.MarkerClusterGroup) { return "L.MarkerClusterGroup"; } // MarkerCluster layer
+	   if (L.MarkerClusterGroup && layer instanceof L.MarkerClusterGroup) { return "L.MarkerClusterGroup"; } // MarkerCluster layer
 	   if (layer instanceof L.TileLayer.WMS) { return "L.TileLayer.WMS"; } // WMS layers
 	   if (layer instanceof L.TileLayer) { return "L.TileLayer"; } // Tile layers
 	   if (layer instanceof L.ImageOverlay) { return "L.ImageOverlay"; }
