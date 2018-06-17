@@ -53,11 +53,21 @@ You can pass a number of options to the plugin to control various settings.
 | closePopupsOnPrint | Boolean | true | Indicates if we need to force popup closing for printed map |
 | contentSelector | String | "[leaflet-browser-print-content]" | Content selector for printed map, will select and dynamically inject content on printed maps. For full functionality please check "Printing additional content section" |
 | pagesSelector | String | "[leaflet-browser-print-pages]" | Pages selector for printed map, will select and dynamically inject additional pages content on printed maps. |
+| manualMode | Boolean | false | Adds a <button id='leaflet-browser-print--manualMode-button'> for debugging purpose, also can be used to print map with external button. |
 
 Here's an example of passing through some options.
 ``` js
+
+var customActionToPrint = function(context) {
+	return function() {
+		window.alert("We are printing the MAP. Let's do Custom print here!");
+		context._printCustom();
+	}
+}
+
 L.control.browserPrint({
 	title: 'Just print me!',
+	documentTitle: 'Map printed using leaflet.browser.print plugin',
 	printLayer: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
 					attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 					subdomains: 'abcd',
@@ -65,8 +75,15 @@ L.control.browserPrint({
 					maxZoom: 16,
 					ext: 'png'
 				}),
-	closePopupsOnPrint: false,      
-	printModesNames: {Portrait:"Portrait", Landscape:"Paysage", Auto:"Auto", Custom:"Séléctionnez la zone"}
+	closePopupsOnPrint: false,
+	printModes: [
+		L.control.browserPrint.mode("Alert", "User specified print action", "A6", customActionToPrint, false),
+		L.control.browserPrint.mode.landscape(),
+		L.control.browserPrint.mode.portrait("Portrait", "a5"),
+		L.control.browserPrint.mode.auto("Auto", "B4"),
+		L.control.browserPrint.mode.custom("Séléctionnez la zone", "B5")
+	],
+	manualMode: false
 }).addTo(map);
 ```
 
@@ -78,6 +95,36 @@ L.control.browserPrint({
 | Landscape     | Print currently visual part of the map with Landscape page dimensions |
 | Auto          | Track all active map layers (markers, lines, polygons, etc. ) and tries to fit them in print page in Portrait or Landscape page dimensions |
 | Custom        | Allows you to select rectangle for printing, and then fit it in Portrait or Landscape page dimensions |
+
+General mode and shortcuts:
+``` js
+	L.control.browserPrint.mode(
+		/*Mode from table above*/,
+		/*Text to represent mode on button*/,
+		/*Page Size that can basically be in range A0-A10 and B0-B10.*/
+		/*Custom function that can be executed to print map*/,
+		/*Indicates if we need to force bounds invalidation(true) or just center the map and use current zoom lvl(false)*/
+	);
+
+	L.control.browserPrint.mode.landscape();
+	L.control.browserPrint.mode.portrait();
+	L.control.browserPrint.mode.auto();
+	L.control.browserPrint.mode.custom();
+```
+
+
+### Custom print mode configurations
+
+``` js
+	var customActionToPrint = function(context) {
+		return function() {
+			window.alert("We are printing the MAP. Let's do Custom print here!");
+			context._printCustom();
+		}
+	}
+	L.control.browserPrint.mode("Alert", "User specified print action", "A6", customActionToPrint, false),
+
+```
 
 ````
 	Currently 'Custom' mode is not working correctly for Leaflet v.0.7.7 in all IE browsers.
@@ -127,6 +174,11 @@ Code example:
 On print, plugin will scan DOM by contentSelector, and will add content to print may.
 
 We are using CSS-GRID to position all controls on a print page. Therefor it's not supportable in all browsers, for more information please visit [caniuse.com](https://caniuse.com/#feat=css-grid).
+
+### Angular 2+
+````
+See chapter 4 of https://github.com/Asymmetrik/ngx-leaflet-tutorial-plugins/tree/master/Leaflet.BrowserPrint
+````
 
 ### Important notes
 ````

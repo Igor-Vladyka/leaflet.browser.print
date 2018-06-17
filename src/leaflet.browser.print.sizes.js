@@ -15,7 +15,7 @@ L.Control.BrowserPrint.Size =  {
 	}
 };
 
-L.Control.BrowserPrint.Mode = function(mode, title, pageSize, action) {
+L.Control.BrowserPrint.Mode = function(mode, title, pageSize, action, invalidateBounds) {
 	if (!mode) {
 		throw 'Print mode should be specified.';
 	}
@@ -26,16 +26,12 @@ L.Control.BrowserPrint.Mode = function(mode, title, pageSize, action) {
 	this.PageSeries = this.PageSize[0];
 	this.PageSeriesSize = parseInt(this.PageSize.substring(1));
 	this.Action = action || function(context) { return context['_print' + mode]; };
-	this.IgnoreBounds = true;
+	this.InvalidateBounds = invalidateBounds;
 };
 
 L.Control.BrowserPrint.Mode.prototype.getPageMargin = function(){
 	var size = this.getPaperSize();
 	return Math.floor((size.Width + size.Height) / 40) + 'mm';
-};
-
-L.Control.BrowserPrint.Mode.prototype.ignoreBounds = function(value){
-	this.IgnoreBounds = value;
 };
 
 L.Control.BrowserPrint.Mode.prototype.getPaperSize = function(){
@@ -78,6 +74,22 @@ L.Control.BrowserPrint.Mode.prototype.getSize = function(){
 	return size;
 };
 
-L.control.browserPrint.mode = function(mode, title, type, action){
-	return new L.Control.BrowserPrint.Mode(mode, title, type, action);
+L.control.browserPrint.mode = function(mode, title, type, action, invalidateBounds){
+	return new L.Control.BrowserPrint.Mode(mode, title, type, action, invalidateBounds);
 }
+
+L.control.browserPrint.mode.portrait = function(title, pageSize, action) {
+	return L.control.browserPrint.mode("Portrait", title, pageSize, action, false);
+};
+
+L.control.browserPrint.mode.landscape = function(title, pageSize, action) {
+	return L.control.browserPrint.mode("Landscape", title, pageSize, action, false);
+};
+
+L.control.browserPrint.mode.auto = function(title, pageSize, action) {
+	return L.control.browserPrint.mode("Auto", title, pageSize, action, true);
+};
+
+L.control.browserPrint.mode.custom = function(title, pageSize, action) {
+	return L.control.browserPrint.mode("Custom", title, pageSize, action, true);
+};

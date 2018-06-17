@@ -165,6 +165,13 @@
 
             L.layerGroup().addLayer(green).addTo(map);
 
+			var customActionToPrint = function(context) {
+				return function() {
+					window.alert("We are printing the MAP. Let's do Custom print here!");
+					context._printCustom();
+				}
+			}
+
             L.control.browserPrint({
                 /*printLayer: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
                             	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -175,11 +182,11 @@
                             }),*/
                 closePopupsOnPrint: false,
 				printModes: [
-					L.control.browserPrint.mode("Landscape", "Landscape A3", "a3"),
-					L.control.browserPrint.mode("Landscape", "Landscape A4", "a4"),
-					L.control.browserPrint.mode("Portrait", "Portrait A5", "a5"),
-					L.control.browserPrint.mode("Auto", "Auto B4", "B4"),
-					L.control.browserPrint.mode("Custom", "Séléctionnez la zone B5", "B5")
+					L.control.browserPrint.mode("Alert", "User specified print action", "A6", customActionToPrint, false),
+					L.control.browserPrint.mode.landscape(),
+					L.control.browserPrint.mode.portrait("Portrait", "a5"),
+					L.control.browserPrint.mode.auto("Auto", "B4"),
+					L.control.browserPrint.mode.custom("Séléctionnez la zone", "B5")
 				]
 
             }).addTo(map);

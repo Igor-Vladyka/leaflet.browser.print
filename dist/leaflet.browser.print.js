@@ -1,6 +1,6 @@
 /*!
  * 
- *  leaflet.browser.print - v0.6.2 (https://github.com/Igor-Vladyka/leaflet.browser.print) 
+ *  leaflet.browser.print - v0.6.3 (https://github.com/Igor-Vladyka/leaflet.browser.print) 
  *  A leaflet plugin which allows users to print the map directly from the browser
  *  
  *  MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -146,9 +146,8 @@ L.Control.BrowserPrint = L.Control.extend({
 				Mode:
 					Mode: Portrait/Landscape/Auto/Custom
 					Title: 'Portrait'/'Landscape'/'Auto'/'Custom'
-					Type: 'A3'/'A4'
+					PageSize: 'A3'/'A4'
 					Action: '_printPortrait'/...
-					Element: DOM element,
 					InvalidateBounds: true/false
 			*/
 			if (mode.length) {
@@ -315,15 +314,7 @@ L.Control.BrowserPrint = L.Control.extend({
 	},
 
 	_setupPrintPagesWidth: function(pagesContainer, size, pageOrientation) {
-		switch (pageOrientation) {
-			case "Landscape":
-				pagesContainer.style.width = size.Height;
-				break;
-			default:
-			case "Portrait":
-				pagesContainer.style.width = size.Width;
-				break;
-		}
+		pagesContainer.style.width = pageOrientation === "Landscape" ? size.Height : size.Width;
 	},
 
 	_setupPrintMapHeight: function(mapContainer, size, pageOrientation) {
@@ -384,9 +375,12 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		this._map.fire(L.Control.BrowserPrint.Event.PrintStart, { printLayer: origins.printLayer, printMap: overlay.map, printObjects: overlay.objects });
 
-		overlay.map.fitBounds(origins.bounds);
-
-		overlay.map.invalidateSize({reset: true, animate: false, pan: false});
+		if (printMode.InvalidateBounds) {
+			overlay.map.fitBounds(origins.bounds);
+			overlay.map.invalidateSize({reset: true, animate: false, pan: false});
+		} else {
+			overlay.map.setView(this._map.getCenter(), this._map.getZoom());
+		}
 
 		var interval = setInterval(function(){
 			if (!self._isTilesLoading(overlay.map)) {
@@ -728,7 +722,7 @@ L.Control.BrowserPrint.Size =  {
 	}
 };
 
-L.Control.BrowserPrint.Mode = function(mode, title, pageSize, action) {
+L.Control.BrowserPrint.Mode = function(mode, title, pageSize, action, invalidateBounds) {
 	if (!mode) {
 		throw 'Print mode should be specified.';
 	}
@@ -739,16 +733,12 @@ L.Control.BrowserPrint.Mode = function(mode, title, pageSize, action) {
 	this.PageSeries = this.PageSize[0];
 	this.PageSeriesSize = parseInt(this.PageSize.substring(1));
 	this.Action = action || function(context) { return context['_print' + mode]; };
-	this.IgnoreBounds = true;
+	this.InvalidateBounds = invalidateBounds;
 };
 
 L.Control.BrowserPrint.Mode.prototype.getPageMargin = function(){
 	var size = this.getPaperSize();
 	return Math.floor((size.Width + size.Height) / 40) + 'mm';
-};
-
-L.Control.BrowserPrint.Mode.prototype.ignoreBounds = function(value){
-	this.IgnoreBounds = value;
 };
 
 L.Control.BrowserPrint.Mode.prototype.getPaperSize = function(){
@@ -791,9 +781,25 @@ L.Control.BrowserPrint.Mode.prototype.getSize = function(){
 	return size;
 };
 
-L.control.browserPrint.mode = function(mode, title, type, action){
-	return new L.Control.BrowserPrint.Mode(mode, title, type, action);
+L.control.browserPrint.mode = function(mode, title, type, action, invalidateBounds){
+	return new L.Control.BrowserPrint.Mode(mode, title, type, action, invalidateBounds);
 }
+
+L.control.browserPrint.mode.portrait = function(title, pageSize, action) {
+	return L.control.browserPrint.mode("Portrait", title, pageSize, action, false);
+};
+
+L.control.browserPrint.mode.landscape = function(title, pageSize, action) {
+	return L.control.browserPrint.mode("Landscape", title, pageSize, action, false);
+};
+
+L.control.browserPrint.mode.auto = function(title, pageSize, action) {
+	return L.control.browserPrint.mode("Auto", title, pageSize, action, true);
+};
+
+L.control.browserPrint.mode.custom = function(title, pageSize, action) {
+	return L.control.browserPrint.mode("Custom", title, pageSize, action, true);
+};
 
 
 /***/ }),

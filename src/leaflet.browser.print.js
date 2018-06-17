@@ -65,9 +65,8 @@ L.Control.BrowserPrint = L.Control.extend({
 				Mode:
 					Mode: Portrait/Landscape/Auto/Custom
 					Title: 'Portrait'/'Landscape'/'Auto'/'Custom'
-					Type: 'A3'/'A4'
+					PageSize: 'A3'/'A4'
 					Action: '_printPortrait'/...
-					Element: DOM element,
 					InvalidateBounds: true/false
 			*/
 			if (mode.length) {
@@ -234,15 +233,7 @@ L.Control.BrowserPrint = L.Control.extend({
 	},
 
 	_setupPrintPagesWidth: function(pagesContainer, size, pageOrientation) {
-		switch (pageOrientation) {
-			case "Landscape":
-				pagesContainer.style.width = size.Height;
-				break;
-			default:
-			case "Portrait":
-				pagesContainer.style.width = size.Width;
-				break;
-		}
+		pagesContainer.style.width = pageOrientation === "Landscape" ? size.Height : size.Width;
 	},
 
 	_setupPrintMapHeight: function(mapContainer, size, pageOrientation) {
@@ -303,9 +294,12 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		this._map.fire(L.Control.BrowserPrint.Event.PrintStart, { printLayer: origins.printLayer, printMap: overlay.map, printObjects: overlay.objects });
 
-		overlay.map.fitBounds(origins.bounds);
-
-		overlay.map.invalidateSize({reset: true, animate: false, pan: false});
+		if (printMode.InvalidateBounds) {
+			overlay.map.fitBounds(origins.bounds);
+			overlay.map.invalidateSize({reset: true, animate: false, pan: false});
+		} else {
+			overlay.map.setView(this._map.getCenter(), this._map.getZoom());
+		}
 
 		var interval = setInterval(function(){
 			if (!self._isTilesLoading(overlay.map)) {
