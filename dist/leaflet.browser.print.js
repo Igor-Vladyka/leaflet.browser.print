@@ -1,6 +1,6 @@
 /*!
  * 
- *  leaflet.browser.print - v0.6.0 (https://github.com/Igor-Vladyka/leaflet.browser.print) 
+ *  leaflet.browser.print - v0.6.2 (https://github.com/Igor-Vladyka/leaflet.browser.print) 
  *  A leaflet plugin which allows users to print the map directly from the browser
  *  
  *  MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -95,7 +95,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		closePopupsOnPrint: true,
 		contentSelector: "[leaflet-browser-print-content]",
 		pagesSelector: "[leaflet-browser-print-pages]",
-		manualMode: false,
+		manualMode: false
 	},
 
 	onAdd: function (map) {
@@ -148,7 +148,8 @@ L.Control.BrowserPrint = L.Control.extend({
 					Title: 'Portrait'/'Landscape'/'Auto'/'Custom'
 					Type: 'A3'/'A4'
 					Action: '_printPortrait'/...
-					Element: DOM element
+					Element: DOM element,
+					InvalidateBounds: true/false
 			*/
 			if (mode.length) {
 				var key = mode[0].toUpperCase() + mode.substring(1).toLowerCase();
@@ -161,13 +162,13 @@ L.Control.BrowserPrint = L.Control.extend({
 				}
 				mode.Title = mode.Title || this._getDefaultTitle(mode.Mode);
 				mode.PageSize = mode.PageSize || "A4";
-				mode.Action = mode.Action || '_print' + mode.Mode;
+				mode.Action = mode.Action(this);
 			}
 
 			mode.Element = L.DomUtil.create('li', 'browser-print-mode', this.holder);
 			mode.Element.innerHTML = mode.Title;
 
-			L.DomEvent.addListener(mode.Element, 'click', this[mode.Action], this);
+			L.DomEvent.addListener(mode.Element, 'click', mode.Action, this);
 
 			domPrintModes.push(mode);
 		}
@@ -608,7 +609,9 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		document.body.className += " leaflet--printing";
 
-		return this._setupPrintMap(overlayMapDom.id, L.Control.BrowserPrint.Utils.cloneBasicOptionsWithoutLayers(this._map.options), origins.printLayer, origins.printObjects, origins.panes);
+		var newMapOptions = L.Control.BrowserPrint.Utils.cloneBasicOptionsWithoutLayers(this._map.options);
+		newMapOptions.maxZoom = this._map.getMaxZoom();
+		return this._setupPrintMap(overlayMapDom.id, newMapOptions, origins.printLayer, origins.printObjects, origins.panes);
 	},
 
 	_setupPrintMap: function (id, options, printLayer, printObjects, panes) {
@@ -716,8 +719,8 @@ L.browserPrint = function(options) {
 /* Portrait mode sizes in mm for 0 lvl*/
 L.Control.BrowserPrint.Size =  {
 	A: {
-		Width: 841,
-		Height: 1189
+		Width: 840,
+		Height: 1188
 	},
 	B: {
 		Width: 1000,
@@ -735,12 +738,17 @@ L.Control.BrowserPrint.Mode = function(mode, title, pageSize, action) {
 	this.PageSize = (pageSize || 'A4').toUpperCase();
 	this.PageSeries = this.PageSize[0];
 	this.PageSeriesSize = parseInt(this.PageSize.substring(1));
-	this.Action = action || '_print' + mode;
+	this.Action = action || function(context) { return context['_print' + mode]; };
+	this.IgnoreBounds = true;
 };
 
 L.Control.BrowserPrint.Mode.prototype.getPageMargin = function(){
 	var size = this.getPaperSize();
 	return Math.floor((size.Width + size.Height) / 40) + 'mm';
+};
+
+L.Control.BrowserPrint.Mode.prototype.ignoreBounds = function(value){
+	this.IgnoreBounds = value;
 };
 
 L.Control.BrowserPrint.Mode.prototype.getPaperSize = function(){
@@ -783,8 +791,8 @@ L.Control.BrowserPrint.Mode.prototype.getSize = function(){
 	return size;
 };
 
-L.control.browserPrint.mode = function(mode, title, type, action, ppi){
-	return new L.Control.BrowserPrint.Mode(mode, title, type, action, ppi);
+L.control.browserPrint.mode = function(mode, title, type, action){
+	return new L.Control.BrowserPrint.Mode(mode, title, type, action);
 }
 
 
@@ -835,7 +843,7 @@ L.Control.BrowserPrint.Utils = {
 		if (!layer) return null;
 
 		var utils = this;
-		
+
 		var options = layer.options;
 
 		// Renderers
@@ -845,6 +853,10 @@ L.Control.BrowserPrint.Utils = {
 
 		if (L.Canvas && layer instanceof L.Canvas) {
 		   return L.canvas(options);
+		}
+
+		if (L.MarkerClusterGroup && layer instanceof L.MarkerClusterGroup) {
+			return L.markerClusterGroup(utils.cloneInnerLayers(layer));
 		}
 
 		// Tile layers

@@ -6,8 +6,8 @@
 /* Portrait mode sizes in mm for 0 lvl*/
 L.Control.BrowserPrint.Size =  {
 	A: {
-		Width: 841,
-		Height: 1189
+		Width: 840,
+		Height: 1188
 	},
 	B: {
 		Width: 1000,
@@ -25,12 +25,17 @@ L.Control.BrowserPrint.Mode = function(mode, title, pageSize, action) {
 	this.PageSize = (pageSize || 'A4').toUpperCase();
 	this.PageSeries = this.PageSize[0];
 	this.PageSeriesSize = parseInt(this.PageSize.substring(1));
-	this.Action = action || '_print' + mode;
+	this.Action = action || function(context) { return context['_print' + mode]; };
+	this.IgnoreBounds = true;
 };
 
 L.Control.BrowserPrint.Mode.prototype.getPageMargin = function(){
 	var size = this.getPaperSize();
 	return Math.floor((size.Width + size.Height) / 40) + 'mm';
+};
+
+L.Control.BrowserPrint.Mode.prototype.ignoreBounds = function(value){
+	this.IgnoreBounds = value;
 };
 
 L.Control.BrowserPrint.Mode.prototype.getPaperSize = function(){
@@ -73,6 +78,6 @@ L.Control.BrowserPrint.Mode.prototype.getSize = function(){
 	return size;
 };
 
-L.control.browserPrint.mode = function(mode, title, type, action, ppi){
-	return new L.Control.BrowserPrint.Mode(mode, title, type, action, ppi);
+L.control.browserPrint.mode = function(mode, title, type, action){
+	return new L.Control.BrowserPrint.Mode(mode, title, type, action);
 }

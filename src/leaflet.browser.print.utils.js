@@ -41,7 +41,7 @@ L.Control.BrowserPrint.Utils = {
 		if (!layer) return null;
 
 		var utils = this;
-		
+
 		var options = layer.options;
 
 		// Renderers
@@ -51,6 +51,10 @@ L.Control.BrowserPrint.Utils = {
 
 		if (L.Canvas && layer instanceof L.Canvas) {
 		   return L.canvas(options);
+		}
+
+		if (L.MarkerClusterGroup && layer instanceof L.MarkerClusterGroup) {
+			return L.markerClusterGroup(utils.cloneInnerLayers(layer));
 		}
 
 		// Tile layers

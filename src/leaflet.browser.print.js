@@ -14,7 +14,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		closePopupsOnPrint: true,
 		contentSelector: "[leaflet-browser-print-content]",
 		pagesSelector: "[leaflet-browser-print-pages]",
-		manualMode: false,
+		manualMode: false
 	},
 
 	onAdd: function (map) {
@@ -67,7 +67,8 @@ L.Control.BrowserPrint = L.Control.extend({
 					Title: 'Portrait'/'Landscape'/'Auto'/'Custom'
 					Type: 'A3'/'A4'
 					Action: '_printPortrait'/...
-					Element: DOM element
+					Element: DOM element,
+					InvalidateBounds: true/false
 			*/
 			if (mode.length) {
 				var key = mode[0].toUpperCase() + mode.substring(1).toLowerCase();
@@ -80,13 +81,13 @@ L.Control.BrowserPrint = L.Control.extend({
 				}
 				mode.Title = mode.Title || this._getDefaultTitle(mode.Mode);
 				mode.PageSize = mode.PageSize || "A4";
-				mode.Action = mode.Action || '_print' + mode.Mode;
+				mode.Action = mode.Action(this);
 			}
 
 			mode.Element = L.DomUtil.create('li', 'browser-print-mode', this.holder);
 			mode.Element.innerHTML = mode.Title;
 
-			L.DomEvent.addListener(mode.Element, 'click', this[mode.Action], this);
+			L.DomEvent.addListener(mode.Element, 'click', mode.Action, this);
 
 			domPrintModes.push(mode);
 		}
@@ -527,7 +528,9 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		document.body.className += " leaflet--printing";
 
-		return this._setupPrintMap(overlayMapDom.id, L.Control.BrowserPrint.Utils.cloneBasicOptionsWithoutLayers(this._map.options), origins.printLayer, origins.printObjects, origins.panes);
+		var newMapOptions = L.Control.BrowserPrint.Utils.cloneBasicOptionsWithoutLayers(this._map.options);
+		newMapOptions.maxZoom = this._map.getMaxZoom();
+		return this._setupPrintMap(overlayMapDom.id, newMapOptions, origins.printLayer, origins.printObjects, origins.panes);
 	},
 
 	_setupPrintMap: function (id, options, printLayer, printObjects, panes) {
