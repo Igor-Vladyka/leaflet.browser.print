@@ -1,6 +1,6 @@
 /*!
  * 
- *  leaflet.browser.print - v0.6.4 (https://github.com/Igor-Vladyka/leaflet.browser.print) 
+ *  leaflet.browser.print - v0.6.5 (https://github.com/Igor-Vladyka/leaflet.browser.print) 
  *  A leaflet plugin which allows users to print the map directly from the browser
  *  
  *  MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -203,10 +203,12 @@ L.Control.BrowserPrint = L.Control.extend({
 		});
     },
 
-	_getMode: function(name){
-		return this.options.printModes.filter(function(f){
+	_getMode: function(name, invalidateBounds) {
+		var mode = this.options.printModes.filter(function(f){
 			return f.Mode == name;
 		})[0];
+
+		return new L.control.browserPrint.mode(mode.Mode, mode.Title, mode.PageSize, mode.Action, invalidateBounds || mode.InvalidateBounds);
 	},
 
     _printLandscape: function () {
@@ -226,7 +228,7 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		var autoBounds = this._getBoundsForAllVisualLayers();
 		var orientation = this._getPageSizeFromBounds(autoBounds);
-		this._print(this._getMode(orientation), orientation, autoBounds);
+		this._print(this._getMode(orientation, true), orientation, autoBounds);
     },
 
     _printCustom: function () {
@@ -293,7 +295,7 @@ L.Control.BrowserPrint = L.Control.extend({
 			this.options.custom = undefined;
 
 			var orientation = this._getPageSizeFromBounds(autoBounds);
-			this._print(this._getMode(orientation), orientation, autoBounds);
+			this._print(this._getMode(orientation, true), orientation, autoBounds);
 		} else {
 			this._clearPrint();
 		}
@@ -314,15 +316,7 @@ L.Control.BrowserPrint = L.Control.extend({
 	},
 
 	_setupPrintMapHeight: function(mapContainer, size, pageOrientation) {
-		switch (pageOrientation) {
-			case "Landscape":
-				mapContainer.style.height = size.Width;
-				break;
-			default:
-			case "Portrait":
-				mapContainer.style.height = size.Height;
-				break;
-		}
+		mapContainer.style.height = pageOrientation === "Landscape" ? size.Width : size.Height;
 	},
 
 	/* Intended to cancel next printing*/
@@ -332,7 +326,7 @@ L.Control.BrowserPrint = L.Control.extend({
 
 	print: function(pageOrientation, autoBounds) {
 		if (pageOrientation == "Landscape" || pageOrientation == "Portrait") {
-			this._print(this._getMode(pageOrientation), pageOrientation, autoBounds);
+			this._print(this._getMode(pageOrientation, !!autoBounds), pageOrientation, autoBounds);
 		}
 	},
 
@@ -946,6 +940,7 @@ L.Control.BrowserPrint.Utils = {
    getType: function(layer) {
 	   if (L.SVG && layer instanceof L.SVG) { return "L.SVG"; } // Renderer
 	   if (L.Canvas && layer instanceof L.Canvas) { return "L.Canvas"; } // Renderer
+	   if (layer instanceof L.MarkerClusterGroup) { return "L.MarkerClusterGroup"; } // MarkerCluster layer
 	   if (layer instanceof L.TileLayer.WMS) { return "L.TileLayer.WMS"; } // WMS layers
 	   if (layer instanceof L.TileLayer) { return "L.TileLayer"; } // Tile layers
 	   if (layer instanceof L.ImageOverlay) { return "L.ImageOverlay"; }

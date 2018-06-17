@@ -122,10 +122,12 @@ L.Control.BrowserPrint = L.Control.extend({
 		});
     },
 
-	_getMode: function(name){
-		return this.options.printModes.filter(function(f){
+	_getMode: function(name, invalidateBounds) {
+		var mode = this.options.printModes.filter(function(f){
 			return f.Mode == name;
 		})[0];
+
+		return new L.control.browserPrint.mode(mode.Mode, mode.Title, mode.PageSize, mode.Action, invalidateBounds || mode.InvalidateBounds);
 	},
 
     _printLandscape: function () {
@@ -145,7 +147,7 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		var autoBounds = this._getBoundsForAllVisualLayers();
 		var orientation = this._getPageSizeFromBounds(autoBounds);
-		this._print(this._getMode(orientation), orientation, autoBounds);
+		this._print(this._getMode(orientation, true), orientation, autoBounds);
     },
 
     _printCustom: function () {
@@ -212,7 +214,7 @@ L.Control.BrowserPrint = L.Control.extend({
 			this.options.custom = undefined;
 
 			var orientation = this._getPageSizeFromBounds(autoBounds);
-			this._print(this._getMode(orientation), orientation, autoBounds);
+			this._print(this._getMode(orientation, true), orientation, autoBounds);
 		} else {
 			this._clearPrint();
 		}
@@ -233,15 +235,7 @@ L.Control.BrowserPrint = L.Control.extend({
 	},
 
 	_setupPrintMapHeight: function(mapContainer, size, pageOrientation) {
-		switch (pageOrientation) {
-			case "Landscape":
-				mapContainer.style.height = size.Width;
-				break;
-			default:
-			case "Portrait":
-				mapContainer.style.height = size.Height;
-				break;
-		}
+		mapContainer.style.height = pageOrientation === "Landscape" ? size.Width : size.Height;
 	},
 
 	/* Intended to cancel next printing*/
@@ -251,7 +245,7 @@ L.Control.BrowserPrint = L.Control.extend({
 
 	print: function(pageOrientation, autoBounds) {
 		if (pageOrientation == "Landscape" || pageOrientation == "Portrait") {
-			this._print(this._getMode(pageOrientation), pageOrientation, autoBounds);
+			this._print(this._getMode(pageOrientation, !!autoBounds), pageOrientation, autoBounds);
 		}
 	},
 
