@@ -10,7 +10,6 @@ L.Control.BrowserPrint = L.Control.extend({
 		position: 'topleft',
         printLayer: null,
 		printModes: ["Portrait", "Landscape", "Auto", "Custom"],
-		printModesNames: {Portrait: "Portrait", Landscape: "Landscape", Auto: "Auto", Custom: "Custom"},
 		closePopupsOnPrint: true,
 		contentSelector: "[leaflet-browser-print-content]",
 		pagesSelector: "[leaflet-browser-print-pages]",
@@ -72,21 +71,18 @@ L.Control.BrowserPrint = L.Control.extend({
 			if (mode.length) {
 				var key = mode[0].toUpperCase() + mode.substring(1).toLowerCase();
 
-				mode = L.control.browserPrint.mode(key, this._getDefaultTitle(key));
+				mode = L.control.browserPrint.mode[mode.toLowerCase()](this._getDefaultTitle(key));
 
 			} else if (mode instanceof L.Control.BrowserPrint.Mode) {
-				if (!mode.Mode) {
-					continue;
-				}
-				mode.Title = mode.Title || this._getDefaultTitle(mode.Mode);
-				mode.PageSize = mode.PageSize || "A4";
-				mode.Action = mode.Action(this);
+				// Looks like everythin is fine.
+			} else {
+				throw "Invalid Print Mode. Can't construct logic to print current map."
 			}
 
 			mode.Element = L.DomUtil.create('li', 'browser-print-mode', this.holder);
 			mode.Element.innerHTML = mode.Title;
 
-			L.DomEvent.addListener(mode.Element, 'click', mode.Action, this);
+			L.DomEvent.addListener(mode.Element, 'click', mode.Action(this), this);
 
 			domPrintModes.push(mode);
 		}
@@ -608,7 +604,11 @@ L.Control.BrowserPrint.Event =  {
 L.control.browserPrint = function(options) {
 
 	if (options && options.printModes && (!options.printModes.filter || !options.printModes.length)) {
-		throw "Please specify valid print modes for Print action. Example: printModes: ['Portrait', 'Landscape', 'Auto', 'Custom']";
+		throw "Please specify valid print modes for Print action. Example: printModes: [L.control.browserPrint.mode.portrait(), L.control.browserPrint.mode.auto('Automatico'), 'Custom']";
+	}
+
+	if (options.printModesNames) {
+		throw "'printModesNames' option is obsolete. Please use 'L.control.browserPrint.mode.*(/*Title*/)' shortcut instead. Please check latest release and documentation.";
 	}
 
 	return new L.Control.BrowserPrint(options);

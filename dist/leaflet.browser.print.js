@@ -1,6 +1,6 @@
 /*!
  * 
- *  leaflet.browser.print - v0.6.3 (https://github.com/Igor-Vladyka/leaflet.browser.print) 
+ *  leaflet.browser.print - v0.6.4 (https://github.com/Igor-Vladyka/leaflet.browser.print) 
  *  A leaflet plugin which allows users to print the map directly from the browser
  *  
  *  MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -91,7 +91,6 @@ L.Control.BrowserPrint = L.Control.extend({
 		position: 'topleft',
         printLayer: null,
 		printModes: ["Portrait", "Landscape", "Auto", "Custom"],
-		printModesNames: {Portrait: "Portrait", Landscape: "Landscape", Auto: "Auto", Custom: "Custom"},
 		closePopupsOnPrint: true,
 		contentSelector: "[leaflet-browser-print-content]",
 		pagesSelector: "[leaflet-browser-print-pages]",
@@ -153,21 +152,18 @@ L.Control.BrowserPrint = L.Control.extend({
 			if (mode.length) {
 				var key = mode[0].toUpperCase() + mode.substring(1).toLowerCase();
 
-				mode = L.control.browserPrint.mode(key, this._getDefaultTitle(key));
+				mode = L.control.browserPrint.mode[mode.toLowerCase()](this._getDefaultTitle(key));
 
 			} else if (mode instanceof L.Control.BrowserPrint.Mode) {
-				if (!mode.Mode) {
-					continue;
-				}
-				mode.Title = mode.Title || this._getDefaultTitle(mode.Mode);
-				mode.PageSize = mode.PageSize || "A4";
-				mode.Action = mode.Action(this);
+				// Looks like everythin is fine.
+			} else {
+				throw "Invalid Print Mode. Can't construct logic to print current map."
 			}
 
 			mode.Element = L.DomUtil.create('li', 'browser-print-mode', this.holder);
 			mode.Element.innerHTML = mode.Title;
 
-			L.DomEvent.addListener(mode.Element, 'click', mode.Action, this);
+			L.DomEvent.addListener(mode.Element, 'click', mode.Action(this), this);
 
 			domPrintModes.push(mode);
 		}
@@ -689,7 +685,11 @@ L.Control.BrowserPrint.Event =  {
 L.control.browserPrint = function(options) {
 
 	if (options && options.printModes && (!options.printModes.filter || !options.printModes.length)) {
-		throw "Please specify valid print modes for Print action. Example: printModes: ['Portrait', 'Landscape', 'Auto', 'Custom']";
+		throw "Please specify valid print modes for Print action. Example: printModes: [L.control.browserPrint.mode.portrait(), L.control.browserPrint.mode.auto('Automatico'), 'Custom']";
+	}
+
+	if (options.printModesNames) {
+		throw "'printModesNames' option is obsolete. Please use 'L.control.browserPrint.mode.*(/*Title*/)' shortcut instead. Please check latest release and documentation.";
 	}
 
 	return new L.Control.BrowserPrint(options);
@@ -735,6 +735,11 @@ L.Control.BrowserPrint.Mode = function(mode, title, pageSize, action, invalidate
 	this.Action = action || function(context) { return context['_print' + mode]; };
 	this.InvalidateBounds = invalidateBounds;
 };
+
+L.Control.BrowserPrint.Mode.Landscape = "Landscape";
+L.Control.BrowserPrint.Mode.Portrait = "Portrait";
+L.Control.BrowserPrint.Mode.Auto = "Auto";
+L.Control.BrowserPrint.Mode.Custom = "Custom";
 
 L.Control.BrowserPrint.Mode.prototype.getPageMargin = function(){
 	var size = this.getPaperSize();
@@ -786,19 +791,19 @@ L.control.browserPrint.mode = function(mode, title, type, action, invalidateBoun
 }
 
 L.control.browserPrint.mode.portrait = function(title, pageSize, action) {
-	return L.control.browserPrint.mode("Portrait", title, pageSize, action, false);
+	return L.control.browserPrint.mode(L.Control.BrowserPrint.Mode.Portrait, title, pageSize, action, false);
 };
 
 L.control.browserPrint.mode.landscape = function(title, pageSize, action) {
-	return L.control.browserPrint.mode("Landscape", title, pageSize, action, false);
+	return L.control.browserPrint.mode(L.Control.BrowserPrint.Mode.Landscape, title, pageSize, action, false);
 };
 
 L.control.browserPrint.mode.auto = function(title, pageSize, action) {
-	return L.control.browserPrint.mode("Auto", title, pageSize, action, true);
+	return L.control.browserPrint.mode(L.Control.BrowserPrint.Mode.Auto, title, pageSize, action, true);
 };
 
 L.control.browserPrint.mode.custom = function(title, pageSize, action) {
-	return L.control.browserPrint.mode("Custom", title, pageSize, action, true);
+	return L.control.browserPrint.mode(L.Control.BrowserPrint.Mode.Custom, title, pageSize, action, true);
 };
 
 

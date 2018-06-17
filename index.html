@@ -20,7 +20,7 @@
 
     <body>
         <h1 class="title" leaflet-browser-print-content>Leaflet Browser print TITLE</h1>
-        <h3 class="sub-content" leaflet-browser-print-content>Leaflet browser print plugin v0.5 for map printing with additional controls and content</h3>
+        <h3 class="sub-content" leaflet-browser-print-content>Leaflet browser print plugin v0.6.4 for map printing with additional controls and content</h3>
     	<div id="map"></div>
 		<table leaflet-browser-print-pages>
 			<thead>
@@ -184,7 +184,7 @@
 				printModes: [
 					L.control.browserPrint.mode("Alert", "User specified print action", "A6", customActionToPrint, false),
 					L.control.browserPrint.mode.landscape(),
-					L.control.browserPrint.mode.portrait("Portrait", "a5"),
+					"PORTrait",
 					L.control.browserPrint.mode.auto("Auto", "B4"),
 					L.control.browserPrint.mode.custom("Séléctionnez la zone", "B5")
 				]

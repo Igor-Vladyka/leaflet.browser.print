@@ -53,12 +53,11 @@ You can pass a number of options to the plugin to control various settings.
 | documentTitle | String       | ''  		  | Sets the text which appears as the print page title |
 | position      | [Leaflet control position](http://leafletjs.com/reference-0.7.7.html#control-position) | 'topleft' | Position the print button |
 | printModes    | Array        | ["Portrait", "Landscape", "Auto", "Custom"] | Collection of page print actions |
-| printModesNames | Object | { Portrait: "Portrait", Landscape: "Landscape", Auto:"Auto", Custom:"Custom" } | Customize each print mode name |
 | printLayer    | [Leaflet tile layer](http://leafletjs.com/reference-0.7.7.html#tilelayer) | null | A tiles layer to show instead of all current active tile layers |
 | closePopupsOnPrint | Boolean | true | Indicates if we need to force popup closing for printed map |
 | contentSelector | String | "[leaflet-browser-print-content]" | Content selector for printed map, will select and dynamically inject content on printed maps. For full functionality please check "Printing additional content section" |
 | pagesSelector | String | "[leaflet-browser-print-pages]" | Pages selector for printed map, will select and dynamically inject additional pages content on printed maps. |
-| manualMode | Boolean | false | Adds a <button id='leaflet-browser-print--manualMode-button'> for debugging purpose, also can be used to print map with external button. |
+| manualMode | Boolean | false | Adds a button with id='leaflet-browser-print--manualMode-button' for debugging purpose, also can be used to print map with external button. |
 
 Here's an example of passing through some options:
 ``` js
@@ -83,15 +82,15 @@ L.control.browserPrint({
 	printModes: [
 		L.control.browserPrint.mode("Alert", "User specified print action", "A6", customActionToPrint, false),
 		L.control.browserPrint.mode.landscape(),
-		L.control.browserPrint.mode.portrait("Portrait", "a5"),
-		L.control.browserPrint.mode.auto("Auto", "B4"),
+		L.control.browserPrint.mode.portrait("Portrait", "A5"),
+		L.control.browserPrint.mode.auto("Automatico", "B4"),
 		L.control.browserPrint.mode.custom("Séléctionnez la zone", "B5")
 	],
 	manualMode: false
 }).addTo(map);
 ```
 
-### Print Modes Details
+### Print Mode Details
 
 | Mode          | Description    |
 | ------------- | -------------- |
@@ -117,7 +116,7 @@ General mode and shortcuts:
 ```
 
 
-### Custom print mode configurations
+### Custom Print Mode Configurations
 
 ``` js
 	var customActionToPrint = function(context) {

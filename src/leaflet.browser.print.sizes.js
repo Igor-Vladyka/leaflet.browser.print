@@ -29,6 +29,11 @@ L.Control.BrowserPrint.Mode = function(mode, title, pageSize, action, invalidate
 	this.InvalidateBounds = invalidateBounds;
 };
 
+L.Control.BrowserPrint.Mode.Landscape = "Landscape";
+L.Control.BrowserPrint.Mode.Portrait = "Portrait";
+L.Control.BrowserPrint.Mode.Auto = "Auto";
+L.Control.BrowserPrint.Mode.Custom = "Custom";
+
 L.Control.BrowserPrint.Mode.prototype.getPageMargin = function(){
 	var size = this.getPaperSize();
 	return Math.floor((size.Width + size.Height) / 40) + 'mm';
@@ -79,17 +84,17 @@ L.control.browserPrint.mode = function(mode, title, type, action, invalidateBoun
 }
 
 L.control.browserPrint.mode.portrait = function(title, pageSize, action) {
-	return L.control.browserPrint.mode("Portrait", title, pageSize, action, false);
+	return L.control.browserPrint.mode(L.Control.BrowserPrint.Mode.Portrait, title, pageSize, action, false);
 };
 
 L.control.browserPrint.mode.landscape = function(title, pageSize, action) {
-	return L.control.browserPrint.mode("Landscape", title, pageSize, action, false);
+	return L.control.browserPrint.mode(L.Control.BrowserPrint.Mode.Landscape, title, pageSize, action, false);
 };
 
 L.control.browserPrint.mode.auto = function(title, pageSize, action) {
-	return L.control.browserPrint.mode("Auto", title, pageSize, action, true);
+	return L.control.browserPrint.mode(L.Control.BrowserPrint.Mode.Auto, title, pageSize, action, true);
 };
 
 L.control.browserPrint.mode.custom = function(title, pageSize, action) {
-	return L.control.browserPrint.mode("Custom", title, pageSize, action, true);
+	return L.control.browserPrint.mode(L.Control.BrowserPrint.Mode.Custom, title, pageSize, action, true);
 };
