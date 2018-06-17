@@ -133,6 +133,7 @@ L.Control.BrowserPrint.Utils = {
    getType: function(layer) {
 	   if (L.SVG && layer instanceof L.SVG) { return "L.SVG"; } // Renderer
 	   if (L.Canvas && layer instanceof L.Canvas) { return "L.Canvas"; } // Renderer
+	   if (layer instanceof L.MarkerClusterGroup) { return "L.MarkerClusterGroup"; } // MarkerCluster layer
 	   if (layer instanceof L.TileLayer.WMS) { return "L.TileLayer.WMS"; } // WMS layers
 	   if (layer instanceof L.TileLayer) { return "L.TileLayer"; } // Tile layers
 	   if (layer instanceof L.ImageOverlay) { return "L.ImageOverlay"; }
