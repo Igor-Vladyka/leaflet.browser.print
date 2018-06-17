@@ -1,19 +1,24 @@
-## leaflet browser print plugin
+## leaflet.js in browser print plugin
 
-A [leaflet](http://www.leafletjs.com) plugin which allows users to print full page map directly from the browser. Compatible with Leaflet v0.7.7 and v1+.
+A [leaflet](http://www.leafletjs.com) plugin which allows users to print full page map directly from the browser [DEMO](https://igor-vladyka.github.io/leaflet.browser.print/);.
+* Pros:
+	- Compatible with Leaflet v0.7.7 and v1+.
+	- Any page size from range A0-A10 to B0-B10 can se used.
+	- Available 4 print modes, you can chose any you want and even create your own.
+	- Everything in browser, no external apps or dependencies, print your map in one click.
+	- Any additional page content can be printed together with a map.
+	- And many more...
 
+* Cons:
+	- 'Custom' print mode not supported in Leaflet v0.7.7 on IE.
+
+### Other examples:
 Check out the:
 [DEMO v0.7.7](https://igor-vladyka.github.io/leaflet.browser.print/examples/v0.7.7.html),
-
 [DEMO v1.2.0](https://igor-vladyka.github.io/leaflet.browser.print/examples/v1.2.0.html),
-
 [DEMO with localization](https://igor-vladyka.github.io/leaflet.browser.print/examples/localization_v1.2.0.html),
-
 [DEMO with print objects manipulations](https://igor-vladyka.github.io/leaflet.browser.print/examples/manipulations_v1.2.0.html),
-
 [DEMO with map legend printing](https://igor-vladyka.github.io/leaflet.browser.print/examples/print-with-legend_v1.2.0.html),
-
-[DEMO with custom print layer and additional page content](https://igor-vladyka.github.io/leaflet.browser.print/);
 
 ### Downloads
 **NPM**
@@ -55,9 +60,8 @@ You can pass a number of options to the plugin to control various settings.
 | pagesSelector | String | "[leaflet-browser-print-pages]" | Pages selector for printed map, will select and dynamically inject additional pages content on printed maps. |
 | manualMode | Boolean | false | Adds a <button id='leaflet-browser-print--manualMode-button'> for debugging purpose, also can be used to print map with external button. |
 
-Here's an example of passing through some options.
+Here's an example of passing through some options:
 ``` js
-
 var customActionToPrint = function(context) {
 	return function() {
 		window.alert("We are printing the MAP. Let's do Custom print here!");
@@ -126,10 +130,6 @@ General mode and shortcuts:
 
 ```
 
-````
-	Currently 'Custom' mode is not working correctly for Leaflet v.0.7.7 in all IE browsers.
-````
-
 ### Map Events
 
 | Map Event           | Value           		 			   | Description 													 | Purpose |
@@ -173,7 +173,10 @@ Code example:
 
 On print, plugin will scan DOM by contentSelector, and will add content to print may.
 
-We are using CSS-GRID to position all controls on a print page. Therefor it's not supportable in all browsers, for more information please visit [caniuse.com](https://caniuse.com/#feat=css-grid).
+````
+We are using CSS-GRID to position all controls on a print page.
+Therefor it's not supportable in all browsers, for more information please visit [caniuse.com](https://caniuse.com/#feat=css-grid).
+````
 
 ### Angular 2+
 ````
@@ -182,7 +185,12 @@ See chapter 4 of https://github.com/Asymmetrik/ngx-leaflet-tutorial-plugins/tree
 
 ### Important notes
 ````
-	Currently if you want to use layerGroup or featureGroup to print groups of layers, please create a group, add all items to it and only then add a group on the map. Otherwise it will not work.
+Currently if you want to use layerGroup or featureGroup to print groups of layers,
+please create a group, add all items to it and only then add a group on the map.
+````
+
+````
+Unfortunately 'Custom' mode is not working correctly for Leaflet v.0.7.7 in all IE browsers.
 ````
 
 ### Acknowledgements
