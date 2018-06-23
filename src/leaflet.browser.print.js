@@ -602,13 +602,13 @@ L.control.browserPrint = function(options) {
 	}
 
 	if (options.printModesNames) {
-		throw "'printModesNames' option is obsolete. Please use 'L.control.browserPrint.mode.*(/*Title*/)' shortcut instead. Please check latest release and documentation.";
+		console.warn("'printModesNames' option is obsolete. Please use 'L.control.browserPrint.mode.*(/*Title*/)' shortcut instead. Please check latest release and documentation.");
 	}
 
 	return new L.Control.BrowserPrint(options);
 };
 
 L.browserPrint = function(options) {
-	console.log("L.browserPrint(options) is obsolete and will be removed shortly, please use L.control.browserPrint(options) instead.");
+	console.warn("L.browserPrint(options) is obsolete and will be removed shortly, please use L.control.browserPrint(options) instead.");
 	return L.control.browserPrint(options);
 };

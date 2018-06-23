@@ -6,17 +6,27 @@ var banner = '\n ' + PACKAGE.name + ' - v' + PACKAGE.version + ' (' + PACKAGE.ho
              '\n ' + PACKAGE.license +
              '\n (c) ' + new Date().getFullYear() + '  ' + PACKAGE.author + '\n';
 
-module.exports = {
-	entry: {
-	    "leaflet.browser.print": ['./src/leaflet.browser.print.js', './src/leaflet.browser.print.utils.js', './src/leaflet.browser.print.sizes.js'],
-	    "leaflet.browser.print.min": ['./src/leaflet.browser.print.js', './src/leaflet.browser.print.utils.js', './src/leaflet.browser.print.sizes.js'],
+var pluginFiles = ['./src/leaflet.browser.print.js', './src/leaflet.browser.print.utils.js', './src/leaflet.browser.print.sizes.js'];
+
+module.exports = [
+	{
+		mode: "development",
+		entry: {
+		    "leaflet.browser.print": pluginFiles,
+		},
+		output: { filename: '[name].js', path: path.resolve(__dirname, 'dist') },
+	    plugins: [
+	        new webpack.BannerPlugin(banner)
+	    ]
 	},
-	output: { filename: '[name].js', path: path.resolve(__dirname, 'dist') },
-    plugins: [
-        new webpack.optimize.UglifyJsPlugin({
-	      include: /\.min\.js$/,
-	      minimize: true
-	    }),
-        new webpack.BannerPlugin(banner)
-    ]
-};
+	{
+		mode: "production",
+		entry: {
+		    "leaflet.browser.print.min": pluginFiles,
+		},
+		output: { filename: '[name].js', path: path.resolve(__dirname, 'dist') },
+	    plugins: [
+	        new webpack.BannerPlugin(banner)
+	    ]
+	}
+];

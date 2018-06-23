@@ -1,6 +1,6 @@
 ## leaflet.js in browser print plugin
 
-A [leaflet](http://www.leafletjs.com) plugin which allows users to print full page map directly from the browser [DEMO](https://igor-vladyka.github.io/leaflet.browser.print/);.
+A [leaflet](http://www.leafletjs.com) plugin which allows users to print full page map directly from the browser [DEMO](https://igor-vladyka.github.io/leaflet.browser.print/)
 * Pros:
 	- Compatible with Leaflet v0.7.7 and v1+.
 	- Any page size from range A0-A10 to B0-B10 can se used.
@@ -147,7 +147,7 @@ By default contentSelector: '[leaflet-browser-print-content]' so we need a conte
 
 Code example:
 
-````
+``` html
 <style leaflet-browser-print-content>
 	.grid-print-container { // grid holder that holds all content (map and any other content)
 		grid-template: auto 1fr auto / 1fr;
@@ -168,7 +168,7 @@ Code example:
 </style>
 <h1 class="title" leaflet-browser-print-content>Leaflet Browser print TITLE</h1>
 <h3 class="sub-content" leaflet-browser-print-content>Leaflet Browser print SUB TITLE text</h3>
-````
+```
 
 On print, plugin will scan DOM by contentSelector, and will add content to print may.
 
@@ -181,6 +181,43 @@ Therefor it's not supportable in all browsers, for more information please visit
 ````
 See chapter 4 of https://github.com/Asymmetrik/ngx-leaflet-tutorial-plugins/tree/master/Leaflet.BrowserPrint
 ````
+
+### New print layers registration
+To add missing print layers you need to explicitly indicate layer, it's identifier and construction function that will return actual layer object.
+
+Example of WMS registration:
+``` js
+L.Control.BrowserPrint.Utils.registerLayer(
+	L.TileLayer.WMS,
+	"L.TileLayer.WMS",
+	function(layer, utils) {
+		return L.tileLayer.wms(layer._url, layer.options);
+	}
+);
+```
+
+List of pre-registered layers available for printing:
+* L.SVG
+* L.Canvas
+* L.MarkerClusterGroup
+* L.TileLayer.WMS
+* L.TileLayer
+* L.ImageOverlay
+* L.Marker
+* L.Popup
+* L.Circle
+* L.CircleMarker
+* L.Rectangle
+* L.Polygon
+* L.MultiPolyline
+* L.MultiPolygon
+* L.Polyline
+* L.GeoJSON
+* L.FeatureGroup
+* L.LayerGroup
+* L.Tooltip
+
+If you want to override any of those, please register your own builder for them.
 
 ### Important notes
 ````

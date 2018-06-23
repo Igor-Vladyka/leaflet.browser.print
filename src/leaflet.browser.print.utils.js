@@ -4,6 +4,9 @@
 **/
 
 L.Control.BrowserPrint.Utils = {
+
+	_cloneFactoryArray: [],
+
 	cloneOptions: function(options) {
 		var utils = this;
 	    var retOptions = {};
@@ -37,122 +40,6 @@ L.Control.BrowserPrint.Utils = {
 		return retOptions;
 	},
 
-	cloneLayer: function(layer) {
-		if (!layer) return null;
-
-		var utils = this;
-
-		var options = layer.options;
-
-		// Renderers
-		if (L.SVG && layer instanceof L.SVG) {
-		   return L.svg(options);
-		}
-
-		if (L.Canvas && layer instanceof L.Canvas) {
-		   return L.canvas(options);
-		}
-
-		if (L.MarkerClusterGroup && layer instanceof L.MarkerClusterGroup) {
-			return L.markerClusterGroup(utils.cloneInnerLayers(layer));
-		}
-
-		// Tile layers
-		if (L.TileLayer.WMS && layer instanceof L.TileLayer.WMS) {
-			  return L.tileLayer.wms(layer._url, options);
-		}
-
-		if (layer instanceof L.TileLayer) {
-		   return L.tileLayer(layer._url, options);
-		}
-
-		if (layer instanceof L.ImageOverlay) {
-		   return L.imageOverlay(layer._url, layer._bounds, options);
-		}
-
-		// Marker layers
-		if (layer instanceof L.Marker) {
-		   return L.marker(layer.getLatLng(), options);
-		}
-
-		if (layer instanceof L.Popup){
-			return L.popup(options).setLatLng(layer.getLatLng()).setContent(layer.getContent());
-		}
-
-		if (layer instanceof L.Circle) {
-		   return L.circle(layer.getLatLng(), layer.getRadius(), options);
-		}
-
-		if (layer instanceof L.CircleMarker) {
-		   return L.circleMarker(layer.getLatLng(), options);
-		}
-
-		if (layer instanceof L.Rectangle) {
-		   return L.rectangle(layer.getBounds(), options);
-		}
-
-		if (layer instanceof L.Polygon) {
-		   return L.polygon(layer.getLatLngs(), options);
-		}
-
-		// MultiPolyline is removed in leaflet 1.0.0
-		if (L.MultiPolyline && layer instanceof L.MultiPolyline) {
-			return L.polyline(layer.getLatLngs(), options);
-		}
-
-		// MultiPolygon is removed in leaflet 1.0.0
-		if (L.MultiPolygon && layer instanceof L.MultiPolygon) {
-			return L.multiPolygon(layer.getLatLngs(), options);
-		}
-
-		if (layer instanceof L.Polyline) {
-		   return L.polyline(layer.getLatLngs(), options);
-		}
-
-		if (layer instanceof L.GeoJSON) {
-		   return L.geoJson(layer.toGeoJSON(), options);
-		}
-
-		if (layer instanceof L.FeatureGroup) {
-		   return L.featureGroup(utils.cloneInnerLayers(layer));
-		}
-
-		if (layer instanceof L.LayerGroup) {
-		   return L.layerGroup(utils.cloneInnerLayers(layer));
-		}
-
-		if (layer instanceof L.Tooltip) {
-            return null;// There is no point to clone tooltips here;  L.tooltip(options);
-        }
-
-		console.info('Unknown layer, cannot clone this layer. Leaflet-version: ' + L.version);
-
-		return null;
-   },
-
-   getType: function(layer) {
-	   if (L.SVG && layer instanceof L.SVG) { return "L.SVG"; } // Renderer
-	   if (L.Canvas && layer instanceof L.Canvas) { return "L.Canvas"; } // Renderer
-	   if (L.MarkerClusterGroup && layer instanceof L.MarkerClusterGroup) { return "L.MarkerClusterGroup"; } // MarkerCluster layer
-	   if (layer instanceof L.TileLayer.WMS) { return "L.TileLayer.WMS"; } // WMS layers
-	   if (layer instanceof L.TileLayer) { return "L.TileLayer"; } // Tile layers
-	   if (layer instanceof L.ImageOverlay) { return "L.ImageOverlay"; }
-	   if (layer instanceof L.Marker) { return "L.Marker"; }
-	   if (layer instanceof L.Popup) { return "L.Popup"; }
-	   if (layer instanceof L.Circle) { return "L.Circle"; }
-	   if (layer instanceof L.CircleMarker) { return "L.CircleMarker"; }
-	   if (layer instanceof L.Rectangle) { return "L.Rectangle"; }
-	   if (layer instanceof L.Polygon) { return "L.Polygon"; }
-	   if (L.MultiPolyline && layer instanceof L.MultiPolyline) { return "L.MultiPolyline"; } // MultiPolyline is removed in leaflet 1.0.0
-	   if (L.MultiPolygon && layer instanceof L.MultiPolygon) { return "L.MultiPolygon"; } // MultiPolygon is removed in leaflet 1.0.0
-	   if (layer instanceof L.Polyline) { return "L.Polyline"; }
-	   if (layer instanceof L.GeoJSON) { return "L.GeoJSON"; }
-	   if (layer instanceof L.FeatureGroup) { return "L.FeatureGroup"; }
-	   if (layer instanceof L.LayerGroup) { return "L.LayerGroup"; }
-	   if (layer instanceof L.Tooltip) { return "L.Tooltip"; }
-	   return null;
-   },
-
 	cloneInnerLayers: function (layer) {
 		var utils = this;
 		var layers = [];
@@ -166,5 +53,97 @@ L.Control.BrowserPrint.Utils = {
 		});
 
 		return layers;
-	}
+	},
+
+	initialize: function () {
+		// Renderers
+		this.registerLayer(L.SVG, 'L.SVG');
+		this.registerLayer(L.Canvas, 'L.Canvas');
+		this.registerLayer(L.MarkerClusterGroup, 'L.MarkerClusterGroup', function (layer, utils) {
+			var cluster = L.markerClusterGroup(layer.options);
+			cluster.addLayers(utils.cloneInnerLayers(layer));
+			return cluster;
+		});
+		this.registerLayer(L.TileLayer.WMS, 'L.TileLayer.WMS', function(layer) { 	return L.tileLayer.wms(layer._url, layer.options); });
+		this.registerLayer(L.TileLayer, 'L.TileLayer', function(layer) { 			return L.tileLayer(layer._url, layer.options); });
+		this.registerLayer(L.ImageOverlay, 'L.ImageOverlay', function(layer) { 		return L.imageOverlay(layer._url, layer._bounds, layer.options); });
+		this.registerLayer(L.Marker, 'L.Marker', function(layer) { 					return L.marker(layer.getLatLng(), layer.options); });
+		this.registerLayer(L.Popup, 'L.Popup', function(layer) { 					return L.popup(layer.options).setLatLng(layer.getLatLng()).setContent(layer.getContent()); });
+		this.registerLayer(L.Circle, 'L.Circle', function(layer) { 					return L.circle(layer.getLatLng(), layer.getRadius(), layer.options); });
+		this.registerLayer(L.CircleMarker, 'L.CircleMarker', function(layer) { 		return L.circleMarker(layer.getLatLng(), layer.options); });
+		this.registerLayer(L.Rectangle, 'L.Rectangle', function(layer) { 			return L.rectangle(layer.getBounds(), layer.options); });
+		this.registerLayer(L.Polygon, 'L.Polygon', function(layer) { 				return L.polygon(layer.getLatLngs(), layer.options); });
+
+		// MultiPolyline is removed in leaflet 1.0.0
+		this.registerLayer(L.MultiPolyline, 'L.MultiPolyline', function(layer) { 	return L.polyline(layer.getLatLngs(), layer.options); });
+		// MultiPolygon is removed in leaflet 1.0.0
+		this.registerLayer(L.MultiPolygon, 'L.MultiPolygon', function(layer) { 		return L.multiPolygon(layer.getLatLngs(), layer.options); });
+
+		this.registerLayer(L.Polyline, 'L.Polyline', function(layer) { 				return L.polyline(layer.getLatLngs(), layer.options); });
+		this.registerLayer(L.GeoJSON, 'L.GeoJSON', function(layer) { 				return L.geoJson(layer.toGeoJSON(), layer.options); });
+
+		this.registerLayer(L.FeatureGroup, 'L.FeatureGroup', function(layer, utils){return L.featureGroup(utils.cloneInnerLayers(layer)); });
+		this.registerLayer(L.LayerGroup, 'L.LayerGroup', function(layer, utils){	return L.layerGroup(utils.cloneInnerLayers(layer)); });
+
+		// There is no point to clone tooltips here;  L.tooltip(options);
+		this.registerLayer(L.Tooltip, 'L.Tooltip', function(){	return null; });
+	},
+
+	registerLayer: function(type, indentifier, layerBuilderFunction) {
+		if (type &&
+			!this._cloneFactoryArray.filter(function(l){ return l.indentifier === identifier; }).length) {
+
+			this._cloneFactoryArray.push({
+				type: type,
+				indentifier: indentifier,
+				builder: layerBuilderFunction || function (layer) { return new type(layer.options); }
+			});
+		}
+	},
+
+	cloneLayer: function(layer) {
+		if (!layer) return null;
+
+		if (!this._cloneFactoryArray.length) {
+			this.initialize();
+		}
+
+		for (var i = 0; i < this._cloneFactoryArray.length; i++) {
+			var factoryObject = this._cloneFactoryArray[i];
+			if (factoryObject.type && layer instanceof factoryObject.type) {
+				return factoryObject.builder(layer, this);
+			}
+		}
+
+		this.__unknownLayer__();
+
+		return null;
+	},
+
+	getType: function(layer) {
+	   if (!layer) return null;
+
+	   if (!this._cloneFactoryArray.length) {
+		   this.initialize();
+	   }
+
+	   for (var i = 0; i < this._cloneFactoryArray.length; i++) {
+		   var factoryObject = this._cloneFactoryArray[i];
+		   if (factoryObject.type && layer instanceof factoryObject.type) {
+			   return factoryObject.indentifier;
+		   }
+	   }
+
+	   this.__unknownLayer__();
+
+	   return null;
+},
+
+	__unknownLayer__: function(){
+	   console.warn('Unknown layer, cannot clone this layer. Leaflet-version: ' + L.version);
+	   console.info('Please use "L.Control.BrowserPrint.Utils.registerLayer(/*layerFunction*/, "layerIdentifierString", constructorFunction)" to register new layers.');
+	   console.info('WMS Layer registration Example: L.Control.BrowserPrint.Utils.registerLayer(L.TileLayer.WMS, "L.TileLayer.WMS", function(layer, utils) { return L.tileLayer.wms(layer._url, layer.options); });');
+	   console.info('For additional information please refer to documentation on: https://github.com/Igor-Vladyka/leaflet.browser.print.');
+	   console.info('-------------------------------------------------------------------------------------------------------------------');
+   }
 };
