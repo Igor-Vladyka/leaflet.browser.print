@@ -89,13 +89,13 @@ L.Control.BrowserPrint.Utils = {
 		this.registerLayer(L.Tooltip, 'L.Tooltip', function(){	return null; });
 	},
 
-	registerLayer: function(type, indentifier, layerBuilderFunction) {
+	registerLayer: function(type, identifier, layerBuilderFunction) {
 		if (type &&
-			!this._cloneFactoryArray.filter(function(l){ return l.indentifier === identifier; }).length) {
+			!this._cloneFactoryArray.filter(function(l){ return l.identifier === identifier; }).length) {
 
 			this._cloneFactoryArray.push({
 				type: type,
-				indentifier: indentifier,
+				identifier: identifier,
 				builder: layerBuilderFunction || function (layer) { return new type(layer.options); }
 			});
 		}
@@ -130,7 +130,7 @@ L.Control.BrowserPrint.Utils = {
 	   for (var i = 0; i < this._cloneFactoryArray.length; i++) {
 		   var factoryObject = this._cloneFactoryArray[i];
 		   if (factoryObject.type && layer instanceof factoryObject.type) {
-			   return factoryObject.indentifier;
+			   return factoryObject.identifier;
 		   }
 	   }
 
