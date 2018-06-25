@@ -20,7 +20,7 @@
 
     <body>
         <h1 class="title" leaflet-browser-print-content>Leaflet Browser print TITLE</h1>
-        <h3 class="sub-content" leaflet-browser-print-content>Leaflet browser print plugin v0.6.4 for map printing with additional controls and content</h3>
+        <h3 class="sub-content" leaflet-browser-print-content>Leaflet browser print plugin v0.6.8 for map printing with additional controls and content</h3>
     	<div id="map"></div>
 		<table leaflet-browser-print-pages>
 			<thead>
@@ -190,6 +190,11 @@
 				]
 
             }).addTo(map);
+
+			L.Control.BrowserPrint.Utils.registerLayer(L.TileLayer.WMS, 'L.TileLayer.WMS', function(layer) {
+				console.info("Printing WMS layer.");
+				return L.tileLayer.wms(layer._url, layer.options);
+			});
 
             L.popup({minWidth: 500}).setLatLng(L.latLng(39.73, -104.99)).setContent("Leaflet browser print plugin with custom print Layer and content").openOn(map);
 

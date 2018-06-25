@@ -104,9 +104,7 @@ L.Control.BrowserPrint.Utils = {
 	cloneLayer: function(layer) {
 		if (!layer) return null;
 
-		if (!this._cloneFactoryArray.length) {
-			this.initialize();
-		}
+		this.initialize();
 
 		for (var i = 0; i < this._cloneFactoryArray.length; i++) {
 			var factoryObject = this._cloneFactoryArray[i];
@@ -123,9 +121,7 @@ L.Control.BrowserPrint.Utils = {
 	getType: function(layer) {
 	   if (!layer) return null;
 
-	   if (!this._cloneFactoryArray.length) {
-		   this.initialize();
-	   }
+	   this.initialize();
 
 	   for (var i = 0; i < this._cloneFactoryArray.length; i++) {
 		   var factoryObject = this._cloneFactoryArray[i];
