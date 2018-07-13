@@ -11,6 +11,7 @@ A [leaflet](http://www.leafletjs.com) plugin which allows users to print full pa
 
 * Cons:
 	- 'Custom' print mode not supported in Leaflet v0.7.7 on IE.
+	- Doesn't change page orietnation automatically in IE and FF, due to [The @page rule and forcing Landscape orientation](http://css-discuss.incutio.com/wiki/Print_Stylesheets#The_.40page_rule_and_forcing_Landscape_orientation)
 
 ### Other examples:
 Check out the:
