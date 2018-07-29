@@ -381,14 +381,14 @@ L.Control.BrowserPrint = L.Control.extend({
 	_getPrintObjects: function(printLayer) {
 		var printObjects = {};
 		for (var id in this._map._layers){
-			var pLayer = this._map._layers[id];
-			if (!printLayer || !pLayer._url || printLayer._url !== pLayer._url) {
-				var type = L.Control.BrowserPrint.Utils.getType(pLayer);
+			var layer = this._map._layers[id];
+			if (!printLayer || !layer._url || layer instanceof L.TileLayer.WMS) {
+				var type = L.Control.BrowserPrint.Utils.getType(layer);
 				if (type) {
 					if (!printObjects[type]) {
 						printObjects[type] = [];
 					}
-					printObjects[type].push(pLayer);
+					printObjects[type].push(layer);
 				}
 			}
 		}
