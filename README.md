@@ -222,11 +222,6 @@ If you want to override any of those, please register your own builder for them.
 
 ### Important notes
 ````
-Currently if you want to use layerGroup or featureGroup to print groups of layers,
-please create a group, add all items to it and only then add a group on the map.
-````
-
-````
 Unfortunately 'Custom' mode is not working correctly for Leaflet v.0.7.7 in all IE browsers.
 ````
 

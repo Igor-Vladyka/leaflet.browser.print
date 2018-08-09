@@ -5,6 +5,8 @@
 
 L.Control.BrowserPrint.Utils = {
 
+	_ignoreArray: [],
+
 	_cloneFactoryArray: [],
 
 	cloneOptions: function(options) {
@@ -66,6 +68,7 @@ L.Control.BrowserPrint.Utils = {
 		});
 		this.registerLayer(L.TileLayer.WMS, 'L.TileLayer.WMS', function(layer) { 	return L.tileLayer.wms(layer._url, layer.options); });
 		this.registerLayer(L.TileLayer, 'L.TileLayer', function(layer) { 			return L.tileLayer(layer._url, layer.options); });
+		this.registerLayer(L.GridLayer, 'L.GridLayer', function(layer) { 			return L.gridLayer(layer.options); });
 		this.registerLayer(L.ImageOverlay, 'L.ImageOverlay', function(layer) { 		return L.imageOverlay(layer._url, layer._bounds, layer.options); });
 		this.registerLayer(L.Marker, 'L.Marker', function(layer) { 					return L.marker(layer.getLatLng(), layer.options); });
 		this.registerLayer(L.Popup, 'L.Popup', function(layer) { 					return L.popup(layer.options).setLatLng(layer.getLatLng()).setContent(layer.getContent()); });
@@ -82,8 +85,8 @@ L.Control.BrowserPrint.Utils = {
 		this.registerLayer(L.Polyline, 'L.Polyline', function(layer) { 				return L.polyline(layer.getLatLngs(), layer.options); });
 		this.registerLayer(L.GeoJSON, 'L.GeoJSON', function(layer) { 				return L.geoJson(layer.toGeoJSON(), layer.options); });
 
-		this.registerLayer(L.FeatureGroup, 'L.FeatureGroup', function(layer, utils){return L.featureGroup(utils.cloneInnerLayers(layer)); });
-		this.registerLayer(L.LayerGroup, 'L.LayerGroup', function(layer, utils){	return L.layerGroup(utils.cloneInnerLayers(layer)); });
+		this.registerIgnoreLayer(L.FeatureGroup, 'L.FeatureGroup');
+		this.registerIgnoreLayer(L.LayerGroup, 'L.LayerGroup');
 
 		// There is no point to clone tooltips here;  L.tooltip(options);
 		this.registerLayer(L.Tooltip, 'L.Tooltip', function(){	return null; });
@@ -101,15 +104,53 @@ L.Control.BrowserPrint.Utils = {
 		}
 	},
 
+	registerIgnoreLayer: function(type, identifier) {
+		if (type &&
+			!this._ignoreArray.filter(function(l){ return l.identifier === identifier; }).length) {
+
+			this._ignoreArray.push({
+				type: type,
+				identifier: identifier
+			});
+		}
+	},
+
 	cloneLayer: function(layer) {
+
+		var factoryObject = this.__getFactoryObject(layer);
+		if (factoryObject) {
+			factoryObject = factoryObject.builder(layer, this);
+		}
+
+		return factoryObject;
+	},
+
+	getType: function(layer) {
+
+		var factoryObject = this.__getFactoryObject(layer);
+		if (factoryObject) {
+			factoryObject = factoryObject.identifier;
+		}
+
+		return factoryObject;
+	},
+
+	__getFactoryObject: function (layer) {
 		if (!layer) return null;
 
 		this.initialize();
 
+		for (var i = 0; i < this._ignoreArray.length; i++) {
+			var ignoreObject = this._ignoreArray[i];
+			if (ignoreObject.type && layer instanceof ignoreObject.type) {
+				return null;
+			}
+		}
+
 		for (var i = 0; i < this._cloneFactoryArray.length; i++) {
 			var factoryObject = this._cloneFactoryArray[i];
 			if (factoryObject.type && layer instanceof factoryObject.type) {
-				return factoryObject.builder(layer, this);
+				return factoryObject;
 			}
 		}
 
@@ -117,23 +158,6 @@ L.Control.BrowserPrint.Utils = {
 
 		return null;
 	},
-
-	getType: function(layer) {
-	   if (!layer) return null;
-
-	   this.initialize();
-
-	   for (var i = 0; i < this._cloneFactoryArray.length; i++) {
-		   var factoryObject = this._cloneFactoryArray[i];
-		   if (factoryObject.type && layer instanceof factoryObject.type) {
-			   return factoryObject.identifier;
-		   }
-	   }
-
-	   this.__unknownLayer__();
-
-	   return null;
-},
 
 	__unknownLayer__: function(){
 	   console.warn('Unknown layer, cannot clone this layer. Leaflet-version: ' + L.version);
