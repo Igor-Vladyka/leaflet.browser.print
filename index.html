@@ -20,7 +20,7 @@
 
     <body>
         <h1 class="title" leaflet-browser-print-content>Leaflet Browser print TITLE</h1>
-        <h3 class="sub-content" leaflet-browser-print-content>Leaflet browser print plugin v0.6.8 for map printing with additional controls and content</h3>
+        <h3 class="sub-content" leaflet-browser-print-content>Leaflet browser print plugin v0.7 for map printing with additional controls and content</h3>
     	<div id="map"></div>
 		<table leaflet-browser-print-pages>
 			<thead>
@@ -144,6 +144,8 @@
 
 			map.createPane("new-pane");
 
+			L.control.scale({position:'topleft'}).addTo(map);
+
 			map.on(L.Draw.Event.CREATED, function (e) {
 			    var type = e.layerType,
 			        layer = e.layer;
@@ -163,7 +165,9 @@
 						pane: "new-pane"
                     });
 
-            L.layerGroup().addLayer(green).addTo(map);
+            var l = L.layerGroup();
+			l.addTo(map)
+			l.addLayer(green);
 
 			var customActionToPrint = function(context) {
 				return function() {
