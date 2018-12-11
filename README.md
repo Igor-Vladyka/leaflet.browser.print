@@ -6,8 +6,9 @@ A [leaflet](http://www.leafletjs.com) plugin which allows users to print full pa
 	- Any page size from range A0-A10 to B0-B10 can se used.
 	- Available 4 print modes, you can chose any you want and even create your own.
 	- Everything in browser, no external apps or dependencies, print your map in one click.
+	- You can even override default browser print behavior and export map as image, more details you can find [here](https://github.com/Igor-Vladyka/leaflet.browser.print#download-map-as-image).
 	- Any additional page content can be printed together with a map.
-	- And many more...
+	- And many more...just ask!
 
 * Cons:
 	- 'Custom' print mode not supported in Leaflet v0.7.7 on IE.
