@@ -15,14 +15,10 @@ A [leaflet](http://www.leafletjs.com) plugin which allows users to print full pa
 
 ### Other examples:
 Check out the:
-
-[Localization](https://igor-vladyka.github.io/leaflet.browser.print/examples/localization.html),
-
-[Print objects manipulations](https://igor-vladyka.github.io/leaflet.browser.print/examples/manipulations.html),
-
-[Map legend printing](https://igor-vladyka.github.io/leaflet.browser.print/examples/print-with-legend.html),
-
-[Export map as Image](https://igor-vladyka.github.io/leaflet.browser.print/examples/savePNG.html),
+* [Localization](https://igor-vladyka.github.io/leaflet.browser.print/examples/localization.html)
+* [Print objects manipulations](https://igor-vladyka.github.io/leaflet.browser.print/examples/manipulations.html)
+* [Map legend printing](https://igor-vladyka.github.io/leaflet.browser.print/examples/print-with-legend.html)
+* [Export map as Image](https://igor-vladyka.github.io/leaflet.browser.print/examples/savePNG.html)
 
 ### Downloads
 **NPM**
@@ -231,7 +227,7 @@ window.print()
 ```
 
 You can override it to support any other behavior as you want.
-Example with (domtoimage)[https://github.com/tsayen/dom-to-image] plugin to export map as image.png:
+Example with [domtoimage](https://github.com/tsayen/dom-to-image) plugin to export map as image.png:
 
 ``` js
 window.print = function () {
