@@ -1,6 +1,9 @@
-## leaflet.js in browser print plugin
+# Map Print Plugin for Leaflet.js
+[![npm version](https://badge.fury.io/js/leaflet.browser.print.svg)](https://badge.fury.io/js/leaflet.browser.print)
 
-A [leaflet](http://www.leafletjs.com) plugin which allows users to print full page map directly from the browser [DEMO](https://igor-vladyka.github.io/leaflet.browser.print/)
+## General information
+
+A [leaflet](http://www.leafletjs.com) plugin which allows users to [print full page map](https://igor-vladyka.github.io/leaflet.browser.print/) directly from the browser
 * Pros:
 	- Compatible with Leaflet v0.7.7 and v1+.
 	- Any page size from range A0-A10 to B0-B10 can se used.
@@ -12,10 +15,11 @@ A [leaflet](http://www.leafletjs.com) plugin which allows users to print full pa
 
 * Cons:
 	- 'Custom' print mode not supported in Leaflet v0.7.7 on IE.
-	- Doesn't change page orietnation automatically in IE and FF, due to [The @page rule and forcing Landscape orientation](http://css-discuss.incutio.com/wiki/Print_Stylesheets#The_.40page_rule_and_forcing_Landscape_orientation)
+	- Doesn't change page orientation automatically in IE and FF, due to [The @page rule and forcing Landscape orientation](http://css-discuss.incutio.com/wiki/Print_Stylesheets#The_.40page_rule_and_forcing_Landscape_orientation)
 
 ### Other examples:
 Check out the:
+* [General example](https://igor-vladyka.github.io/leaflet.browser.print/)
 * [Localization](https://igor-vladyka.github.io/leaflet.browser.print/examples/localization.html)
 * [Print objects manipulations](https://igor-vladyka.github.io/leaflet.browser.print/examples/manipulations.html)
 * [Map legend printing](https://igor-vladyka.github.io/leaflet.browser.print/examples/print-with-legend.html)
