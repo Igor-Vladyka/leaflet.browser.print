@@ -15,9 +15,14 @@ A [leaflet](http://www.leafletjs.com) plugin which allows users to print full pa
 
 ### Other examples:
 Check out the:
-[DEMO with localization](https://igor-vladyka.github.io/leaflet.browser.print/examples/localization.html),
-[DEMO with print objects manipulations](https://igor-vladyka.github.io/leaflet.browser.print/examples/manipulations.html),
-[DEMO with map legend printing](https://igor-vladyka.github.io/leaflet.browser.print/examples/print-with-legend.html),
+
+[Localization](https://igor-vladyka.github.io/leaflet.browser.print/examples/localization.html),
+
+[Print objects manipulations](https://igor-vladyka.github.io/leaflet.browser.print/examples/manipulations.html),
+
+[Map legend printing](https://igor-vladyka.github.io/leaflet.browser.print/examples/print-with-legend.html),
+
+[Export map as Image](https://igor-vladyka.github.io/leaflet.browser.print/examples/savePNG.html),
 
 ### Downloads
 **NPM**
@@ -217,6 +222,30 @@ List of pre-registered layers available for printing:
 * L.Tooltip
 
 If you want to override any of those, please register your own builder for them.
+
+### Download Map as Image
+To download map as PNG you have to use external plugin to do the job. Current plugin will do only 1 job - prepare map for printing.
+To print actual map we use in-browser print mechanism:
+``` js
+window.print()
+```
+
+You can override it to support any other behavior as you want.
+Example with (domtoimage)[https://github.com/tsayen/dom-to-image] plugin to export map as image.png:
+
+``` js
+window.print = function () {
+	domtoimage.toPng(document.body)
+			.then(function (dataUrl) {
+				var link = document.createElement('a');
+				link.download = map.printControl.options.documentTitle || "exportedMap" + '.png';
+				link.href = dataUrl;
+				link.click();
+			});
+};
+```
+
+Full example you can find here:
 
 ### Important notes
 ````
