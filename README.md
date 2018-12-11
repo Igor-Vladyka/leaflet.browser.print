@@ -246,7 +246,7 @@ window.print = function () {
 };
 ```
 
-Full example you can find here:
+Full example you can find [here](https://igor-vladyka.github.io/leaflet.browser.print/examples/savePNG.html).
 
 ### Important notes
 ````
