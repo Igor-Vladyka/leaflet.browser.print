@@ -15,11 +15,9 @@ A [leaflet](http://www.leafletjs.com) plugin which allows users to print full pa
 
 ### Other examples:
 Check out the:
-[DEMO v0.7.7](https://igor-vladyka.github.io/leaflet.browser.print/examples/v0.7.7.html),
-[DEMO v1.2.0](https://igor-vladyka.github.io/leaflet.browser.print/examples/v1.2.0.html),
-[DEMO with localization](https://igor-vladyka.github.io/leaflet.browser.print/examples/localization_v1.2.0.html),
-[DEMO with print objects manipulations](https://igor-vladyka.github.io/leaflet.browser.print/examples/manipulations_v1.2.0.html),
-[DEMO with map legend printing](https://igor-vladyka.github.io/leaflet.browser.print/examples/print-with-legend_v1.2.0.html),
+[DEMO with localization](https://igor-vladyka.github.io/leaflet.browser.print/examples/localization.html),
+[DEMO with print objects manipulations](https://igor-vladyka.github.io/leaflet.browser.print/examples/manipulations.html),
+[DEMO with map legend printing](https://igor-vladyka.github.io/leaflet.browser.print/examples/print-with-legend.html),
 
 ### Downloads
 **NPM**

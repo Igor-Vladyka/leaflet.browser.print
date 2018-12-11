@@ -1,30 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-	
+
 	<title>Choropleth Tutorial - Leaflet</title>
 
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	
+
 	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
-
-	<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
-
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+		integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+		crossorigin=""/>
+	<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
+		integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+		crossorigin=""></script>
+	<script src="../dist/leaflet.browser.print.min.js"></script>
+	<script type="text/javascript" src="data/us-states.js"></script>
 	<style>
-		html, body { width: 100%; height: 100%; margin: 0px; padding: 0px;}
+		html, body, #map { width: 100%; height: 100%; margin: 0px; padding: 0px;}
 	</style>
 
-	<style> #map { width: 800px; height: 500px; }
+	<style>
 	.info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; }
-	.legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }</style>
+	.legend { text-align: left; line-height: 18px; color: #555; }
+	.legend > * {
+		display: flex;
+		margin-bottom: 5px;
+	}
+	.legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }</style>
 </head>
 <body>
 
 <div id='map'></div>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin=""/>
-<script type="text/javascript" src="data/us-states.js"></script>
-<script src="../dist/leaflet.browser.print.min.js"></script>
 
 <script type="text/javascript">
 
@@ -124,25 +131,25 @@
 	map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
 
 	/* Good way to create custom control */
-	L.LegendControl = L.Control.extend({ 
+	L.LegendControl = L.Control.extend({
 		onAdd: function (map) {
-	
+
 			var div = L.DomUtil.create('div', 'info legend');
 			var grades = [0, 10, 20, 50, 100, 200, 500, 1000];
 			var labels = [];
 			var from;
 			var to;
-	
+
 			for (var i = 0; i < grades.length; i++) {
 				from = grades[i];
 				to = grades[i + 1];
-	
+
 				labels.push(
-					'<i style="background:' + getColor(from + 1) + '"></i> ' +
-					from + (to ? '&ndash;' + to : '+'));
+					'<div><i style="background:' + getColor(from + 1) + '"></i> ' +
+					from + (to ? '&ndash;' + to : '+') + "</div>");
 			}
-	
-			div.innerHTML = labels.join('<br>');
+
+			div.innerHTML = labels.join('');
 			return div;
 		}
 	});
@@ -153,14 +160,14 @@
 
 	// Here we are creating control to show it on the map;
 	L.legendControl({position: 'bottomright'}).addTo(map);
-    
+
     L.control.browserPrint().addTo(map);
-	
+
 	map.on("browser-print-start", function(e){
 		/*on print start we already have a print map and we can create new control and add it to the print map to be able to print custom information */
 		L.legendControl({position: 'bottomright'}).addTo(e.printMap);
 	});
-	
+
 </script>
 
 </body>

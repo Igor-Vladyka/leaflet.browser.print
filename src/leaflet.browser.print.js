@@ -590,6 +590,15 @@ L.Control.BrowserPrint.Event =  {
 },
 
 L.control.browserPrint = function(options) {
+	if (!options || !options.printModes) {
+		options = options || {};
+		options.printModes = [
+			L.control.browserPrint.mode.portrait(),
+			L.control.browserPrint.mode.landscape(),
+			L.control.browserPrint.mode.auto(),
+			L.control.browserPrint.mode.custom()
+		]
+	}
 
 	if (options && options.printModes && (!options.printModes.filter || !options.printModes.length)) {
 		throw "Please specify valid print modes for Print action. Example: printModes: [L.control.browserPrint.mode.portrait(), L.control.browserPrint.mode.auto('Automatico'), 'Custom']";
@@ -600,9 +609,4 @@ L.control.browserPrint = function(options) {
 	}
 
 	return new L.Control.BrowserPrint(options);
-};
-
-L.browserPrint = function(options) {
-	console.warn("L.browserPrint(options) is obsolete and will be removed shortly, please use L.control.browserPrint(options) instead.");
-	return L.control.browserPrint(options);
 };
