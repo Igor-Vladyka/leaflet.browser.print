@@ -1,5 +1,5 @@
 # Map Print Plugin for Leaflet.js
-[![npm version](https://badge.fury.io/js/leaflet.browser.print.svg)](https://badge.fury.io/js/leaflet.browser.print)
+[![npm version](https://badge.fury.io/js/leaflet.browser.print.svg)](https://www.npmjs.com/package/leaflet.browser.print)
 
 ## General information
 

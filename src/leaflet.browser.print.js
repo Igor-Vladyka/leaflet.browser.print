@@ -316,7 +316,7 @@ L.Control.BrowserPrint = L.Control.extend({
         // Getting all layers without URL -> not tiles.
         for (var layerId in this._map._layers){
             var layer = this._map._layers[layerId];
-            if (!layer._url) {
+            if (!layer._url && !layer._mutant) {
                 if (fitBounds) {
                     if (layer.getBounds) {
                         fitBounds.extend(layer.getBounds());
@@ -332,6 +332,10 @@ L.Control.BrowserPrint = L.Control.extend({
                 }
             }
         }
+
+		if (!fitBounds) {
+			fitBounds = this._map.getBounds();
+		}
 
 		return fitBounds;
     },
@@ -573,7 +577,7 @@ L.Control.BrowserPrint = L.Control.extend({
 	_getLoadingLayers: function(map) {
 		for (var l in map._layers) {
 			var layer = map._layers[l];
-			if (layer._url && layer._loading) {
+			if ((layer._url || layer._mutant) && layer._loading) {
 				return true;
 			}
 		}
