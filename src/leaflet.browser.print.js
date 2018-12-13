@@ -79,7 +79,7 @@ L.Control.BrowserPrint = L.Control.extend({
 			mode.Element = L.DomUtil.create('li', 'browser-print-mode', L.DomUtil.create('ul', 'browser-print-holder', container));
 			mode.Element.innerHTML = mode.Title;
 
-			L.DomEvent.addListener(mode.Element, 'click', mode.Action(this), this);
+			L.DomEvent.addListener(mode.Element, 'click', mode.Action(this, mode), this);
 
 			domPrintModes.push(mode);
 		}

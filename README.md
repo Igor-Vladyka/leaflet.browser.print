@@ -124,7 +124,7 @@ General mode and shortcuts:
 ### Custom Print Mode Configurations
 
 ``` js
-	var customActionToPrint = function(context) {
+	var customActionToPrint = function(context, mode) {
 		return function() {
 			window.alert("We are printing the MAP. Let's do Custom print here!");
 			context._printCustom();
@@ -143,11 +143,11 @@ General mode and shortcuts:
 | browser-print       | { printLayer, printMap, printObjects } | Fire right before native print. 								 | For DOM manipulation with print map and print objects. |
 | browser-print-end   | { printLayer, printMap, printObjects } | Fire on print end, after we refresh map to show initial view.   | For DOM manipulation with real map objects after print |
 
-Example can be found here: [DEMO with print objects manipulations](https://igor-vladyka.github.io/leaflet.browser.print/examples/manipulations_v1.2.0.html);
+Example can be found here: [DEMO with print objects manipulations](https://igor-vladyka.github.io/leaflet.browser.print/examples/manipulations.html);
 
 ### Printing additional content section
 
-To add additional printing content (in addition to a map itself) we need to specify content that should be added. [Demo](https://igor-vladyka.github.io/leaflet.browser.print/);
+To add additional printing content (in addition to a map itself) we need to specify content that should be added: [Demo](https://igor-vladyka.github.io/leaflet.browser.print/);
 By default contentSelector: '[leaflet-browser-print-content]' so we need a content with an 'leaflet-browser-print-content' attribute.
 
 Code example:
@@ -236,13 +236,13 @@ Example with [domtoimage](https://github.com/tsayen/dom-to-image) plugin to expo
 
 ``` js
 window.print = function () {
-	domtoimage.toPng(document.body)
-			.then(function (dataUrl) {
-				var link = document.createElement('a');
-				link.download = map.printControl.options.documentTitle || "exportedMap" + '.png';
-				link.href = dataUrl;
-				link.click();
-			});
+	return domtoimage.toPng(document.body)
+				.then(function (dataUrl) {
+					var link = document.createElement('a');
+					link.download = map.printControl.options.documentTitle || "exportedMap" + '.png';
+					link.href = dataUrl;
+					link.click();
+				});
 };
 ```
 
