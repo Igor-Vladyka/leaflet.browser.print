@@ -404,7 +404,7 @@ L.Control.BrowserPrint = L.Control.extend({
         printStyleSheet.setAttribute('type', 'text/css');
 		printStyleSheet.innerHTML = ' @media print { .leaflet-popup-content-wrapper, .leaflet-popup-tip { box-shadow: none; }';
 		printStyleSheet.innerHTML += ' .leaflet-browser-print--manualMode-button { display: none; }';
-		printStyleSheet.innerHTML += ' * { -webkit-print-color-adjust: exact!important; }';
+		printStyleSheet.innerHTML += ' * { -webkit-print-color-adjust: exact!important; printer-colors: exact!important; color-adjust: exact!important; }';
 		if (pageMargin) {
 			printStyleSheet.innerHTML += ' @page { margin: ' + pageMargin + '; }';
 		}
