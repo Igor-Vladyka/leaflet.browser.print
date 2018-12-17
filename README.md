@@ -25,6 +25,9 @@ Check out the:
 * [Map legend printing](https://igor-vladyka.github.io/leaflet.browser.print/examples/print-with-legend.html)
 * [Export map as Image](https://igor-vladyka.github.io/leaflet.browser.print/examples/savePNG.html)
 
+### Be carefull when printing map legend
+Common problem with printing map with a legend is external CSS plugins that ruins everything, [here is an actual good answer why it is like that with Bootstrap plugin](https://stackoverflow.com/questions/33410724/bootstrap-print-css-removes-background-color). Please read it carefully.
+
 ### Downloads
 **NPM**
 ````
