@@ -23,8 +23,12 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		this._appendControlStyles(container);
 
-		L.DomEvent.addListener(container, 'mouseover', this._displayPageSizeButtons, this);
-		L.DomEvent.addListener(container, 'mouseout', this._hidePageSizeButtons, this);
+		if (this.options.printModes.length > 1) {
+			L.DomEvent.addListener(container, 'mouseover', this._displayPageSizeButtons, this);
+			L.DomEvent.addListener(container, 'mouseout', this._hidePageSizeButtons, this);
+		} else {
+			container.style.cursor = "pointer";
+		}
 
 		if (this.options.position.indexOf("left") > 0) {
 			this._createIcon(container);
@@ -76,8 +80,12 @@ L.Control.BrowserPrint = L.Control.extend({
 				throw "Invalid Print Mode. Can't construct logic to print current map."
 			}
 
-			mode.Element = L.DomUtil.create('li', 'browser-print-mode', L.DomUtil.create('ul', 'browser-print-holder', container));
-			mode.Element.innerHTML = mode.Title;
+			if (this.options.printModes.length == 1) {
+				mode.Element = container;
+			} else {
+				mode.Element = L.DomUtil.create('li', 'browser-print-mode', L.DomUtil.create('ul', 'browser-print-holder', container));
+				mode.Element.innerHTML = mode.Title;
+			}
 
 			L.DomEvent.addListener(mode.Element, 'click', mode.Action(this, mode), this);
 
@@ -427,7 +435,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		var printControlStyleSheet = document.createElement('style');
 		printControlStyleSheet.setAttribute('type', 'text/css');
 
-		printControlStyleSheet.innerHTML += " .leaflet-control-browser-print { display: flex; } .leaflet-control-browser-print a { background: #fff url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gcCCi8Vjp+aNAAAAGhJREFUOMvFksENgDAMA68RC7BBN+Cf/ZU33QAmYAT6BolAGxB+RrrIsg1BpfNBVXcPMLMDI/ytpKozMHWwK7BJJ7yYWQbGdBea9wTIkRDzKy0MT7r2NiJACRgotCzxykFI34QY2Ea7KmtxGJ+uX4wfAAAAAElFTkSuQmCC') no-repeat 5px; background-size: 16px 16px; display: block; border-radius: 4px; }";
+		printControlStyleSheet.innerHTML += " .leaflet-control-browser-print { display: flex; } .leaflet-control-browser-print a { background: #fff url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gcCCi8Vjp+aNAAAAGhJREFUOMvFksENgDAMA68RC7BBN+Cf/ZU33QAmYAT6BolAGxB+RrrIsg1BpfNBVXcPMLMDI/ytpKozMHWwK7BJJ7yYWQbGdBea9wTIkRDzKy0MT7r2NiJACRgotCzxykFI34QY2Ea7KmtxGJ+uX4wfAAAAAElFTkSuQmCC') no-repeat 5px; background-size: 16px 16px; display: block; border-radius: 2px; }";
 
 		printControlStyleSheet.innerHTML += " .v0-7.leaflet-control-browser-print a.leaflet-browser-print { width: 26px; height: 26px; } .v1.leaflet-control-browser-print a.leaflet-browser-print { background-position-x: 7px; }";
 		printControlStyleSheet.innerHTML += " .browser-print-holder { margin: 0px; padding: 0px; list-style: none; white-space: nowrap; } .browser-print-holder-left li:last-child { border-top-right-radius: 2px; border-bottom-right-radius: 2px; } .browser-print-holder-right li:first-child { border-top-left-radius: 2px; border-bottom-left-radius: 2px; }";
