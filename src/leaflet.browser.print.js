@@ -18,34 +18,32 @@ L.Control.BrowserPrint = L.Control.extend({
 	},
 
 	onAdd: function (map) {
-	   if (this.options.addIcon) {
 		var container = L.DomUtil.create('div', 'leaflet-control-browser-print leaflet-bar leaflet-control');
 		L.DomEvent.disableClickPropagation(container);
+		if (this.options.addIcon) {
 
-		this._appendControlStyles(container);
+			this._appendControlStyles(container);
 
-		if (this.options.printModes.length > 1) {
-			L.DomEvent.addListener(container, 'mouseover', this._displayPageSizeButtons, this);
-			L.DomEvent.addListener(container, 'mouseout', this._hidePageSizeButtons, this);
-		} else {
-			container.style.cursor = "pointer";
+			if (this.options.printModes.length > 1) {
+				L.DomEvent.addListener(container, 'mouseover', this._displayPageSizeButtons, this);
+				L.DomEvent.addListener(container, 'mouseout', this._hidePageSizeButtons, this);
+			} else {
+				container.style.cursor = "pointer";
+			}
+
+			if (this.options.position.indexOf("left") > 0) {
+				this._createIcon(container);
+				this._createMenu(container);
+			} else {
+				this._createMenu(container);
+				this._createIcon(container);
+			}
 		}
-
-		if (this.options.position.indexOf("left") > 0) {
-			this._createIcon(container);
-			this._createMenu(container);
-		} else {
-			this._createMenu(container);
-			this._createIcon(container);
-		}
-
 		setTimeout( function () {
 			container.className += parseInt(L.version) ? " v1" : " v0-7"; // parseInt(L.version) returns 1 for v1.0.3 and 0 for 0.7.7;
 		}, 10);
-
+        	map.printControl = this; // Make control available from the map object itself;
 		return container;
-	   }
-           map.printControl = this; // Make control available from the map object itself;
 	},
 
 	_createIcon: function (container) {
