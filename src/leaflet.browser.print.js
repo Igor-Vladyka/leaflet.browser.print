@@ -14,7 +14,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		contentSelector: "[leaflet-browser-print-content]",
 		pagesSelector: "[leaflet-browser-print-pages]",
 		manualMode: false,
-		addIcon:true;
+		addIcon:true
 	},
 
 	onAdd: function (map) {
