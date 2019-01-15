@@ -8,16 +8,17 @@ L.Control.BrowserPrint = L.Control.extend({
 		title: 'Print map',
 		documentTitle: '',
 		position: 'topleft',
-        printLayer: null,
+        	printLayer: null,
 		printModes: ["Portrait", "Landscape", "Auto", "Custom"],
 		closePopupsOnPrint: true,
 		contentSelector: "[leaflet-browser-print-content]",
 		pagesSelector: "[leaflet-browser-print-pages]",
-		manualMode: false
+		manualMode: false,
+		addIcon:true;
 	},
 
 	onAdd: function (map) {
-
+	   if (this.options.addIcon) {
 		var container = L.DomUtil.create('div', 'leaflet-control-browser-print leaflet-bar leaflet-control');
 		L.DomEvent.disableClickPropagation(container);
 
@@ -42,8 +43,9 @@ L.Control.BrowserPrint = L.Control.extend({
 			container.className += parseInt(L.version) ? " v1" : " v0-7"; // parseInt(L.version) returns 1 for v1.0.3 and 0 for 0.7.7;
 		}, 10);
 
-		map.printControl = this; // Make control available from the map object itself;
 		return container;
+	   }
+           map.printControl = this; // Make control available from the map object itself;
 	},
 
 	_createIcon: function (container) {
