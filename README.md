@@ -25,7 +25,7 @@ Check out the:
 * [Map legend printing](https://igor-vladyka.github.io/leaflet.browser.print/examples/print-with-legend.html)
 * [Export map as Image](https://igor-vladyka.github.io/leaflet.browser.print/examples/savePNG.html)
 
-### Be carefull when printing map legend
+### Be careful when printing map legend
 Common problem with printing map with a legend is external CSS plugins that ruins everything, [here is an actual good answer why it is like that with Bootstrap plugin](https://stackoverflow.com/questions/33410724/bootstrap-print-css-removes-background-color). Please read it carefully.
 
 ### Downloads
@@ -190,7 +190,7 @@ Therefor it's not supportable in all browsers, for more information please visit
 See chapter 4 of https://github.com/Asymmetrik/ngx-leaflet-tutorial-plugins/tree/master/Leaflet.BrowserPrint
 ````
 
-### New print layers registration
+### New print layers/renderers registration
 To add missing print layers you need to explicitly indicate layer, it's identifier and construction function that will return actual layer object.
 
 Example of WMS registration:
@@ -199,14 +199,13 @@ L.Control.BrowserPrint.Utils.registerLayer(
 	L.TileLayer.WMS,
 	"L.TileLayer.WMS",
 	function(layer, utils) {
-		return L.tileLayer.wms(layer._url, layer.options);
+		// We need to clone options to properly handle multiple renderers.
+		return L.tileLayer.wms(layer._url, utils.cloneOptions(layer.options));
 	}
 );
 ```
 
 List of pre-registered layers available for printing:
-* L.SVG
-* L.Canvas
 * L.MarkerClusterGroup
 * L.TileLayer.WMS
 * L.TileLayer
@@ -224,6 +223,16 @@ List of pre-registered layers available for printing:
 * L.FeatureGroup
 * L.LayerGroup
 * L.Tooltip
+
+
+Example of renderer registration:
+``` js
+L.Control.BrowserPrint.Utils.registerRenderer(L.SVG, 'L.SVG');
+```
+
+List of registered renderers
+* L.SVG
+* L.Canvas
 
 If you want to override any of those, please register your own builder for them.
 

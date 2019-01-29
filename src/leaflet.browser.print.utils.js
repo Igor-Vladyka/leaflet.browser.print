@@ -8,6 +8,8 @@ L.Control.BrowserPrint.Utils = {
 	_ignoreArray: [],
 
 	_cloneFactoryArray: [],
+	_cloneRendererArray: [],
+	_knownRenderers: {},
 
 	cloneOptions: function(options) {
 		var utils = this;
@@ -59,31 +61,32 @@ L.Control.BrowserPrint.Utils = {
 
 	initialize: function () {
 		// Renderers
-		this.registerLayer(L.SVG, 'L.SVG');
-		this.registerLayer(L.Canvas, 'L.Canvas');
+		this.registerRenderer(L.SVG, 'L.SVG');
+		this.registerRenderer(L.Canvas, 'L.Canvas');
+
 		this.registerLayer(L.MarkerClusterGroup, 'L.MarkerClusterGroup', function (layer, utils) {
 			var cluster = L.markerClusterGroup(layer.options);
 			cluster.addLayers(utils.cloneInnerLayers(layer));
 			return cluster;
 		});
-		this.registerLayer(L.TileLayer.WMS, 'L.TileLayer.WMS', function(layer) { 	return L.tileLayer.wms(layer._url, layer.options); });
-		this.registerLayer(L.TileLayer, 'L.TileLayer', function(layer) { 			return L.tileLayer(layer._url, layer.options); });
-		this.registerLayer(L.GridLayer, 'L.GridLayer', function(layer) { 			return L.gridLayer(layer.options); });
-		this.registerLayer(L.ImageOverlay, 'L.ImageOverlay', function(layer) { 		return L.imageOverlay(layer._url, layer._bounds, layer.options); });
-		this.registerLayer(L.Marker, 'L.Marker', function(layer) { 					return L.marker(layer.getLatLng(), layer.options); });
-		this.registerLayer(L.Popup, 'L.Popup', function(layer) { 					return L.popup(layer.options).setLatLng(layer.getLatLng()).setContent(layer.getContent()); });
-		this.registerLayer(L.Circle, 'L.Circle', function(layer) { 					return L.circle(layer.getLatLng(), layer.getRadius(), layer.options); });
-		this.registerLayer(L.CircleMarker, 'L.CircleMarker', function(layer) { 		return L.circleMarker(layer.getLatLng(), layer.options); });
-		this.registerLayer(L.Rectangle, 'L.Rectangle', function(layer) { 			return L.rectangle(layer.getBounds(), layer.options); });
-		this.registerLayer(L.Polygon, 'L.Polygon', function(layer) { 				return L.polygon(layer.getLatLngs(), layer.options); });
+		this.registerLayer(L.TileLayer.WMS, 'L.TileLayer.WMS', function(layer, utils) { 	return L.tileLayer.wms(layer._url, utils.cloneOptions(layer.options)); });
+		this.registerLayer(L.TileLayer, 'L.TileLayer', function(layer, utils) { 			return L.tileLayer(layer._url, utils.cloneOptions(layer.options)); });
+		this.registerLayer(L.GridLayer, 'L.GridLayer', function(layer, utils) { 			return L.gridLayer(utils.cloneOptions(layer.options)); });
+		this.registerLayer(L.ImageOverlay, 'L.ImageOverlay', function(layer, utils) { 		return L.imageOverlay(layer._url, layer._bounds, utils.cloneOptions(layer.options)); });
+		this.registerLayer(L.Marker, 'L.Marker', function(layer, utils) { 					return L.marker(layer.getLatLng(), utils.cloneOptions(layer.options)); });
+		this.registerLayer(L.Popup, 'L.Popup', function(layer, utils) { 					return L.popup(utils.cloneOptions(layer.options)).setLatLng(layer.getLatLng()).setContent(layer.getContent()); });
+		this.registerLayer(L.Circle, 'L.Circle', function(layer, utils) { 					return L.circle(layer.getLatLng(), layer.getRadius(), utils.cloneOptions(layer.options)); });
+		this.registerLayer(L.CircleMarker, 'L.CircleMarker', function(layer, utils) { 		return L.circleMarker(layer.getLatLng(), utils.cloneOptions(layer.options)); });
+		this.registerLayer(L.Rectangle, 'L.Rectangle', function(layer, utils) { 			return L.rectangle(layer.getBounds(), utils.cloneOptions(layer.options)); });
+		this.registerLayer(L.Polygon, 'L.Polygon', function(layer, utils) { 				return L.polygon(layer.getLatLngs(), utils.cloneOptions(layer.options)); });
 
 		// MultiPolyline is removed in leaflet 1.0.0
-		this.registerLayer(L.MultiPolyline, 'L.MultiPolyline', function(layer) { 	return L.polyline(layer.getLatLngs(), layer.options); });
+		this.registerLayer(L.MultiPolyline, 'L.MultiPolyline', function(layer, utils) { 	return L.polyline(layer.getLatLngs(), utils.cloneOptions(layer.options)); });
 		// MultiPolygon is removed in leaflet 1.0.0
-		this.registerLayer(L.MultiPolygon, 'L.MultiPolygon', function(layer) { 		return L.multiPolygon(layer.getLatLngs(), layer.options); });
+		this.registerLayer(L.MultiPolygon, 'L.MultiPolygon', function(layer, utils) { 		return L.multiPolygon(layer.getLatLngs(), utils.cloneOptions(layer.options)); });
 
-		this.registerLayer(L.Polyline, 'L.Polyline', function(layer) { 				return L.polyline(layer.getLatLngs(), layer.options); });
-		this.registerLayer(L.GeoJSON, 'L.GeoJSON', function(layer) { 				return L.geoJson(layer.toGeoJSON(), layer.options); });
+		this.registerLayer(L.Polyline, 'L.Polyline', function(layer, utils) { 				return L.polyline(layer.getLatLngs(), utils.cloneOptions(layer.options)); });
+		this.registerLayer(L.GeoJSON, 'L.GeoJSON', function(layer, utils) { 				return L.geoJson(layer.toGeoJSON(), utils.cloneOptions(layer.options)); });
 
 		this.registerIgnoreLayer(L.FeatureGroup, 'L.FeatureGroup');
 		this.registerIgnoreLayer(L.LayerGroup, 'L.LayerGroup');
@@ -92,31 +95,39 @@ L.Control.BrowserPrint.Utils = {
 		this.registerLayer(L.Tooltip, 'L.Tooltip', function(){	return null; });
 	},
 
-	registerLayer: function(type, identifier, layerBuilderFunction) {
+	_register: function(array, type, identifier, builderFunction) {
 		if (type &&
-			!this._cloneFactoryArray.filter(function(l){ return l.identifier === identifier; }).length) {
+			!array.filter(function(l){ return l.identifier === identifier; }).length) {
 
-			this._cloneFactoryArray.push({
+			array.push({
 				type: type,
 				identifier: identifier,
-				builder: layerBuilderFunction || function (layer) { return new type(layer.options); }
+				builder: builderFunction || function (layer) { return new type(layer.options); }
 			});
 		}
 	},
 
-	registerIgnoreLayer: function(type, identifier) {
-		if (type &&
-			!this._ignoreArray.filter(function(l){ return l.identifier === identifier; }).length) {
+	registerLayer: function(type, identifier, builderFunction) {
+		this._register(this._cloneFactoryArray, type, identifier, builderFunction);
+	},
 
-			this._ignoreArray.push({
-				type: type,
-				identifier: identifier
-			});
-		}
+	registerRenderer: function(type, identifier, builderFunction) {
+		this._register(this._cloneRendererArray, type, identifier, builderFunction);
+	},
+
+	registerIgnoreLayer: function(type, identifier) {
+		this._register(this._ignoreArray, type, identifier);
 	},
 
 	cloneLayer: function(layer) {
 
+		// First we check if this layer is actual renderer
+		var renderer = this.__getRenderer(layer);
+		if (renderer) {
+			return renderer;
+		}
+
+		// We clone and recreate layer if it's simple overlay
 		var factoryObject = this.__getFactoryObject(layer);
 		if (factoryObject) {
 			factoryObject = factoryObject.builder(layer, this);
@@ -133,6 +144,23 @@ L.Control.BrowserPrint.Utils = {
 		}
 
 		return factoryObject;
+	},
+
+	__getRenderer: function(oldRenderer) {
+		var renderer = this._knownRenderers[oldRenderer._leaflet_id];
+		if (!renderer) {
+			for (var i = 0; i < this._cloneRendererArray.length; i++) {
+				var factoryObject = this._cloneRendererArray[i];
+				if (oldRenderer instanceof factoryObject.type) {
+					this._knownRenderers[oldRenderer._leaflet_id] = factoryObject.builder(oldRenderer.options);
+					break;
+				}
+			}
+
+			renderer = this._knownRenderers[oldRenderer._leaflet_id];
+		}
+
+		return renderer;
 	},
 
 	__getFactoryObject: function (layer) {

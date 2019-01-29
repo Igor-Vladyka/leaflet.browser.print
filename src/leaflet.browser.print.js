@@ -312,9 +312,16 @@ L.Control.BrowserPrint = L.Control.extend({
 		var self = this;
 		setTimeout(function(){
 			self._map.fire(L.Control.BrowserPrint.Event.Print, { printLayer: origins.printLayer, printMap: overlayMap, printObjects: printObjects });
-			window.print();
-			self._printEnd(origins);
-			self._map.fire(L.Control.BrowserPrint.Event.PrintEnd, { printLayer: origins.printLayer, printMap: overlayMap, printObjects: printObjects });
+			var printPromise = window.print();
+			if (printPromise) {
+				Promise.all([printPromise]).then(function(){
+					self._printEnd(origins);
+					self._map.fire(L.Control.BrowserPrint.Event.PrintEnd, { printLayer: origins.printLayer, printMap: overlayMap, printObjects: printObjects });
+				})
+			} else {
+				self._printEnd(origins);
+				self._map.fire(L.Control.BrowserPrint.Event.PrintEnd, { printLayer: origins.printLayer, printMap: overlayMap, printObjects: printObjects });
+			}
 		}, 1000);
 	},
 
