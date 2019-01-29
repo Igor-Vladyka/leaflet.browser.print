@@ -120,6 +120,7 @@ L.Control.BrowserPrint.Utils = {
 	},
 
 	cloneLayer: function(layer) {
+		if (!layer) return null;
 
 		// First we check if this layer is actual renderer
 		var renderer = this.__getRenderer(layer);
@@ -137,6 +138,7 @@ L.Control.BrowserPrint.Utils = {
 	},
 
 	getType: function(layer) {
+		if (!layer) return null;
 
 		var factoryObject = this.__getFactoryObject(layer);
 		if (factoryObject) {
@@ -164,8 +166,6 @@ L.Control.BrowserPrint.Utils = {
 	},
 
 	__getFactoryObject: function (layer) {
-		if (!layer) return null;
-
 		this.initialize();
 
 		for (var i = 0; i < this._ignoreArray.length; i++) {
