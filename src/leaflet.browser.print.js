@@ -255,6 +255,8 @@ L.Control.BrowserPrint = L.Control.extend({
 	},
 
     _print: function (printMode, pageOrientation, autoBounds) {
+		L.Control.BrowserPrint.Utils.initialize();
+		
 		var self = this;
         var mapContainer = this._map.getContainer();
 
@@ -375,24 +377,6 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		this._map.invalidateSize({reset: true, animate: false, pan: false});
     },
-
-    /*_validatePrintLayer: function() {
-		var visualLayerForPrinting = null;
-
-        if (this.options.printLayer) {
-			visualLayerForPrinting = this.options.printLayer;
-        } else {
-            for (var id in this._map._layers){
-                var pLayer = this._map._layers[id];
-                if (pLayer._url) {
-                    visualLayerForPrinting = pLayer;
-					break;
-                }
-            }
-		}
-
-		return visualLayerForPrinting;
-    },*/
 
 	_getPrintObjects: function(printLayer) {
 		var printObjects = {};

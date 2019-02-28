@@ -60,6 +60,9 @@ L.Control.BrowserPrint.Utils = {
 	},
 
 	initialize: function () {
+
+		this._knownRenderers = {};
+
 		// Renderers
 		this.registerRenderer(L.SVG, 'L.SVG');
 		this.registerRenderer(L.Canvas, 'L.Canvas');
@@ -166,8 +169,6 @@ L.Control.BrowserPrint.Utils = {
 	},
 
 	__getFactoryObject: function (layer) {
-		this.initialize();
-
 		for (var i = 0; i < this._ignoreArray.length; i++) {
 			var ignoreObject = this._ignoreArray[i];
 			if (ignoreObject.type && layer instanceof ignoreObject.type) {
@@ -179,6 +180,13 @@ L.Control.BrowserPrint.Utils = {
 			var factoryObject = this._cloneFactoryArray[i];
 			if (factoryObject.type && layer instanceof factoryObject.type) {
 				return factoryObject;
+			}
+		}
+
+		for (var i = 0; i < this._cloneRendererArray.length; i++) {
+			var factoryObject = this._cloneRendererArray[i];
+			if (factoryObject.type && layer instanceof factoryObject.type) {
+				return null;
 			}
 		}
 
