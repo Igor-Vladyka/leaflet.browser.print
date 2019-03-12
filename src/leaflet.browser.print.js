@@ -127,24 +127,31 @@ L.Control.BrowserPrint = L.Control.extend({
 		});
     },
 
-	_getMode: function(name, invalidateBounds) {
+	_getMode: function(name, invalidateBounds, baseActionName) {
 		var mode = this.options.printModes.filter(function(f){
-			return f.Mode == name;
+			return f.Mode.toLowerCase() == name.toLowerCase();
 		})[0];
+
+		if (!mode) {
+			var baseAction = this.options.printModes.filter(function(f){
+				return f.Mode == baseActionName;
+			})[0];
+			mode = L.control.browserPrint.mode[name.toLowerCase()](baseAction.Title, baseAction.PageSize);
+		}
 
 		return new L.control.browserPrint.mode(mode.Mode, mode.Title, mode.PageSize, mode.Action, invalidateBounds || mode.InvalidateBounds);
 	},
 
     _printLandscape: function () {
 		this._addPrintClassToContainer(this._map, "leaflet-browser-print--landscape");
-		var orientation = "Landscape";
-        this._print(this._getMode(orientation), orientation);
+		var orientation = L.Control.BrowserPrint.Mode.Landscape;
+        this._print(this._getMode(orientation, false, orientation), orientation);
     },
 
     _printPortrait: function () {
 		this._addPrintClassToContainer(this._map, "leaflet-browser-print--portrait");
-		var orientation = "Portrait";
-        this._print(this._getMode(orientation), orientation);
+		var orientation = L.Control.BrowserPrint.Mode.Portrait;
+        this._print(this._getMode(orientation, false, orientation), orientation);
     },
 
     _printAuto: function () {
@@ -152,7 +159,7 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		var autoBounds = this._getBoundsForAllVisualLayers();
 		var orientation = this._getPageSizeFromBounds(autoBounds);
-		this._print(this._getMode(orientation, true), orientation, autoBounds);
+		this._print(this._getMode(orientation, true, L.Control.BrowserPrint.Mode.Auto), orientation, autoBounds);
     },
 
     _printCustom: function () {
@@ -219,7 +226,7 @@ L.Control.BrowserPrint = L.Control.extend({
 			this.options.custom = undefined;
 
 			var orientation = this._getPageSizeFromBounds(autoBounds);
-			this._print(this._getMode(orientation, true), orientation, autoBounds);
+			this._print(this._getMode(orientation, true, L.Control.BrowserPrint.Mode.Custom), orientation, autoBounds);
 		} else {
 			this._clearPrint();
 		}
@@ -256,7 +263,7 @@ L.Control.BrowserPrint = L.Control.extend({
 
     _print: function (printMode, pageOrientation, autoBounds) {
 		L.Control.BrowserPrint.Utils.initialize();
-		
+
 		var self = this;
         var mapContainer = this._map.getContainer();
 
