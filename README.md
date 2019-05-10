@@ -6,7 +6,8 @@
 A [leaflet](http://www.leafletjs.com) plugin which allows users to [print full page map](https://igor-vladyka.github.io/leaflet.browser.print/) directly from the browser
 * Pros:
 	- Compatible with Leaflet v0.7.7 and v1+.
-	- Any page size from range A0-A10 to B0-B10 can se used.
+	- Any page size from range A0-A10, B0-B10, C0-C10, D0-D10 can se used.
+	- North American paper sizes available as well: Letter, HalfLetter, Legal, JuniorLegal, Tabloid, Ledger
 	- Available 4 print modes, you can chose any you want and even create your own.
 	- Everything in browser, no external apps or dependencies, print your map in one click.
 	- You can even override default browser print behavior and export map as image, more details you can find [here](https://github.com/Igor-Vladyka/leaflet.browser.print#download-map-as-image).
@@ -69,10 +70,10 @@ You can pass a number of options to the plugin to control various settings.
 
 Here's an example of passing through some options:
 ``` js
-var customActionToPrint = function(context) {
+var customActionToPrint = function(context, mode) {
 	return function() {
 		window.alert("We are printing the MAP. Let's do Custom print here!");
-		context._printCustom();
+		context._printCustom(mode);
 	}
 }
 
@@ -88,6 +89,7 @@ L.control.browserPrint({
 				}),
 	closePopupsOnPrint: false,
 	printModes: [
+		L.control.browserPrint.mode.landscape("TABLOID VIEW", "tabloid"),
 		L.control.browserPrint.mode("Alert", "User specified print action", "A6", customActionToPrint, false),
 		L.control.browserPrint.mode.landscape(),
 		"Portrait",
@@ -130,7 +132,7 @@ General mode and shortcuts:
 	var customActionToPrint = function(context, mode) {
 		return function() {
 			window.alert("We are printing the MAP. Let's do Custom print here!");
-			context._printCustom();
+			context._printCustom(mode);
 		}
 	}
 	L.control.browserPrint.mode("Alert", "User specified print action", "A6", customActionToPrint, false),

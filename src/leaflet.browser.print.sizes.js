@@ -12,6 +12,38 @@ L.Control.BrowserPrint.Size =  {
 	B: {
 		Width: 1000,
 		Height: 1414
+	},
+	C: {
+		Width: 916,
+		Height: 1296
+	},
+	D: {
+		Width: 770,
+		Height: 1090
+	},
+	LETTER: {
+		Width: 216,
+		Height: 279
+	},
+	HALFLETTER: {
+		Width: 140,
+		Height: 216
+	},
+	LEGAL: {
+		Width: 216,
+		Height: 356
+	},
+	JUNIORLEGAL: {
+		Width: 127,
+		Height: 203
+	},
+	TABLOID: {
+		Width: 279,
+		Height: 432
+	},
+	LEDGER: {
+		Width: 432,
+		Height: 279
 	}
 };
 
@@ -23,9 +55,13 @@ L.Control.BrowserPrint.Mode = function(mode, title, pageSize, action, invalidate
 	this.Mode = mode;
 	this.Title = title || mode;
 	this.PageSize = (pageSize || 'A4').toUpperCase();
-	this.PageSeries = this.PageSize[0];
-	this.PageSeriesSize = parseInt(this.PageSize.substring(1));
-	this.Action = action || function(context) { return context['_print' + mode]; };
+	this.PageSeries = ["A", "B", "C", "D"].indexOf(this.PageSize[0]) != -1 ? this.PageSize[0] : "";
+	this.PageSeriesSize = this.PageSize.substring(this.PageSeries.length);
+	this.Action = action || function(context, element) {
+		return function() {
+			context['_print' + element.Mode](element);
+		};
+	};
 	this.InvalidateBounds = invalidateBounds;
 };
 
@@ -40,25 +76,34 @@ L.Control.BrowserPrint.Mode.prototype.getPageMargin = function(){
 };
 
 L.Control.BrowserPrint.Mode.prototype.getPaperSize = function(){
-	var series = L.Control.BrowserPrint.Size[this.PageSeries];
-	var w = series.Width;
-	var h = series.Height;
-	var switchSides = false;
-	if (this.PageSeriesSize) {
-		switchSides = this.PageSeriesSize % 2 === 1;
-		if (switchSides) {
-			w = w / (this.PageSeriesSize - 1 || 1);
-			h = h / (this.PageSeriesSize + 1);
-		} else {
-			w = w / this.PageSeriesSize;
-			h = h / this.PageSeriesSize;
+	if (this.PageSeries) {
+		var series = L.Control.BrowserPrint.Size[this.PageSeries];
+		var w = series.Width;
+		var h = series.Height;
+		var switchSides = false;
+		if (this.PageSeriesSize) {
+			this.PageSeriesSize = +this.PageSeriesSize;
+			switchSides = this.PageSeriesSize % 2 === 1;
+			if (switchSides) {
+				w = w / (this.PageSeriesSize - 1 || 1);
+				h = h / (this.PageSeriesSize + 1);
+			} else {
+				w = w / this.PageSeriesSize;
+				h = h / this.PageSeriesSize;
+			}
 		}
-	}
 
-	return {
-		Width: switchSides ? h : w,
-		Height: switchSides ? w : h
-	};
+		return {
+			Width: switchSides ? h : w,
+			Height: switchSides ? w : h
+		};
+	} else {
+		var size = L.Control.BrowserPrint.Size[this.PageSeriesSize];
+		return {
+			Width: size.Width,
+			Height: size.Height
+		};
+	}
 };
 
 L.Control.BrowserPrint.Mode.prototype.getSize = function(){

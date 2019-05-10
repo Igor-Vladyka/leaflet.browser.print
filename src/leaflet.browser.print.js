@@ -113,7 +113,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		});
     },
 
-    _hidePageSizeButtons: function (){
+    _hidePageSizeButtons: function () {
 		if (this.options.position.indexOf("left") > 0) {
 	    	this.__link__.style.borderTopRightRadius = "";
 	    	this.__link__.style.borderBottomRightRadius = "";
@@ -127,43 +127,32 @@ L.Control.BrowserPrint = L.Control.extend({
 		});
     },
 
-	_getMode: function(name, invalidateBounds, baseActionName) {
-		var mode = this.options.printModes.filter(function(f){
-			return f.Mode.toLowerCase() == name.toLowerCase();
-		})[0];
-
-		if (!mode) {
-			var baseAction = this.options.printModes.filter(function(f){
-				return f.Mode == baseActionName;
-			})[0];
-			mode = L.control.browserPrint.mode[name.toLowerCase()](baseAction.Title, baseAction.PageSize);
-		}
-
-		return new L.control.browserPrint.mode(mode.Mode, mode.Title, mode.PageSize, mode.Action, invalidateBounds || mode.InvalidateBounds);
+	_getMode: function(expectedOrientation, mode) {
+		return new L.control.browserPrint.mode(expectedOrientation, mode.Title, mode.PageSize, mode.Action, mode.InvalidateBounds);
 	},
 
-    _printLandscape: function () {
+    _printLandscape: function (mode) {
 		this._addPrintClassToContainer(this._map, "leaflet-browser-print--landscape");
-		var orientation = L.Control.BrowserPrint.Mode.Landscape;
-        this._print(this._getMode(orientation, false, orientation), orientation);
+        this._print(mode);
     },
 
-    _printPortrait: function () {
+    _printPortrait: function (mode) {
 		this._addPrintClassToContainer(this._map, "leaflet-browser-print--portrait");
-		var orientation = L.Control.BrowserPrint.Mode.Portrait;
-        this._print(this._getMode(orientation, false, orientation), orientation);
+        this._print(mode);
     },
 
-    _printAuto: function () {
+    _printAuto: function (mode) {
 		this._addPrintClassToContainer(this._map, "leaflet-browser-print--auto");
 
 		var autoBounds = this._getBoundsForAllVisualLayers();
 		var orientation = this._getPageSizeFromBounds(autoBounds);
-		this._print(this._getMode(orientation, true, L.Control.BrowserPrint.Mode.Auto), orientation, autoBounds);
+
+		this._print(this._getMode(orientation, mode), autoBounds);
     },
 
-    _printCustom: function () {
+    _printCustom: function (mode) {
 		this._addPrintClassToContainer(this._map, "leaflet-browser-print--custom");
+		this.options.custom = { mode: mode};
 		this._map.on('mousedown', this._startAutoPoligon, this);
     },
 
@@ -189,7 +178,7 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		this._map.dragging.disable();
 
-		this.options.custom = { start: e.latlng };
+		this.options.custom.start = e.latlng;
 
 		this._map.off('mousedown', this._startAutoPoligon, this);
 		this._map.on('mousemove', this._moveAutoPoligon, this);
@@ -223,10 +212,11 @@ L.Control.BrowserPrint = L.Control.extend({
 			var autoBounds = this.options.custom.rectangle.getBounds();
 
 			this._map.removeLayer(this.options.custom.rectangle);
-			this.options.custom = undefined;
 
 			var orientation = this._getPageSizeFromBounds(autoBounds);
-			this._print(this._getMode(orientation, true, L.Control.BrowserPrint.Mode.Custom), orientation, autoBounds);
+			this._print(this._getMode(orientation, this.options.custom.mode), autoBounds);
+
+			delete this.options.custom;
 		} else {
 			this._clearPrint();
 		}
@@ -255,17 +245,16 @@ L.Control.BrowserPrint = L.Control.extend({
 		this.cancelNextPrinting = cancelNextPrinting;
 	},
 
-	print: function(pageOrientation, autoBounds) {
-		if (pageOrientation == "Landscape" || pageOrientation == "Portrait") {
-			this._print(this._getMode(pageOrientation, !!autoBounds), pageOrientation, autoBounds);
-		}
+	print: function(pageMode) {
+		this._print(this._getMode(pageMode.Mode, pageMode), autoBounds);
 	},
 
-    _print: function (printMode, pageOrientation, autoBounds) {
+    _print: function (printMode, autoBounds) {
 		L.Control.BrowserPrint.Utils.initialize();
 
 		var self = this;
         var mapContainer = this._map.getContainer();
+		var pageOrientation = printMode.Mode;
 
         var origins = {
             bounds: autoBounds || this._map.getBounds(),

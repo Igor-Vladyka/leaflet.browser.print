@@ -172,10 +172,10 @@
 			l.addTo(map)
 			l.addLayer(green);
 
-			var customActionToPrint = function(context) {
+			var customActionToPrint = function(context, mode) {
 				return function() {
 					window.alert("We are printing the MAP. Let's do Custom print here!");
-					context._printCustom();
+					context._printCustom(mode);
 				}
 			}
 
@@ -189,6 +189,7 @@
                             }),
                 closePopupsOnPrint: false,
 				printModes: [
+					L.control.browserPrint.mode.landscape("Tabloid VIEW", "Tabloid"),
 					L.control.browserPrint.mode("Alert", "User specified print action", "A6", customActionToPrint, false),
 					L.control.browserPrint.mode.landscape(),
 					"PORTrait",
