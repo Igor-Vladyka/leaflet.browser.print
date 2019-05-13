@@ -512,6 +512,14 @@ L.Control.BrowserPrint = L.Control.extend({
 
 	_setupPrintMap: function (id, options, printLayer, printObjects, panes) {
 		options.zoomControl = false;
+		options.dragging = false;
+		options.zoomAnimation = false;
+		options.fadeAnimation = false;
+		options.markerZoomAnimation = false;
+		options.keyboard = false;
+		options.scrollWheelZoom = false;
+		options.tap = false;
+		options.touchZoom = false;
 		var overlayMap = L.map(id, options);
 
 		if (printLayer) {
