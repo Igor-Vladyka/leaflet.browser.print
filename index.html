@@ -9,8 +9,8 @@
 		  integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
 		  crossorigin=""/>
      	<link rel="stylesheet" href="https://leaflet.github.io/Leaflet.draw/src/leaflet.draw.css"/>
-     	<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css"/>
-     	<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css"/>
+     	<link rel="stylesheet" href="https://leaflet.github.io/Leaflet.markercluster/dist/MarkerCluster.css"/>
+     	<link rel="stylesheet" href="https://leaflet.github.io/Leaflet.markercluster/dist/MarkerCluster.Default.css"/>
         <style>
             html, body { width: 100%; height: 100%; margin: 0px; padding: 0px;}
             #map {
@@ -82,10 +82,11 @@
 		  integrity="sha512-eldJj3obVsCO9Tlrj/J8AFrrTFD4+sN8d9HdwKAqZuSgHloWOm6IzetLy1uQnwh9qLssrY3TAgIJQfjPfQJxHQ=="
 		  crossorigin=""></script-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.js"></script>
-		<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+		<script src="https://leaflet.github.io/Leaflet.markercluster/dist/leaflet.markercluster-src.js"></script>
         <script src="src/leaflet.browser.print.js"></script>
         <script src="src/leaflet.browser.print.utils.js"></script>
         <script src="src/leaflet.browser.print.sizes.js"></script>
+		<script src="https://leaflet.github.io/Leaflet.markercluster/example/realworld.388.js"></script>
     	<script>
  				var canvasRenderer = L.canvas();
 					//Layers
@@ -209,7 +210,17 @@
 
             L.popup({minWidth: 500}).setLatLng(L.latLng(39.73, -104.99)).setContent("Leaflet browser print plugin with custom print Layer and content").openOn(map);
 
+			var markers = L.markerClusterGroup();
 
+			for (var i = 0; i < addressPoints.length; i++) {
+				var a = addressPoints[i];
+				var title = a[2];
+				var marker = L.marker(new L.LatLng(a[0], a[1]), { title: title });
+				marker.bindPopup(title);
+				markers.addLayer(marker);
+			}
+
+			map.addLayer(markers);
 
     	</script>
 

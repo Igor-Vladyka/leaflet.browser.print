@@ -69,7 +69,7 @@ L.Control.BrowserPrint.Utils = {
 
 		this.registerLayer(L.MarkerClusterGroup, 'L.MarkerClusterGroup', function (layer, utils) {
 			var cluster = L.markerClusterGroup(layer.options);
-			cluster.addLayers(utils.cloneInnerLayers(layer));
+			cluster.addLayers(utils.cloneInnerLayers(layer._group));
 			return cluster;
 		});
 		this.registerLayer(L.TileLayer.WMS, 'L.TileLayer.WMS', function(layer, utils) { 	return L.tileLayer.wms(layer._url, utils.cloneOptions(layer.options)); });
@@ -131,8 +131,14 @@ L.Control.BrowserPrint.Utils = {
 			return renderer;
 		}
 
+		var factoryObject;
+		if (layer._group) {
+			factoryObject = this.__getFactoryObject(layer._group, true);
+		} else {
+			factoryObject = this.__getFactoryObject(layer);
+		}
+
 		// We clone and recreate layer if it's simple overlay
-		var factoryObject = this.__getFactoryObject(layer);
 		if (factoryObject) {
 			factoryObject = factoryObject.builder(layer, this);
 		}
@@ -168,11 +174,13 @@ L.Control.BrowserPrint.Utils = {
 		return renderer;
 	},
 
-	__getFactoryObject: function (layer) {
-		for (var i = 0; i < this._ignoreArray.length; i++) {
-			var ignoreObject = this._ignoreArray[i];
-			if (ignoreObject.type && layer instanceof ignoreObject.type) {
-				return null;
+	__getFactoryObject: function (layer, skipIgnore) {
+		if (!skipIgnore) {
+			for (var i = 0; i < this._ignoreArray.length; i++) {
+				var ignoreObject = this._ignoreArray[i];
+				if (ignoreObject.type && layer instanceof ignoreObject.type) {
+					return null;
+				}
 			}
 		}
 
