@@ -262,6 +262,33 @@ window.print = function () {
 
 Full example you can find [here](https://igor-vladyka.github.io/leaflet.browser.print/examples/savePNG.html).
 
+### Custom print button action
+Example of how you can use default button or style/specify your own button to call actual print logic. First of all you need to create print plugin with at least one print option to be able to attach it to the map, later you can use any other, even dynamically created print mode with your custom print button.
+
+Example:
+``` js
+    L.control.browserPrint({
+        printLayer: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
+                    	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                    	subdomains: 'abcd',
+                    	minZoom: 1,
+                    	maxZoom: 16,
+                    	ext: 'png'
+                    }),
+		printModes: [ "Landscape" ],
+		manualMode: true // use true if it's debug and/or default button is okay for you, otherwise false.
+    }).addTo(map);
+
+	document.querySelector("#custom_print_button").addEventListener("click", function(){
+		var modeToUse = L.control.browserPrint.mode.auto();
+		map.printControl.print(modeToUse);
+	});
+```
+
+And add next css to hide onmap menu:
+``` CSS
+	.leaflet-control-browser-print {display: none;}
+```
 ### Important notes
 ````
 Unfortunately 'Custom' mode is not working correctly for Leaflet v.0.7.7 in all IE browsers.

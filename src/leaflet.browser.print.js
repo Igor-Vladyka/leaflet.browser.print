@@ -246,7 +246,7 @@ L.Control.BrowserPrint = L.Control.extend({
 	},
 
 	print: function(pageMode) {
-		this._print(this._getMode(pageMode.Mode, pageMode), autoBounds);
+		this._print(this._getMode(pageMode.Mode, pageMode));
 	},
 
     _print: function (printMode, autoBounds) {
