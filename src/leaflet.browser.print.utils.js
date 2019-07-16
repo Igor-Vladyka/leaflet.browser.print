@@ -67,11 +67,6 @@ L.Control.BrowserPrint.Utils = {
 		this.registerRenderer(L.SVG, 'L.SVG');
 		this.registerRenderer(L.Canvas, 'L.Canvas');
 
-		this.registerLayer(L.MarkerClusterGroup, 'L.MarkerClusterGroup', function (layer, utils) {
-			var cluster = L.markerClusterGroup(layer.options);
-			cluster.addLayers(utils.cloneInnerLayers(layer._group));
-			return cluster;
-		});
 		this.registerLayer(L.TileLayer.WMS, 'L.TileLayer.WMS', function(layer, utils) { 	return L.tileLayer.wms(layer._url, utils.cloneOptions(layer.options)); });
 		this.registerLayer(L.TileLayer, 'L.TileLayer', function(layer, utils) { 			return L.tileLayer(layer._url, utils.cloneOptions(layer.options)); });
 		this.registerLayer(L.GridLayer, 'L.GridLayer', function(layer, utils) { 			return L.gridLayer(utils.cloneOptions(layer.options)); });
@@ -132,7 +127,7 @@ L.Control.BrowserPrint.Utils = {
 		}
 
 		var factoryObject;
-		if (layer._group) {
+		if (layer._group) { // Exceptional check for L.MarkerClusterGroup
 			factoryObject = this.__getFactoryObject(layer._group, true);
 		} else {
 			factoryObject = this.__getFactoryObject(layer);
@@ -204,9 +199,7 @@ L.Control.BrowserPrint.Utils = {
 	},
 
 	__unknownLayer__: function(){
-	   console.warn('Unknown layer, cannot clone this layer. Leaflet-version: ' + L.version);
-	   console.info('Please use "L.Control.BrowserPrint.Utils.registerLayer(/*layerFunction*/, "layerIdentifierString", constructorFunction)" to register new layers.');
-	   console.info('WMS Layer registration Example: L.Control.BrowserPrint.Utils.registerLayer(L.TileLayer.WMS, "L.TileLayer.WMS", function(layer, utils) { return L.tileLayer.wms(layer._url, layer.options); });');
+	   console.warn('Unknown layer, cannot clone this layer. Leaflet version: ' + L.version);
 	   console.info('For additional information please refer to documentation on: https://github.com/Igor-Vladyka/leaflet.browser.print.');
 	   console.info('-------------------------------------------------------------------------------------------------------------------');
    }

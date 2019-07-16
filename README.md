@@ -195,20 +195,28 @@ See chapter 4 of https://github.com/Asymmetrik/ngx-leaflet-tutorial-plugins/tree
 ### New print layers/renderers registration
 To add missing print layers you need to explicitly indicate layer, it's identifier and construction function that will return actual layer object.
 
-Example of WMS registration:
+Example of L.MarkerClusterGroup registration:
 ``` js
 L.Control.BrowserPrint.Utils.registerLayer(
-	L.TileLayer.WMS,
-	"L.TileLayer.WMS",
-	function(layer, utils) {
-		// We need to clone options to properly handle multiple renderers.
-		return L.tileLayer.wms(layer._url, utils.cloneOptions(layer.options));
-	}
-);
+	// Actual typeof object to compare with
+	L.MarkerClusterGroup,
+	// Any string you would like for current function for print events
+	'L.MarkerClusterGroup',
+	function (layer, utils) {
+		// We need to recreate cluster object with available options
+		// Here we use function, but we can use object aswell,
+		// example: new L.MarkerClusterGroup(layer._group.options);
+		var cluster = L.markerClusterGroup(layer._group.options);
+
+		// And we clone all inner layers to our new cluster
+		// to properly recalculate/recreate position for print map
+		cluster.addLayers(utils.cloneInnerLayers(layer._group));
+
+		return cluster;
+	});
 ```
 
 List of pre-registered layers available for printing:
-* L.MarkerClusterGroup
 * L.TileLayer.WMS
 * L.TileLayer
 * L.ImageOverlay
