@@ -5,7 +5,7 @@
 
 A [leaflet](http://www.leafletjs.com) plugin which allows users to [print full page map](https://igor-vladyka.github.io/leaflet.browser.print/) directly from the browser
 * Pros:
-	- Compatible with Leaflet v0.7.7 and v1+.
+	- Compatible with Leaflet v1+.
 	- Any page size from range A0-A10, B0-B10, C0-C10, D0-D10 can se used.
 	- North American paper sizes available as well: Letter, HalfLetter, Legal, JuniorLegal, Tabloid, Ledger
 	- Available 4 print modes, you can chose any you want and even create your own.
@@ -15,7 +15,6 @@ A [leaflet](http://www.leafletjs.com) plugin which allows users to [print full p
 	- And many more...just ask!
 
 * Cons:
-	- 'Custom' print mode not supported in Leaflet v0.7.7 on IE.
 	- Doesn't change page orientation automatically in IE and FF, due to [The @page rule and forcing Landscape orientation](http://css-discuss.incutio.com/wiki/Print_Stylesheets#The_.40page_rule_and_forcing_Landscape_orientation)
 
 ### Other examples:

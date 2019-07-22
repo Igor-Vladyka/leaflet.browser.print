@@ -208,12 +208,6 @@
 				return L.tileLayer.wms(layer._url, layer.options);
 			});
 
-			L.Control.BrowserPrint.Utils.registerLayer(L.MarkerClusterGroup, 'L.MarkerClusterGroup', function (layer, utils) {
-				var cluster = L.markerClusterGroup(layer._group.options);
-				cluster.addLayers(utils.cloneInnerLayers(layer._group));
-				return cluster;
-			});
-
             L.popup({minWidth: 500}).setLatLng(L.latLng(39.73, -104.99)).setContent("Leaflet browser print plugin with custom print Layer and content").openOn(map);
 
 			var markers = L.markerClusterGroup();
@@ -225,6 +219,17 @@
 				marker.bindPopup(title);
 				markers.addLayer(marker);
 			}
+
+			// We are not cloning markercluster to preserve original clasterization behavior and prevent OutOfMemory problems
+			L.Control.BrowserPrint.Utils.registerLayer(L.MarkerClusterGroup, 'L.MarkerClusterGroup', function (layer, utils) {
+				return layer;
+			});
+
+			// On print end we invalidate markercluster to update markers;
+			map.on(L.Control.BrowserPrint.Event.PrintEnd, function(e) {
+				map.removeLayer(markers);
+				map.addLayer(markers);
+			});
 
 			map.addLayer(markers);
 
