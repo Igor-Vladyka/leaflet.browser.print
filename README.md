@@ -59,13 +59,14 @@ You can pass a number of options to the plugin to control various settings.
 | ------------- |--------------|--------------|---------------|
 | title         | String       | 'Print map'  | Sets the text which appears as the tooltip of the print button |
 | documentTitle | String       | ''  		  | Sets the text which appears as the print page title |
-| position      | [Leaflet control position](http://leafletjs.com/reference-0.7.7.html#control-position) | 'topleft' | Position the print button |
+| position      | [Leaflet control position](http://leafletjs.com/reference-1.5.0.html#control-position) | 'topleft' | Position the print button |
 | printModes    | Array        | ["Portrait", "Landscape", "Auto", "Custom"] | Collection of page print actions |
-| printLayer    | [Leaflet tile layer](http://leafletjs.com/reference-0.7.7.html#tilelayer) | null | A tiles layer to show instead of all current active tile layers |
+| printLayer    | [Leaflet tile layer](http://leafletjs.com/reference-1.5.0.html#tilelayer) | null | A tiles layer to show instead of all current active tile layers |
 | closePopupsOnPrint | Boolean | true | Indicates if we need to force popup closing for printed map |
 | contentSelector | String | "[leaflet-browser-print-content]" | Content selector for printed map, will select and dynamically inject content on printed maps. For full functionality please check "Printing additional content section" |
 | pagesSelector | String | "[leaflet-browser-print-pages]" | Pages selector for printed map, will select and dynamically inject additional pages content on printed maps. |
 | manualMode | Boolean | false | Adds a button with id='leaflet-browser-print--manualMode-button' for debugging purpose, also can be used to print map with external button. |
+| customPrintStyle | [Polyline options](https://leafletjs.com/reference-1.5.0.html#polyline-option)] | { color: "gray", dashArray: "5, 10", pane: "customPrintPane" } | Style for rectangle on custom print. 'customPrintPane' - is a custom pane with z-index => 9999 |
 
 Here's an example of passing through some options:
 ``` js
@@ -140,12 +141,13 @@ General mode and shortcuts:
 
 ### Map Events
 
-| Map Event           | Value           		 			   | Description 													 | Purpose |
-| ------------------- | -------------------------------------- | --------------------------------------------------------------- | ------- |
-| browser-pre-print   | { pageSize, pageBounds, printObjects } | Fire before print started, allows manipulation with map objects.| For DOM manipulation with real map objects. |
-| browser-print-start | { printLayer, printMap, printObjects } | Fire on print started, before all print calculations is done.   | For DOM manipulation with print map and print objects. |
-| browser-print       | { printLayer, printMap, printObjects } | Fire right before native print. 								 | For DOM manipulation with print map and print objects. |
-| browser-print-end   | { printLayer, printMap, printObjects } | Fire on print end, after we refresh map to show initial view.   | For DOM manipulation with real map objects after print |
+| Map Event           | Event Shortcut                          | Value           		 			     | Description 													   | Purpose |
+| ------------------- | --------------------------------------- | -------------------------------------- | --------------------------------------------------------------- | ------- |
+| browser-print-init  | L.Control.BrowserPrint.Event.PrintInit  | { mode }                               | Fire right after printing was initialized.                      | To support busy indicator of any type to show user loaing status. |
+| browser-pre-print   | L.Control.BrowserPrint.Event.PrePrint   | { pageSize, pageBounds, printObjects } | Fire before print started, allows manipulation with map objects.| For DOM manipulation with real map objects.|
+| browser-print-start | L.Control.BrowserPrint.Event.PrintStart | { printLayer, printMap, printObjects } | Fire on print started, before all print calculations is done.   | For DOM manipulation with print map and print objects. |
+| browser-print       | L.Control.BrowserPrint.Event.Print      | { printLayer, printMap, printObjects } | Fire right before native print. 								   | For DOM manipulation with print map and print objects. |
+| browser-print-end   | L.Control.BrowserPrint.Event.PrintEnd   | { printLayer, printMap, printObjects } | Fire on print end, after we refresh map to show initial view.   | For DOM manipulation with real map objects after print |
 
 Example can be found here: [DEMO with print objects manipulations](https://igor-vladyka.github.io/leaflet.browser.print/examples/manipulations.html);
 

@@ -13,10 +13,15 @@ L.Control.BrowserPrint = L.Control.extend({
 		closePopupsOnPrint: true,
 		contentSelector: "[leaflet-browser-print-content]",
 		pagesSelector: "[leaflet-browser-print-pages]",
-		manualMode: false
+		manualMode: false,
+		customPrintStyle: { color: "gray", dashArray: '5, 10', pane: "customPrintPane" }
 	},
 
 	onAdd: function (map) {
+
+		if (this.options.customPrintStyle.pane && !map.getPane(this.options.customPrintStyle.pane)) {
+			map.createPane(this.options.customPrintStyle.pane).style.zIndex = 9999;
+		}
 
 		var container = L.DomUtil.create('div', 'leaflet-control-browser-print leaflet-bar leaflet-control');
 		L.DomEvent.disableClickPropagation(container);
@@ -37,10 +42,6 @@ L.Control.BrowserPrint = L.Control.extend({
 			this._createMenu(container);
 			this._createIcon(container);
 		}
-
-		setTimeout( function () {
-			container.className += parseInt(L.version) ? " v1" : " v0-7"; // parseInt(L.version) returns 1 for v1.0.3 and 0 for 0.7.7;
-		}, 10);
 
 		map.printControl = this; // Make control available from the map object itself;
 		return container;
@@ -192,7 +193,7 @@ L.Control.BrowserPrint = L.Control.extend({
 			if (this.options.custom.rectangle) {
 				this.options.custom.rectangle.setBounds(L.latLngBounds(this.options.custom.start, e.latlng));
 			} else {
-				this.options.custom.rectangle = L.rectangle([this.options.custom.start, e.latlng], { color: "gray", dashArray: '5, 10' });
+				this.options.custom.rectangle = L.rectangle([this.options.custom.start, e.latlng], this.options.customPrintStyle);
 				this.options.custom.rectangle.addTo(this._map);
 			}
 		}
@@ -250,6 +251,7 @@ L.Control.BrowserPrint = L.Control.extend({
 	},
 
     _print: function (printMode, autoBounds) {
+		this._map.fire(L.Control.BrowserPrint.Event.PrintInit, { mode: printMode });
 		L.Control.BrowserPrint.Utils.initialize();
 
 		var self = this;
@@ -424,9 +426,9 @@ L.Control.BrowserPrint = L.Control.extend({
 
 		printControlStyleSheet.innerHTML += " .leaflet-control-browser-print { display: flex; } .leaflet-control-browser-print a { background: #fff url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gcCCi8Vjp+aNAAAAGhJREFUOMvFksENgDAMA68RC7BBN+Cf/ZU33QAmYAT6BolAGxB+RrrIsg1BpfNBVXcPMLMDI/ytpKozMHWwK7BJJ7yYWQbGdBea9wTIkRDzKy0MT7r2NiJACRgotCzxykFI34QY2Ea7KmtxGJ+uX4wfAAAAAElFTkSuQmCC') no-repeat 5px; background-size: 16px 16px; display: block; border-radius: 2px; }";
 
-		printControlStyleSheet.innerHTML += " .v0-7.leaflet-control-browser-print a.leaflet-browser-print { width: 26px; height: 26px; } .v1.leaflet-control-browser-print a.leaflet-browser-print { background-position-x: 7px; }";
+		printControlStyleSheet.innerHTML += " .leaflet-control-browser-print a.leaflet-browser-print { background-position-x: 7px; }";
 		printControlStyleSheet.innerHTML += " .browser-print-holder { margin: 0px; padding: 0px; list-style: none; white-space: nowrap; } .browser-print-holder-left li:last-child { border-top-right-radius: 2px; border-bottom-right-radius: 2px; } .browser-print-holder-right li:first-child { border-top-left-radius: 2px; border-bottom-left-radius: 2px; }";
-		printControlStyleSheet.innerHTML += " .browser-print-mode { display: none; background-color: #919187; color: #FFF; font: 11px/19px 'Helvetica Neue', Arial, Helvetica, sans-serif; text-decoration: none; padding: 4px 10px; text-align: center; } .v1 .browser-print-mode { padding: 6px 10px; } .browser-print-mode:hover { background-color: #757570; cursor: pointer; }";
+		printControlStyleSheet.innerHTML += " .browser-print-mode { display: none; background-color: #919187; color: #FFF; font: 11px/19px 'Helvetica Neue', Arial, Helvetica, sans-serif; text-decoration: none; padding: 4px 10px; text-align: center; } .browser-print-mode { padding: 6px 10px; } .browser-print-mode:hover { background-color: #757570; cursor: pointer; }";
 		printControlStyleSheet.innerHTML += " .leaflet-browser-print--custom, .leaflet-browser-print--custom path { cursor: crosshair!important; }";
 		printControlStyleSheet.innerHTML += " .leaflet-print-overlay { width: 100%; height:auto; min-height: 100%; position: absolute; top: 0; background-color: white!important; left: 0; z-index: 1001; display: block!important; } ";
 		printControlStyleSheet.innerHTML += " .leaflet--printing { height:auto; min-height: 100%; margin: 0px!important; padding: 0px!important; } body.leaflet--printing > * { display: none; box-sizing: border-box; }";
@@ -590,6 +592,7 @@ L.Control.BrowserPrint = L.Control.extend({
 });
 
 L.Control.BrowserPrint.Event =  {
+	PrintInit: 'browser-print-init',
 	PrePrint: 'browser-pre-print',
 	PrintStart: 'browser-print-start',
 	Print: 'browser-print',
