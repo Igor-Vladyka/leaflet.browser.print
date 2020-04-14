@@ -2,16 +2,12 @@
 <html>
 	<head>
 
-		<title>Leaflet browser print plugin for v1.3.4 | Save as PNG</title>
+		<title>Leaflet browser print plugin | Save as PNG</title>
 		<meta charset="utf-8" />
 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
-		  integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-		  crossorigin=""/>
-		<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
-		  integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
-		  crossorigin=""></script>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+		<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 		<script src="../dist/leaflet.browser.print.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.js"></script>
 		<script type="text/javascript" src="data/us-states.js"></script>
@@ -35,20 +31,32 @@
 
 		<script>
 			window.print = function () {
-				domtoimage
-				.toPng(document.body)
-				.then(function (dataUrl) {
-					var link = document.createElement('a');
-					link.download = map.printControl.options.documentTitle || "exportedMap" + '.png';
-					link.href = dataUrl;
-					link.click();
-				});
+				return domtoimage
+						.toPng(document.querySelector(".grid-print-container"))
+						.then(function (dataUrl) {
+							var link = document.createElement('a');
+							link.download = map.printControl.options.documentTitle || "exportedMap" + '.png';
+							link.href = dataUrl;
+							link.click();
+						});
 			};
 		</script>
 
 		<script type="text/javascript">
 
 			var map = L.map("map").setView([37.8, -96], 4);
+
+			// Here we hide all controls from end image
+			map.on(L.Control.BrowserPrint.Event.PrintStart, function() {
+				map._controlCorners.topleft.style.display = "none";
+				map._controlCorners.topright.style.display = "none";
+			});
+
+			// Here we show all controls after image was created
+			map.on(L.Control.BrowserPrint.Event.PrintEnd, function() {
+				map._controlCorners.topleft.style.display = "";
+				map._controlCorners.topright.style.display = "";
+			});
 
 			L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 				maxZoom: 18,
@@ -174,16 +182,13 @@
 			L.legendControl({position: 'bottomright'}).addTo(map);
 
 		    L.control.browserPrint({
+				documentTitle: "printImage",
 				printModes: [
-					L.control.browserPrint.mode.auto("Download PNG"),
-					L.control.browserPrint.mode.landscape(),
-					L.control.browserPrint.mode.portrait(),
-					L.control.browserPrint.mode.auto(),
-					L.control.browserPrint.mode.custom()
+					L.control.browserPrint.mode.auto("Download PNG")
 				]
 			}).addTo(map);
 
-			map.on("browser-print-start", function(e){
+			map.on(L.Control.BrowserPrint.Event.PrintStart, function(e){
 				/*on print start we already have a print map and we can create new control and add it to the print map to be able to print custom information */
 				L.legendControl({position: 'bottomright'}).addTo(e.printMap);
 			});
