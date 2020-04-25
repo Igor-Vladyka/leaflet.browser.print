@@ -529,9 +529,10 @@ L.Control.BrowserPrint = L.Control.extend({
 		}
 
 		panes.forEach(function(p) { overlayMap.createPane(p.name, p.container); });
-
+		var clones = {};
 		for (var type in printObjects){
 			var closePopupsOnPrint = this.options.closePopupsOnPrint;
+			var popupsToOpen = [];
 			printObjects[type] = printObjects[type].map(function(pLayer){
 				var clone = L.Control.BrowserPrint.Utils.cloneLayer(pLayer);
 
@@ -542,11 +543,13 @@ L.Control.BrowserPrint = L.Control.extend({
 							pLayer.isOpen = function () { return this._isOpen; };
 						}
 						if (pLayer.isOpen() && !closePopupsOnPrint) {
-							clone.openOn(overlayMap);
+							popupsToOpen.push({source: pLayer._source, popup: clone});
 						}
 					} else {
 						clone.addTo(overlayMap);
 					}
+
+					clones[pLayer._leaflet_id] = clone;
 
 					if (pLayer instanceof L.Layer) {
 						var tooltip = pLayer.getTooltip();
@@ -561,6 +564,16 @@ L.Control.BrowserPrint = L.Control.extend({
 					return clone;
 				}
 			});
+		}
+
+		for (var p = 0; p < popupsToOpen.length; p++) {
+			var popupModel = popupsToOpen[p];
+			if (popupModel.source) {
+				var element = clones[popupModel.source._leaflet_id];
+				if (element && element.bindPopup && element.openPopup) {
+					clones[popupModel.source._leaflet_id].bindPopup(popupModel.popup).openPopup(popupModel.popup.getLatLng());
+				}
+			}
 		}
 
 		return {map: overlayMap, objects: printObjects};
