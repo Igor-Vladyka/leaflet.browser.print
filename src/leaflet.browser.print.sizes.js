@@ -70,9 +70,24 @@ L.Control.BrowserPrint.Mode.Portrait = "Portrait";
 L.Control.BrowserPrint.Mode.Auto = "Auto";
 L.Control.BrowserPrint.Mode.Custom = "Custom";
 
-L.Control.BrowserPrint.Mode.prototype.getPageMargin = function(){
+L.Control.BrowserPrint.Mode.prototype.getPageMargin = function(type) {
 	var size = this.getPaperSize();
-	return Math.floor((size.Width + size.Height) / 40) + 'mm';
+	var marginInMm = ((size.Width + size.Height) / 39.9);
+	var result;
+
+	switch (type) {
+		case "mm":
+			result = marginInMm.toFixed(2) + "mm";
+			break;
+		case "in":
+			result = (marginInMm / 25.4).toFixed(2) + "in";
+			break;
+		default:
+			result = marginInMm;
+			break;
+
+	}
+	return result;
 };
 
 L.Control.BrowserPrint.Mode.prototype.getPaperSize = function(){
@@ -108,18 +123,10 @@ L.Control.BrowserPrint.Mode.prototype.getPaperSize = function(){
 
 L.Control.BrowserPrint.Mode.prototype.getSize = function(){
 	var size = this.getPaperSize();
-	var margin = parseInt(this.getPageMargin());
+	var margin = this.getPageMargin() * 2 * (window.devicePixelRatio || 1);
 
-	var calculateMargin = function(s) {
-		if (margin) {
-			return s - (margin * 2);
-		}
-
-		return s;
-	}
-
-	size.Width = Math.floor(calculateMargin(size.Width)) + 'mm';
-	size.Height = Math.floor(calculateMargin(size.Height)) + 'mm';
+	size.Width = Math.floor(size.Width - margin) + 'mm';
+	size.Height = Math.floor(size.Height - margin) + 'mm';
 
 	return size;
 };

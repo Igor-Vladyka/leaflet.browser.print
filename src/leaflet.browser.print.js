@@ -281,7 +281,7 @@ L.Control.BrowserPrint = L.Control.extend({
 			return;
 		}
 
-		var overlay = this._addPrintMapOverlay(printMode.PageSize, printMode.getPageMargin(), printMode.getSize(), pageOrientation, origins);
+		var overlay = this._addPrintMapOverlay(printMode.PageSize, printMode.getPageMargin("mm"), printMode.getSize(), pageOrientation, origins);
 
 		if (this.options.documentTitle) {
 			document.title = this.options.documentTitle;
