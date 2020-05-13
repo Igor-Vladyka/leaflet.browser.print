@@ -239,7 +239,8 @@ If you are facing OutOfMemory problem printing huge amount of objects you may co
 // markerClusterGroup to print
 var printableObjects = L.markerClusterGroup();
 
-// We are not cloning markercluster to preserve original clasterization behavior and prevent OutOfMemory problems, but this way we will need to invalidate MarkerClusterGroup after printing
+// We are not cloning markercluster to preserve original clasterization behavior and prevent OutOfMemory problems
+// This way we will need to invalidate MarkerClusterGroup after printing
 L.Control.BrowserPrint.Utils.registerLayer(L.MarkerClusterGroup,
 										  'L.MarkerClusterGroup',
 											function (layer, utils) {
