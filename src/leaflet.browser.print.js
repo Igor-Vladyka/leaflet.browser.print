@@ -246,8 +246,8 @@ L.Control.BrowserPrint = L.Control.extend({
 		this.cancelNextPrinting = cancelNextPrinting;
 	},
 
-	print: function(pageMode, mapBoundToPrint) {
-		this._print(this._getMode(pageMode.Mode, pageMode), mapBoundToPrint);
+	print: function(pageMode) {
+		pageMode.Action(this, pageMode)();
 	},
 
     _print: function (printMode, autoBounds) {

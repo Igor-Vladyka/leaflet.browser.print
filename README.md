@@ -125,20 +125,6 @@ General mode and shortcuts:
 	L.control.browserPrint.mode.custom();
 ```
 
-
-### Custom Print Mode Configurations
-
-``` js
-	var customActionToPrint = function(context, mode) {
-		return function() {
-			window.alert("We are printing the MAP. Let's do Custom print here!");
-			context._printCustom(mode);
-		}
-	}
-	L.control.browserPrint.mode("Alert", "User specified print action", "A6", customActionToPrint, false),
-
-```
-
 ### Map Events
 
 | Map Event           | Event Shortcut                          | Value           		 			     | Description 													   | Purpose |
@@ -246,6 +232,30 @@ List of registered renderers
 * L.Canvas
 
 If you want to override any of those, please register your own builder for them.
+
+#### MarkerClusterGroup OutOfMemory problem:
+If you are facing OutOfMemory problem printing huge amount of objects you may consider next workaround:
+``` js
+// markerClusterGroup to print
+var printableObjects = L.markerClusterGroup();
+
+// We are not cloning markercluster to preserve original clasterization behavior and prevent OutOfMemory problems, but this way we will need to invalidate MarkerClusterGroup after printing
+L.Control.BrowserPrint.Utils.registerLayer(L.MarkerClusterGroup,
+										  'L.MarkerClusterGroup',
+											function (layer, utils) {
+												return layer;
+											});
+
+// On print end we invalidate markercluster to update markers;
+map.on(L.Control.BrowserPrint.Event.PrintEnd, function(e) {
+	map.removeLayer(printableObjects);
+	map.addLayer(printableObjects);
+});
+
+// Initial rendering ouf objects
+map.addLayer(printableObjects);
+```
+
 
 ### Download Map as Image
 To download map as PNG you have to use external plugin to do the job. Current plugin will do only 1 job - prepare map for printing.
