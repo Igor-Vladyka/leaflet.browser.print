@@ -1,5 +1,6 @@
 # Map Print Plugin for Leaflet.js
 [![npm version](https://badge.fury.io/js/leaflet.browser.print.svg)](https://www.npmjs.com/package/leaflet.browser.print)
+[Changelog](https://github.com/Igor-Vladyka/leaflet.browser.print/blob/master/CHANGELOG.md)
 
 ## General information
 
@@ -16,8 +17,6 @@ A [leaflet](http://www.leafletjs.com) plugin which allows users to [print full p
 
 * Cons:
 	- Doesn't change page orientation automatically in IE and FF, due to [The @page rule and forcing Landscape orientation](http://css-discuss.incutio.com/wiki/Print_Stylesheets#The_.40page_rule_and_forcing_Landscape_orientation)
-
-[Changelog](https://github.com/Igor-Vladyka/leaflet.browser.print/blob/master/CHANGELOG.md)
 
 ### Other examples:
 Check out the:
