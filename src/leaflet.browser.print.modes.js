@@ -14,8 +14,8 @@ L.BrowserPrint.Mode = L.Class.extend({
 		scale: 1,
 		orientation: '',
 		pageSize: 'A4',
-		pageSeries: 'A',
-		pageSeriesSize: '4',
+		pageSeries: '',
+		pageSeriesSize: '',
 		action: null,
 	},
 	initialize: function (mode, options = {}) {
@@ -37,7 +37,7 @@ L.BrowserPrint.Mode = L.Class.extend({
 		}
 
 		this.options.pageSize = (this.options.pageSize || 'A4').toUpperCase();
-		this.options.pageSeries = ["A", "B", "C", "D"].indexOf(this.options.pageSize[0]) !== -1 ? this.options.pageSize[0] : "A";
+		this.options.pageSeries = ["A", "B", "C", "D"].indexOf(this.options.pageSize[0]) !== -1 ? this.options.pageSize[0] : "";
 		this.options.pageSeriesSize = this.options.pageSize.substring(this.options.pageSeries.length);
 		this.options.action = this.options.action || function (context, element) {
 			return function () {
