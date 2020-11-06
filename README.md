@@ -12,6 +12,7 @@ A [leaflet](http://www.leafletjs.com) plugin which allows users to [print full p
 	- Everything in browser, no external apps or dependencies, print your map in one click.
 	- You can even override default browser print behavior and export map as image, more details you can find [here](https://github.com/Igor-Vladyka/leaflet.browser.print#download-map-as-image).
 	- Any additional page content can be printed together with a map.
+	- Leaflet Print Control
 	- And many more...just ask!
 
 * Cons:
@@ -41,43 +42,50 @@ Common problem with printing map with a legend is external CSS plugins that ruin
 	yarn add leaflet.browser.print
 ````
 
-### Usage
-**Step 1.** Include the required js and css files in your document.
-
+**SCRIPT**
 ```html
 	<script src="dist/leaflet.browser.print.min.js"></script>
 ```
 
-**Step 2.** Add the following line of code to your map script
 
-``` js
-	L.control.browserPrint().addTo(map)
+### Usage
+#### Add a Control
+Add the following line of code to your map script
+
+```javascript
+var browserControl = L.control.browserPrint(options).addTo(map);
 ```
 
-**Step 3.**
-You can pass a number of options to the plugin to control various settings.
+You can pass a number of options to the control:
 
 | Option        | Type         | Default      | Description   |
 | ------------- |--------------|--------------|---------------|
-| title         | String       | 'Print map'  | Sets the text which appears as the tooltip of the print button |
-| documentTitle | String       | ''  		  | Sets the text which appears as the print page title |
 | position      | [Leaflet control position](http://leafletjs.com/reference-1.5.0.html#control-position) | 'topleft' | Position the print button |
+| title         | String       | 'Print map'  | Sets the text which appears as the tooltip of the print button |
 | printModes    | Array        | ["Portrait", "Landscape", "Auto", "Custom"] | Collection of page print actions |
-| printLayer    | [Leaflet tile layer](http://leafletjs.com/reference-1.5.0.html#tilelayer) | null | A tiles layer to show instead of all current active tile layers |
-| closePopupsOnPrint | Boolean | true | Indicates if we need to force popup closing for printed map |
-| contentSelector | String | "[leaflet-browser-print-content]" | Content selector for printed map, will select and dynamically inject content on printed maps. For full functionality please check "Printing additional content section" |
-| pagesSelector | String | "[leaflet-browser-print-pages]" | Pages selector for printed map, will select and dynamically inject additional pages content on printed maps. |
-| manualMode | Boolean | false | Adds a button with id='leaflet-browser-print--manualMode-button' for debugging purpose, also can be used to print map with external button. |
-| customPrintStyle | [Polyline options](https://leafletjs.com/reference-1.5.0.html#polyline-option)] | { color: "gray", dashArray: "5, 10", pane: "customPrintPane" } | Style for rectangle on custom print. 'customPrintPane' - is a custom pane with z-index => 9999 |
+
+Also the options for the [backend](#Use it in the Backend) can passed through.
+
+```javascript
+L.control.browserPrint({position: 'topleft', title: 'Print ...'}).addTo(map);
+```
+
+To use the same BrowserPrint class in the backend and in the control you can pass it while creating the control:
+```javascript
+var browserPrint = L.browserPrint(map,backendOptions);
+L.control.browserPrint(controlOptions,browserPrint).addTo(map);
+```
+
+
 
 Here's an example of passing through some options:
-``` js
+```javascript
 var customActionToPrint = function(context, mode) {
 	return function() {
 		window.alert("We are printing the MAP. Let's do Custom print here!");
-		context._printCustom(mode);
+		context._printMode(mode);
 	}
-}
+};
 
 L.control.browserPrint({
 	title: 'Just print me!',
@@ -91,51 +99,122 @@ L.control.browserPrint({
 				}),
 	closePopupsOnPrint: false,
 	printModes: [
-		L.control.browserPrint.mode.landscape("TABLOID VIEW", "tabloid"),
-		L.control.browserPrint.mode("Alert", "User specified print action", "A6", customActionToPrint, false),
-		L.control.browserPrint.mode.landscape(),
-		"Portrait",
-		L.control.browserPrint.mode.auto("Automatico", "B4"),
-		L.control.browserPrint.mode.custom("Séléctionnez la zone", "B5")
+            L.BrowserPrint.Mode.Landscape("Tabloid",{title: "Tabloid VIEW"}),
+            L.browserPrint.mode("Alert",{title:"User specified print action",pageSize: "A6", action: customActionToPrint, invalidateBounds: false}),
+            L.BrowserPrint.Mode.Landscape(),
+            "Portrait",
+            L.BrowserPrint.Mode.Auto("B4",{title: "Auto"}),
+            L.BrowserPrint.Mode.Custom("B5",{title:"Select area"})
 	],
 	manualMode: false
 }).addTo(map);
 ```
 
-### Print Mode Details
+To stop printing call `cancel()`:
+```javascript
+browserControl.cancel();
+```
+
+
+#### Use it in the Backend
+Add the following line of code to your map script
+
+```javascript
+var browserPrint = L.browserPrint(map, options);
+```
+
+And then you can start printing with:
+```javascript
+browserPrint.print(L.BrowserPrint.Mode.Landscape());
+```
+To stop printing call `cancel()`:
+```javascript
+browserPrint.cancel();
+```
+
+You can pass a number of options for printing:
+
+| Option        | Type         | Default      | Description   |
+| ------------- |--------------|--------------|---------------|
+| printModes    | Array        | ["Portrait", "Landscape", "Auto", "Custom"] | Collection of page print actions |
+| documentTitle | String       | ''  		  | Sets the text which appears as the print page title |
+| printLayer    | [Leaflet tile layer](http://leafletjs.com/reference-1.5.0.html#tilelayer) | null | A tiles layer to show instead of all current active tile layers |
+| closePopupsOnPrint | Boolean | true | Indicates if we need to force popup closing for printed map |
+| contentSelector | String | "[leaflet-browser-print-content]" | Content selector for printed map, will select and dynamically inject content on printed maps. For full functionality please check "Printing additional content section" |
+| pagesSelector | String | "[leaflet-browser-print-pages]" | Pages selector for printed map, will select and dynamically inject additional pages content on printed maps. |
+| manualMode | Boolean | false | Adds a button with id='leaflet-browser-print--manualMode-button' for debugging purpose, also can be used to print map with external button. |
+| customPrintStyle | [Polyline options](https://leafletjs.com/reference-1.5.0.html#polyline-option) | `{ color: "gray", dashArray: "5, 10", pane: "customPrintPane" }` | Style for rectangle on custom print. 'customPrintPane' - is a custom pane with z-index => 9999 |
+
+
+Here's an example of passing through some options:
+```javascript
+var options = {
+    documentTitle: 'Map printed using leaflet.browser.print plugin',
+    printLayer: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
+                    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                    subdomains: 'abcd',
+                    minZoom: 1,
+                    maxZoom: 16,
+                    ext: 'png'
+                }),
+    closePopupsOnPrint: false,
+    manualMode: false
+};
+var browserPrint = L.browserPrint(map, options);
+```
+
+
+### Print Modes
 
 | Mode          | Description    |
 | ------------- | -------------- |
 | Portrait      | Print currently visual part of the map with Portrait page dimensions |
 | Landscape     | Print currently visual part of the map with Landscape page dimensions |
 | Auto          | Track all active map layers (markers, lines, polygons, etc. ) and tries to fit them in print page in Portrait or Landscape page dimensions |
-| Custom        | Allows you to select rectangle for printing, and then fit it in Portrait or Landscape page dimensions |
+| Custom        | Allows you to select rectangle for printing, and then fit it in Portrait or Landscape page dimensions if it is not explicit set |
 
-General mode and shortcuts:
-``` js
-	L.control.browserPrint.mode(
-		/*Mode from table above*/,
-		/*Text to represent mode on button*/,
-		/*Page Size that can basically be in range A0-A10 and B0-B10.*/
-		/*Custom function that can be executed to print map*/,
-		/*Indicates if we need to force bounds invalidation(true) or just center the map and use current zoom lvl(false)*/
-	);
+General modes:
+```javascript
+	L.BrowserPrint.Mode.Landscape();
+	L.BrowserPrint.Mode.Portrait();
+	L.BrowserPrint.Mode.Auto();
+	L.BrowserPrint.Mode.Custom();
+```
 
-	L.control.browserPrint.mode.landscape();
-	L.control.browserPrint.mode.portrait();
-	L.control.browserPrint.mode.auto();
-	L.control.browserPrint.mode.custom();
+For each general mode the page size and options can be passed. The default page size is `A4`
+```javascript
+L.BrowserPrint.Mode.Landscape(pageSize,options);
+```
+
+
+| Option        | Type         | Default      | Description   |
+| ------------- |--------------|--------------|---------------|
+| title         | String       | The mode name. f.e. "Portrait" | Set the control menu text |
+| pageSize      | String       | 'A4'          | Size of page that will be printed |
+| orientation   | String       | Mode name or calculation (Auto & Custom) | How the page will be displayed landscape or portrait |
+| zoom          | Integer      | 0             | Zoom the map to this level |
+| enableZoom    | Boolean      | true          | Zoom the map optimal, else the current zoom is taken. `zoom` have to be `0` |
+| action        | Function     | default mode action | [Custom print button action](#Custom print button action) |
+| rotate        | Integer      | 0             | Rotate the map x-times by 90° |
+| margin        | Object       | automatic     | The default margin are `(height + width) / 39.9`. A number can passed for all margins or set it explicit in a object for `left`, `right`, `top`, `bottom` --> `{left: 10, top: 40}`  |
+| scale         | Double       | 1             | Scale the map. Shows all bigger or smaller, with `1` the map looks normal |
+
+
+Creating a own mode: `L.BrowserPrint.Mode(name,options);`
+```javascript
+L.browserPrint.mode("Alert Mode",{pageSize: 'A3',orientation: 'Portrait'});
 ```
 
 ### Map Events
 
 | Map Event           | Event Shortcut                          | Value           		 			     | Description 													   | Purpose |
 | ------------------- | --------------------------------------- | -------------------------------------- | --------------------------------------------------------------- | ------- |
-| browser-print-init  | L.Control.BrowserPrint.Event.PrintInit  | { mode }                               | Fire right after printing was initialized.                      | To support busy indicator of any type to show user loaing status. |
-| browser-pre-print   | L.Control.BrowserPrint.Event.PrePrint   | { pageSize, pageBounds, printObjects } | Fire before print started, allows manipulation with map objects.| For DOM manipulation with real map objects.|
-| browser-print-start | L.Control.BrowserPrint.Event.PrintStart | { printLayer, printMap, printObjects } | Fire on print started, before all print calculations is done.   | For DOM manipulation with print map and print objects. |
-| browser-print       | L.Control.BrowserPrint.Event.Print      | { printLayer, printMap, printObjects } | Fire right before native print. 								   | For DOM manipulation with print map and print objects. |
-| browser-print-end   | L.Control.BrowserPrint.Event.PrintEnd   | { printLayer, printMap, printObjects } | Fire on print end, after we refresh map to show initial view.   | For DOM manipulation with real map objects after print |
+| browser-print-init  | L.BrowserPrint.Event.PrintInit  | { mode }                               | Fire right after printing was initialized.                      | To support busy indicator of any type to show user loaing status. |
+| browser-pre-print   | L.BrowserPrint.Event.PrePrint   | { pageSize, pageBounds, printObjects } | Fire before print started, allows manipulation with map objects.| For DOM manipulation with real map objects.|
+| browser-print-start | L.BrowserPrint.Event.PrintStart | { printLayer, printMap, printObjects } | Fire on print started, before all print calculations is done.   | For DOM manipulation with print map and print objects. |
+| browser-print       | L.BrowserPrint.Event.Print      | { printLayer, printMap, printObjects } | Fire right before native print. 								   | For DOM manipulation with print map and print objects. |
+| browser-print-end   | L.BrowserPrint.Event.PrintEnd   | { printLayer, printMap, printObjects } | Fire on print end, after we refresh map to show initial view.   | For DOM manipulation with real map objects after print |
+| browser-print-cancel| L.BrowserPrint.Event.PrintCancel   | { mode } | Fire when printing cancelded   | For DOM manipulation with real map objects after cancel |
 
 Example can be found here: [DEMO with print objects manipulations](https://igor-vladyka.github.io/leaflet.browser.print/examples/manipulations.html);
 
@@ -146,7 +225,7 @@ By default contentSelector: '[leaflet-browser-print-content]' so we need a conte
 
 Code example:
 
-``` html
+```html
 <style leaflet-browser-print-content>
 	.grid-print-container { // grid holder that holds all content (map and any other content)
 		grid-template: auto 1fr auto / 1fr;
@@ -185,8 +264,8 @@ See chapter 4 of https://github.com/Asymmetrik/ngx-leaflet-tutorial-plugins/tree
 To add missing print layers you need to explicitly indicate layer, it's identifier and construction function that will return actual layer object.
 
 Example of L.MarkerClusterGroup registration:
-``` js
-L.Control.BrowserPrint.Utils.registerLayer(
+```js
+L.BrowserPrint.Utils.registerLayer(
 	// Actual typeof object to compare with
 	L.MarkerClusterGroup,
 	// Any string you would like for current function for print events
@@ -225,8 +304,8 @@ List of pre-registered layers available for printing:
 
 
 Example of renderer registration:
-``` js
-L.Control.BrowserPrint.Utils.registerRenderer(L.SVG, 'L.SVG');
+```js
+L.BrowserPrint.Utils.registerRenderer(L.SVG, 'L.SVG');
 ```
 
 List of registered renderers
@@ -237,20 +316,20 @@ If you want to override any of those, please register your own builder for them.
 
 #### MarkerClusterGroup OutOfMemory problem:
 If you are facing OutOfMemory problem printing huge amount of objects you may consider next workaround:
-``` js
+```js
 // markerClusterGroup to print
 var printableObjects = L.markerClusterGroup();
 
 // We are not cloning markercluster to preserve original clasterization behavior and prevent OutOfMemory problems
 // This way we will need to invalidate MarkerClusterGroup after printing
-L.Control.BrowserPrint.Utils.registerLayer(L.MarkerClusterGroup,
+L.BrowserPrint.Utils.registerLayer(L.MarkerClusterGroup,
 										  'L.MarkerClusterGroup',
 											function (layer, utils) {
 												return layer;
 											});
 
 // On print end we invalidate markercluster to update markers;
-map.on(L.Control.BrowserPrint.Event.PrintEnd, function(e) {
+map.on(L.BrowserPrint.Event.PrintEnd, function(e) {
 	map.removeLayer(printableObjects);
 	map.addLayer(printableObjects);
 });
@@ -263,14 +342,14 @@ map.addLayer(printableObjects);
 ### Download Map as Image
 To download map as PNG you have to use external plugin to do the job. Current plugin will do only 1 job - prepare map for printing.
 To print actual map we use in-browser print mechanism:
-``` js
+```js
 window.print()
 ```
 
 You can override it to support any other behavior as you want.
 Example with [domtoimage](https://github.com/tsayen/dom-to-image) plugin to export map as image.png:
 
-``` js
+```js
 window.print = function () {
 	return domtoimage.toPng(document.body)
 				.then(function (dataUrl) {
@@ -288,7 +367,7 @@ Full example you can find [here](https://igor-vladyka.github.io/leaflet.browser.
 Example of how you can use default button or style/specify your own button to call actual print logic. First of all you need to create print plugin with at least one print option to be able to attach it to the map, later you can use any other, even dynamically created print mode with your custom print button.
 
 Example:
-``` js
+```js
     L.control.browserPrint({
         printLayer: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
                     	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -302,13 +381,13 @@ Example:
     }).addTo(map);
 
 	document.querySelector("#custom_print_button").addEventListener("click", function(){
-		var modeToUse = L.control.browserPrint.mode.auto();
+		var modeToUse = L.BrowserPrint.Mode.Auto();
 		map.printControl.print(modeToUse);
 	});
 ```
 
 And add next css to hide onmap menu:
-``` CSS
+```CSS
 	.leaflet-control-browser-print {display: none;}
 ```
 ### Important notes
@@ -322,3 +401,5 @@ Thanks to [Rowan Winsemius](https://github.com/rowanwins/leaflet-easyPrint) for 
 Thanks to [Jan Pieter Waagmeester](https://github.com/jieter/leaflet-clonelayer) for an idea that helped with map print functionality.
 
 Also thanks to [IcoMoon](http://icomoon.io/) for the print icon.
+
+Thanks to [Falke-Design](https://github.com/falke-design/) for restructuring the project and adding more functions

@@ -1,270 +1,282 @@
 <!DOCTYPE html>
 <html>
-    <head>
-    	<title>Leaflet browser print plugin with custom print Layer and content</title>
-    	<meta charset="utf-8" />
+<head>
+  <title>Leaflet browser print plugin with custom print Layer and content</title>
+  <meta charset="utf-8"/>
 
-    	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-     	<link rel="stylesheet" href="https://leaflet.github.io/Leaflet.draw/src/leaflet.draw.css"/>
-     	<link rel="stylesheet" href="https://leaflet.github.io/Leaflet.markercluster/dist/MarkerCluster.css"/>
-     	<link rel="stylesheet" href="https://leaflet.github.io/Leaflet.markercluster/dist/MarkerCluster.Default.css"/>
-        <style>
-            html, body { width: 100%; height: 100%; margin: 0px; padding: 0px;}
-            #map {
-                width: 80%; margin: auto; height: 70%;
-            }
-        </style>
-     </head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://leaflet.github.io/Leaflet.draw/src/leaflet.draw.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@geoman-io/leaflet-geoman-free@2.7.0/dist/leaflet-geoman.css">
+  <link rel="stylesheet" href="https://leaflet.github.io/Leaflet.markercluster/dist/MarkerCluster.css"/>
+  <link rel="stylesheet" href="https://leaflet.github.io/Leaflet.markercluster/dist/MarkerCluster.Default.css"/>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0px;
+      padding: 0px;
+    }
 
-    <body>
-        <h1 class="title" leaflet-browser-print-content>Leaflet Browser print TITLE</h1>
-        <h3 class="sub-content" leaflet-browser-print-content>Leaflet browser print plugin for map printing with additional controls and content</h3>
-    	<div id="map"></div>
-		<table leaflet-browser-print-pages>
-			<thead>
-				<tr>
-					<th>Option</th>
-					<th>Type</th>
-					<th>Default</th>
-					<th>Description</th>
-				</tr>
-			</thead>
-			<tbody>
-			<tr>
-			<td>title</td>
-			<td>String</td>
-			<td>'Print map'</td>
-			<td>Sets the text which appears as the tooltip of the print button</td>
-			</tr>
-			<tr>
-			<td>position</td>
-			<td><a href="http://leafletjs.com/reference-0.7.7.html#control-position" rel="nofollow">Leaflet control position</a></td>
-			<td>'topleft'</td>
-			<td>Position the print button</td>
-			</tr>
-			<tr>
-			<td>printModes</td>
-			<td>Array</td>
-			<td>["Portrait", "Landscape", "Auto", "Custom"]</td>
-			<td>Collection of page print actions</td>
-			</tr>
-			<tr>
-			<td>printModesNames</td>
-			<td>Object</td>
-			<td>{ Portrait: "Portrait", Landscape: "Landscape", Auto:"Auto", Custom:"Custom" }</td>
-			<td>Customize each print mode name</td>
-			</tr>
-			<tr>
-			<td>printLayer</td>
-			<td><a href="http://leafletjs.com/reference-0.7.7.html#tilelayer" rel="nofollow">Leaflet tile layer</a></td>
-			<td>null</td>
-			<td>A tiles layer to show instead of all current active tiles layers</td>
-			</tr>
-			<tr>
-			<td>closePopupsOnPrint</td>
-			<td>Boolean</td>
-			<td>true</td>
-			<td>Indicates if we need to force popup closing for printed map</td>
-			</tr>
-			<tr>
-			<td>contentSelector</td>
-			<td>String</td>
-			<td>"[leaflet-browser-print-content]"</td>
-			<td>Content selector for printed map, will select and dynamically inject content on printed maps. For full functionality please check "Printing additional content section"</td>
-			</tr></tbody></table>
-		<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.js"></script>
-		<script src="https://leaflet.github.io/Leaflet.markercluster/dist/leaflet.markercluster-src.js"></script>
-        <script src="src/leaflet.browser.print.js"></script>
-        <script src="src/leaflet.browser.print.utils.js"></script>
-        <script src="src/leaflet.browser.print.sizes.js"></script>
-		<script src="https://leaflet.github.io/Leaflet.markercluster/example/realworld.388.js"></script>
-    	<script>
- 				var canvasRenderer = L.canvas();
-					//Layers
-					var cities = L.markerClusterGroup();
-					var arrayOfPoints = [[39.61, -105.02], [39.73, -104.8], [39.77, -105.23]];
+    #map {
+      width: 80%;
+      margin: auto;
+      height: 70%;
+    }
+  </style>
+</head>
 
-					L.marker(arrayOfPoints[0]).bindPopup('This is Littleton, CO.').addTo(cities),
-					L.marker(arrayOfPoints[1]).bindPopup('This is Aurora, CO.').addTo(cities),
-					L.marker(arrayOfPoints[2]).bindPopup('This is Golden, CO.').addTo(cities);
+<body>
+<h1 class="title" leaflet-browser-print-content>Leaflet Browser print TITLE</h1>
+<h3 class="sub-content" leaflet-browser-print-content>Leaflet browser print plugin for map printing with additional
+  controls and content</h3>
+<div id="map"></div>
+<table leaflet-browser-print-pages>
+  <thead>
+  <tr>
+    <th>Option</th>
+    <th>Type</th>
+    <th>Default</th>
+    <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>title</td>
+    <td>String</td>
+    <td>'Print map'</td>
+    <td>Sets the text which appears as the tooltip of the print button</td>
+  </tr>
+  <tr>
+    <td>position</td>
+    <td><a href="http://leafletjs.com/reference-0.7.7.html#control-position" rel="nofollow">Leaflet control position</a>
+    </td>
+    <td>'topleft'</td>
+    <td>Position the print button</td>
+  </tr>
+  <tr>
+    <td>printModes</td>
+    <td>Array</td>
+    <td>["Portrait", "Landscape", "Auto", "Custom"]</td>
+    <td>Collection of page print actions</td>
+  </tr>
+  <tr>
+    <td>printModesNames</td>
+    <td>Object</td>
+    <td>{ Portrait: "Portrait", Landscape: "Landscape", Auto:"Auto", Custom:"Custom" }</td>
+    <td>Customize each print mode name</td>
+  </tr>
+  <tr>
+    <td>printLayer</td>
+    <td><a href="http://leafletjs.com/reference-0.7.7.html#tilelayer" rel="nofollow">Leaflet tile layer</a></td>
+    <td>null</td>
+    <td>A tiles layer to show instead of all current active tiles layers</td>
+  </tr>
+  <tr>
+    <td>closePopupsOnPrint</td>
+    <td>Boolean</td>
+    <td>true</td>
+    <td>Indicates if we need to force popup closing for printed map</td>
+  </tr>
+  <tr>
+    <td>contentSelector</td>
+    <td>String</td>
+    <td>"[leaflet-browser-print-content]"</td>
+    <td>Content selector for printed map, will select and dynamically inject content on printed maps. For full
+      functionality please check "Printing additional content section"
+    </td>
+  </tr>
+  </tbody>
+</table>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.js"></script>
+<script src="https://leaflet.github.io/Leaflet.markercluster/dist/leaflet.markercluster-src.js"></script>
+<script src="dist/leaflet.browser.print.js"></script>
+<script src="https://leaflet.github.io/Leaflet.markercluster/example/realworld.388.js">
 
-				var p =	L.polygon(arrayOfPoints, {color: 'yellow'}).bindTooltip("polygon").bindPopup('This is Polygon, CO.').addTo(cities);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@geoman-io/leaflet-geoman-free@2.7.0/dist/leaflet-geoman.min.js"></script>
+<script>
+    var canvasRenderer = L.canvas();
+    //Layers
+    var cities = L.markerClusterGroup();
+    var arrayOfPoints = [[39.61, -105.02], [39.73, -104.8], [39.77, -105.23]];
+
+    L.marker(arrayOfPoints[0]).bindPopup('This is Littleton, CO.').addTo(cities);
+    L.marker(arrayOfPoints[1]).bindPopup('This is Aurora, CO.').addTo(cities);
+    L.marker(arrayOfPoints[2]).bindPopup('This is Golden, CO.').addTo(cities);
+
+    var p = L.polygon(arrayOfPoints, {color: 'yellow'}).bindTooltip("polygon").bindPopup('This is Polygon, CO.').addTo(cities);
 
 
+    var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+        'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
 
-					var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-							'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-							'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-						mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+    var grayscale = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
+        streets = L.tileLayer(mbUrl, {id: 'mapbox.streets', attribution: mbAttr}),
+        originLayer = L.tileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        });
+    var wms = L.tileLayer.wms('https://ahocevar.com/geoserver/wms', {
+        layers: 'topp:states',
+        CQL_FILTER: 'PERSONS > 2000000',
+        styles: '',
+        format: 'image/png',
+        transparent: true,
+    });
 
-					var grayscale   = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
-						streets  = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr}),
-						originLayer = L.tileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			            	maxZoom: 19,
-			            	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-			            })
-						wms = L.tileLayer.wms('https://ahocevar.com/geoserver/wms', { layers: 'topp:states', CQL_FILTER: 'PERSONS > 2000000', styles: '', format: 'image/png', transparent: true, });
+    var map = L.map('map', {
+        center: [39.73, -104.99],
+        zoom: 10,
+        layers: [grayscale, cities]
+    });
 
-					var map = L.map('map', {
-						center: [39.73, -104.99],
-						zoom: 10,
-						layers: [grayscale, cities]
-					});
+    var baseLayers = {
+        "Grayscale": grayscale,
+        "Streets": streets,
+        "Origin": originLayer,
+        "WMS": wms
+    };
 
-					var baseLayers = {
-						"Grayscale": grayscale,
-						"Streets": streets,
-						"Origin": originLayer,
-						"WMS": wms
-					};
+    var overlays = {
+        "Cities": cities
+    };
 
-					var overlays = {
-						"Cities": cities
-					};
+    L.control.layers(baseLayers, overlays).addTo(map);
 
-					L.control.layers(baseLayers, overlays).addTo(map);
 
-			var drawnItems = new L.FeatureGroup();
+    L.control.scale({position: 'topleft'}).addTo(map);
 
-			var drawControl = new L.Control.Draw({
-				position: 'bottomright',
-				edit: {
-					featureGroup: drawnItems,
-					remove: false,
-					edit: false
-				},
-				draw: {
-					circlemarker: false,
-				}
-			});
-			map.addControl(drawControl);
+    map.pm.addControls({
+        position: 'bottomright',
+        editControls: false
+    });
+    var drawnItems = new L.FeatureGroup().addTo(map);
+    map.on("pm:create", function (e) {
+        var type = e.shape,
+            layer = e.layer;
 
-			map.createPane("new-pane");
+        if (type === 'Marker') {
+            layer.bindPopup('A popup!');
+        }
 
-			L.control.scale({position:'topleft'}).addTo(map);
+        drawnItems.addLayer(layer);
+    });
 
-			map.on(L.Draw.Event.CREATED, function (e) {
-			    var type = e.layerType,
-			        layer = e.layer;
 
-			    if (type === 'marker') {
-			        layer.bindPopup('A popup!');
-			    }
+    map.createPane("new-pane");
+    var l = L.layerGroup().addTo(map);
+    var green = L.circle([39.73, -104.99], 5000, {
+        color: 'green',
+        fillColor: 'darkgreen',
+        fillOpacity: 0.8,
+        pane: "new-pane",
+        renderer: canvasRenderer
+    }).addTo(l);
 
-			    drawnItems.addLayer(layer);
-				map.addLayer(drawnItems);
-			});
 
-            var green = L.circle([39.73, -104.99], 5000, {
-                        color: 'green',
-                        fillColor: 'darkgreen',
-                        fillOpacity: 0.8,
-						pane: "new-pane",
-						renderer: canvasRenderer
-                    });
+    var customActionToPrint = function (context, mode) {
+        return function () {
+            window.alert("We are printing the MAP. Let's do Custom print here!");
+            context._printCustom(mode);
+        }
+    };
 
-            var l = L.layerGroup();
-			l.addTo(map)
-			l.addLayer(green);
+    L.control.browserPrint({
+        printLayer: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
+            attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            subdomains: 'abcd',
+            minZoom: 1,
+            maxZoom: 16,
+            ext: 'png'
+        }),
+        closePopupsOnPrint: false,
+        printModes: [
+            L.BrowserPrint.Mode.Landscape("Tabloid",{title: "Tabloid VIEW"}),
+            new L.BrowserPrint.Mode("Alert",{title:"User specified print action",pageSize: "A6", action: customActionToPrint, invalidateBounds: false}),
+            L.BrowserPrint.Mode.Landscape(),
+            "Portrait",
+            L.BrowserPrint.Mode.Auto("B4",{title: "Auto"}),
+            L.BrowserPrint.Mode.Custom("B5",{title:"Select area"})
+        ]
+    }).addTo(map);
 
-			var customActionToPrint = function(context, mode) {
-				return function() {
-					window.alert("We are printing the MAP. Let's do Custom print here!");
-					context._printCustom(mode);
-				}
-			}
+    L.BrowserPrint.Utils.registerLayer(L.TileLayer.WMS, 'L.TileLayer.WMS', function (layer) {
+        console.info("Printing WMS layer.");
+        return L.tileLayer.wms(layer._url, layer.options);
+    });
 
-            L.control.browserPrint({
-                printLayer: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
-                            	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                            	subdomains: 'abcd',
-                            	minZoom: 1,
-                            	maxZoom: 16,
-                            	ext: 'png'
-                            }),
-                closePopupsOnPrint: false,
-				printModes: [
-					L.control.browserPrint.mode.landscape("Tabloid VIEW", "Tabloid"),
-					L.control.browserPrint.mode("Alert", "User specified print action", "A6", customActionToPrint, false),
-					L.control.browserPrint.mode.landscape(),
-					"PORTrait",
-					L.control.browserPrint.mode.auto("Auto", "B4"),
-					L.control.browserPrint.mode.custom("Séléctionnez la zone", "B5")
-				]
+    L.popup({minWidth: 500}).setLatLng(L.latLng(39.73, -104.99)).setContent("Leaflet browser print plugin with custom print Layer and content").openOn(map);
 
-            }).addTo(map);
+    var markers = L.markerClusterGroup();
 
-			L.Control.BrowserPrint.Utils.registerLayer(L.TileLayer.WMS, 'L.TileLayer.WMS', function(layer) {
-				console.info("Printing WMS layer.");
-				return L.tileLayer.wms(layer._url, layer.options);
-			});
+    for (var i = 0; i < addressPoints.length; i++) {
+        var a = addressPoints[i];
+        var title = a[2];
+        var marker = L.marker(new L.LatLng(a[0], a[1]), {title: title});
+        marker.bindPopup(title);
+        markers.addLayer(marker);
+    }
+    map.addLayer(markers);
 
-            L.popup({minWidth: 500}).setLatLng(L.latLng(39.73, -104.99)).setContent("Leaflet browser print plugin with custom print Layer and content").openOn(map);
+    // We are not cloning markercluster to preserve original clasterization behavior and prevent OutOfMemory problems
+    L.BrowserPrint.Utils.registerLayer(L.MarkerClusterGroup, 'L.MarkerClusterGroup', function (layer, utils) {
+        return layer;
+    });
 
-			var markers = L.markerClusterGroup();
+    // On print end we invalidate markercluster to update markers;
+    map.on(L.BrowserPrint.Event.PrintEnd, function (e) {
+        map.removeLayer(markers);
+        map.addLayer(markers);
+    });
 
-			for (var i = 0; i < addressPoints.length; i++) {
-				var a = addressPoints[i];
-				var title = a[2];
-				var marker = L.marker(new L.LatLng(a[0], a[1]), { title: title });
-				marker.bindPopup(title);
-				markers.addLayer(marker);
-			}
 
-			// We are not cloning markercluster to preserve original clasterization behavior and prevent OutOfMemory problems
-			L.Control.BrowserPrint.Utils.registerLayer(L.MarkerClusterGroup, 'L.MarkerClusterGroup', function (layer, utils) {
-				return layer;
-			});
+</script>
 
-			// On print end we invalidate markercluster to update markers;
-			map.on(L.Control.BrowserPrint.Event.PrintEnd, function(e) {
-				map.removeLayer(markers);
-				map.addLayer(markers);
-			});
+<style>
+  .grid-print-container {
+    grid-template: auto 1fr auto / 1fr;
+    background-color: orange;
+  }
 
-			map.addLayer(markers);
+  .grid-map-print {
+    grid-row: 2;
+  }
 
-    	</script>
+  .grid-print-container > .title,
+  .grid-print-container > .sub-content {
+    color: white;
+  }
 
-        <style>
-            .grid-print-container {
-                grid-template: auto 1fr auto / 1fr;
-                background-color: orange;
-            }
-            .grid-map-print {
-                grid-row: 2;
-            }
+  .title {
+    grid-row: 1;
+    justify-self: center;
+    text-align: center;
+    color: grey;
+    box-sizing: border-box;
+    margin-top: 0;
+  }
 
-            .grid-print-container > .title,
-            .grid-print-container > .sub-content {
-                color: white;
-            }
-            .title {
-                grid-row: 1;
-                justify-self: center;
-                text-align: center;
-                color: grey;
-				box-sizing: border-box;
-				margin-top: 0;
-            }
-            .sub-content {
-                grid-row: 5;
-                padding-left: 10px;
-                text-align: center;
-                color: grey;
-				box-sizing: border-box;
-            }
-        </style>
-		<style>
-			[leaflet-browser-print-pages] {
-				display: none;
-			}
-			.pages-print-container [leaflet-browser-print-pages] {
-				display: block;
-			}
-		</style>
-    </body>
+  .sub-content {
+    grid-row: 5;
+    padding-left: 10px;
+    text-align: center;
+    color: grey;
+    box-sizing: border-box;
+  }
+</style>
+<style>
+  [leaflet-browser-print-pages] {
+    display: none;
+  }
+
+  .pages-print-container [leaflet-browser-print-pages] {
+    display: block;
+  }
+</style>
+</body>
 
 </html>

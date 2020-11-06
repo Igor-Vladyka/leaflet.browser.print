@@ -47,13 +47,13 @@
 			var map = L.map("map").setView([37.8, -96], 4);
 
 			// Here we hide all controls from end image
-			map.on(L.Control.BrowserPrint.Event.PrintStart, function() {
+			map.on(L.BrowserPrint.Event.PrintStart, function() {
 				map._controlCorners.topleft.style.display = "none";
 				map._controlCorners.topright.style.display = "none";
 			});
 
 			// Here we show all controls after image was created
-			map.on(L.Control.BrowserPrint.Event.PrintEnd, function() {
+			map.on(L.BrowserPrint.Event.PrintEnd, function() {
 				map._controlCorners.topleft.style.display = "";
 				map._controlCorners.topright.style.display = "";
 			});
@@ -184,11 +184,11 @@
 		    L.control.browserPrint({
 				documentTitle: "printImage",
 				printModes: [
-					L.control.browserPrint.mode.auto("Download PNG")
+					L.BrowserPrint.Mode.Auto("Download PNG")
 				]
 			}).addTo(map);
 
-			map.on(L.Control.BrowserPrint.Event.PrintStart, function(e){
+			map.on(L.BrowserPrint.Event.PrintStart, function(e){
 				/*on print start we already have a print map and we can create new control and add it to the print map to be able to print custom information */
 				L.legendControl({position: 'bottomright'}).addTo(e.printMap);
 			});

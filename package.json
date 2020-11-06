@@ -1,6 +1,6 @@
 {
   "name": "leaflet.browser.print",
-  "version": "1.0.6",
+  "version": "2.0.0",
   "keywords": [
     "leaflet.js",
     "browser",
@@ -18,7 +18,12 @@
   },
   "author": "Igor Vladyka <igor.vladyka@gmail.com> (https://github.com/Igor-Vladyka/)",
   "license": "MIT (http://www.opensource.org/licenses/mit-license.php)",
+  "scripts": {
+    "build": "npx webpack",
+    "watch": "npx webpack -w"
+  },
   "devDependencies": {
+    "leaflet": "^1.7.1",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11"
   }

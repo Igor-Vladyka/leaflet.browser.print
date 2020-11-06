@@ -3,7 +3,7 @@
 	Author Igor Vladyka <igor.vladyka@gmail.com> (https://github.com/Igor-Vladyka/leaflet.browser.print)
 **/
 
-L.Control.BrowserPrint.Utils = {
+L.BrowserPrint.Utils = {
 
 	_ignoreArray: [],
 
