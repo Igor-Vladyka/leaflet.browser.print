@@ -6,7 +6,7 @@ var banner = '\n ' + PACKAGE.name + ' - v' + PACKAGE.version + ' (' + PACKAGE.ho
              '\n ' + PACKAGE.license +
              '\n (c) ' + new Date().getFullYear() + '  ' + PACKAGE.author + '\n';
 
-var pluginFiles = ['./src/leaflet.browser.print.js', './src/leaflet.browser.print.utils.js', './src/leaflet.browser.print.sizes.js'];
+var pluginFiles = ['./src/leaflet.browser.print.js', './src/leaflet.browser.print.control.js', './src/leaflet.browser.print.utils.js', './src/leaflet.browser.print.sizes.js', './src/leaflet.browser.print.modes.js', './src/leaflet.browser.print.helpers.js'];
 
 module.exports = [
 	{

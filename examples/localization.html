@@ -11,7 +11,7 @@
 		<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
 		  integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
 		  crossorigin=""></script>
-		<script src="../dist/leaflet.browser.print.min.js"></script>
+		<script src="../dist/leaflet.browser.print.js"></script>
         <style>
             html, body, #map { width: 100%; height: 100%; margin: 0px; padding: 0px;}
         </style>
@@ -40,9 +40,11 @@
                         fillOpacity: 0.8
                     }).addTo(map);
 
-            L.control.browserPrint({
-                printModes: [L.control.browserPrint.mode.landscape(), L.control.browserPrint.mode.custom("Séléctionnez la zone")]
-            }).addTo(map);
+            var browserPrint = L.browserPrint(map);
+
+            var c = L.control.browserPrint({
+                printModes: [L.BrowserPrint.Mode.Landscape(), L.BrowserPrint.Mode.Custom("A4",{title: "Select area (Custom)"})]
+            },browserPrint).addTo(map);
 
     	</script>
     </body>
