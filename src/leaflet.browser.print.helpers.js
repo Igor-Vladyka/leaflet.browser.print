@@ -69,7 +69,7 @@ L.BrowserPrint.Helper = {
 				Height: switchSides ? w : h
 			};
 		} else {
-			var size = L.BrowserPrint.Size[mode.options.pageSeries];
+			var size = L.BrowserPrint.Size[mode.options.pageSeriesSize];
 			return {
 				Width: size.Width,
 				Height: size.Height
