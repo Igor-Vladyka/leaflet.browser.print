@@ -81,14 +81,16 @@ L.Control.BrowserPrint = L.Control.extend({
 				throw "Invalid Print Mode. Can't construct logic to print current map."
 			}
 
+			var clickContainer = container;
 			if (this.options.printModes.length === 1) {
 				mode.Element = container;
 			} else {
-				mode.Element = L.DomUtil.create('li', 'browser-print-mode', L.DomUtil.create('ul', 'browser-print-holder', container));
+				clickContainer = L.DomUtil.create('ul', 'browser-print-holder', container);
+				mode.Element = L.DomUtil.create('li', 'browser-print-mode', clickContainer);
 				mode.Element.innerHTML = mode.options.title;
 			}
 
-			L.DomEvent.on(mode.Element, 'click', mode.options.action(this.browserPrint, mode), this.browserPrint);
+			L.DomEvent.on(clickContainer, 'click', mode.options.action(this.browserPrint, mode), this.browserPrint);
 
 			domPrintModes.push(mode);
 		}
