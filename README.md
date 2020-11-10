@@ -205,6 +205,11 @@ Creating a own mode: `L.BrowserPrint.Mode(name,options);`
 L.browserPrint.mode("Alert Mode",{pageSize: 'A3',orientation: 'Portrait'});
 ```
 
+The mode options can be updated with:
+```javascript
+mode.setOptions(options);
+```
+
 ### Map Events
 
 | Map Event           | Event Shortcut                          | Value           		 			     | Description 													   | Purpose |

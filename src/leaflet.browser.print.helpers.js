@@ -52,7 +52,7 @@ L.BrowserPrint.Helper = {
 			var w = series.Width;
 			var h = series.Height;
 			var switchSides = false;
-			if (mode.options.pageSeriesSize) {
+			if (mode.options.pageSeriesSize && mode.options.pageSeriesSize !== '0') {
 				mode.options.pageSeriesSize = +mode.options.pageSeriesSize;
 				switchSides = mode.options.pageSeriesSize % 2 === 1;
 				if (switchSides) {

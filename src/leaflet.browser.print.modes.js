@@ -24,27 +24,28 @@ L.BrowserPrint.Mode = L.Class.extend({
 		}
 
 		this.mode = mode;
-		L.setOptions(this, options);
-
-		if(!this.options.title){
-			this.options.title = mode;
-		}
-
-		if(!this.options.orientation){
-			if(mode === "Portrait" || mode === "Landscape"){
-				this.options.orientation = mode;
-			}
-		}
-
-		this.options.pageSize = (this.options.pageSize || 'A4').toUpperCase();
-		this.options.pageSeries = ["A", "B", "C", "D"].indexOf(this.options.pageSize[0]) !== -1 ? this.options.pageSize[0] : "";
-		this.options.pageSeriesSize = this.options.pageSize.substring(this.options.pageSeries.length);
-		this.options.action = this.options.action || function (context, element) {
-			return function () {
-				context._printMode(element)
-			};
-		};
+		this.setOptions(options);
 	},
+    setOptions: function(options){
+        L.setOptions(this, options);
+
+        if(!this.options.title){
+            this.options.title = this.mode;
+        }
+
+        if(this.mode === "Portrait" || this.mode === "Landscape"){
+            this.options.orientation = this.mode;
+        }
+
+        this.options.pageSize = (this.options.pageSize || 'A4').toUpperCase();
+        this.options.pageSeries = ["A", "B", "C", "D"].indexOf(this.options.pageSize[0]) !== -1 ? this.options.pageSize[0] : "";
+        this.options.pageSeriesSize = this.options.pageSize.substring(this.options.pageSeries.length);
+        this.options.action = this.options.action || function (context, element) {
+            return function () {
+                context._printMode(element)
+            };
+        };
+    }
 });
 
 L.browserPrint.mode = function(mode, options){
