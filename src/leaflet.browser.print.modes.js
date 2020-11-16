@@ -17,6 +17,18 @@ L.BrowserPrint.Mode = L.Class.extend({
 		pageSeries: '',
 		pageSeriesSize: '',
 		action: null,
+		header: {
+			enabled: false,
+			text: "",
+			size: "10mm",
+			overTheMap: false,
+		},
+		footer: {
+			enabled: false,
+			text: "",
+			size: "10mm",
+			overTheMap: false,
+		},
 	},
 	initialize: function (mode, options = {}) {
 		if (!mode) {
