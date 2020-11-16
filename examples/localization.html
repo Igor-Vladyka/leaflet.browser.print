@@ -41,10 +41,24 @@
         fillOpacity: 0.8
     }).addTo(map);
 
-    var browserPrint = L.browserPrint(map);
+    var browserPrint = L.browserPrint(map,{debug:false, cancelWithEsc: true});
 
     var c = L.control.browserPrint({
-        printModes: [L.BrowserPrint.Mode.Landscape(), L.BrowserPrint.Mode.Custom("A4", {title: "Select area (Custom)"})]
+        printModes: [
+            L.BrowserPrint.Mode.Landscape(),
+            L.BrowserPrint.Mode.Landscape('A4',{margin: 0, title: 'Header / Footer', header: {
+                enabled: true,
+                text: "<span>A wonderful print Plugin</span>",
+                size: "10mm",
+                overTheMap: false,
+            },
+            footer: {
+                enabled: true,
+                text: "<span>Created by Leaflet-Browser-Plugin</span>",
+                size: "10mm",
+                overTheMap: false,
+            }
+        }), L.BrowserPrint.Mode.Custom("A4", {title: "Select area (Custom)"})]
     }, browserPrint).addTo(map);
 
 </script>

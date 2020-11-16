@@ -138,12 +138,14 @@ You can pass a number of options for printing:
 | ------------- |--------------|--------------|---------------|
 | printModes    | Array        | ["Portrait", "Landscape", "Auto", "Custom"] | Collection of page print actions |
 | documentTitle | String       | ''  		  | Sets the text which appears as the print page title |
-| printLayer    | [Leaflet tile layer](http://leafletjs.com/reference-1.5.0.html#tilelayer) | null | A tiles layer to show instead of all current active tile layers |
+| printLayer    | [Leaflet tile layer](http://leafletjs.com/reference-1.7.1.html#tilelayer) | null | A tiles layer to show instead of all current active tile layers |
 | closePopupsOnPrint | Boolean | true | Indicates if we need to force popup closing for printed map |
 | contentSelector | String | "[leaflet-browser-print-content]" | Content selector for printed map, will select and dynamically inject content on printed maps. For full functionality please check "Printing additional content section" |
 | pagesSelector | String | "[leaflet-browser-print-pages]" | Pages selector for printed map, will select and dynamically inject additional pages content on printed maps. |
 | manualMode | Boolean | false | Adds a button with id='leaflet-browser-print--manualMode-button' for debugging purpose, also can be used to print map with external button. |
-| customPrintStyle | [Polyline options](https://leafletjs.com/reference-1.5.0.html#polyline-option) | `{ color: "gray", dashArray: "5, 10", pane: "customPrintPane" }` | Style for rectangle on custom print. 'customPrintPane' - is a custom pane with z-index => 9999 |
+| customPrintStyle | [Polyline options](https://leafletjs.com/reference-1.7.1.html#polyline-option) | `{ color: "gray", dashArray: "5, 10", pane: "customPrintPane" }` | Style for rectangle on custom print. 'customPrintPane' - is a custom pane with z-index => 9999 |
+| cancelWithEsc    | Boolean        | true | Cancel printing with the ESC key |
+| debug    | Boolean        | false | Stops opening the print window. Only for developing use. |
 
 
 Here's an example of passing through some options:
@@ -198,7 +200,18 @@ L.BrowserPrint.Mode.Landscape(pageSize,options);
 | rotate        | Integer      | 0             | Rotate the map x-times by 90° |
 | margin        | Object       | automatic     | The default margin are `(height + width) / 39.9`. A number can passed for all margins or set it explicit in a object for `left`, `right`, `top`, `bottom` --> `{left: 10, top: 40}`  |
 | scale         | Double       | 1             | Scale the map. Shows all bigger or smaller, with `1` the map looks normal |
+| header        | Object       |               | Adds a header section to the top of the page. For the available options look in the "Header / Footer Options" table below |
+| footer        | Object       |               | Adds a footer section to the bottom of the page. For the available options look in the "Header / Footer Options" table below |
 
+#### Header / Footer Options
+| Option        | Type         | Default      | Description   |
+| ------------- |--------------|--------------|---------------|
+| enabled       | Boolean      | false        | Shows the section |
+| text          | String / HTML| ""           | The displayed text |
+| size          | String       | "10mm"       | The height of the section |
+| overTheMap    | Boolean      | false        | The section is displayed over the map|
+
+You can overwrite the CSS or change the DOM over the ids `#print-header` and `#print-footer`
 
 Creating a own mode: `L.BrowserPrint.Mode(name,options);`
 ```javascript
@@ -395,6 +408,7 @@ And add next css to hide onmap menu:
 ```CSS
 	.leaflet-control-browser-print {display: none;}
 ```
+
 ### Important notes
 ````
 Unfortunately 'Custom' mode is not working correctly for Leaflet v.0.7.7 in all IE browsers.
