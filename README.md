@@ -308,8 +308,8 @@ Example:
 ```
 
 And add next css to hide onmap menu:
-``` CSS
-	.leaflet-control-browser-print {display: none;}
+```js
+	document.querySelector('.leaflet-control-browser-print').style.display = 'none';
 ```
 ### Important notes
 ````
