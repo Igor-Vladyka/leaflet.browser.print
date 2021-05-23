@@ -90,6 +90,8 @@ L.BrowserPrint = L.Class.extend({
 
 		this.options.custom.start = e.latlng;
 
+		this._map.getPane(this.options.customPrintStyle.pane).style.display = "initial";
+
 		this._map.off('mousedown', this._startAutoPolygon, this);
 		this._map.on('mousemove', this._moveAutoPolygon, this);
 		this._map.on('mouseup', this._endAutoPolygon, this);
@@ -102,8 +104,8 @@ L.BrowserPrint = L.Class.extend({
 				this.options.custom.rectangle.setBounds(L.latLngBounds(this.options.custom.start, e.latlng));
 			} else {
 				this.options.custom.rectangle = L.rectangle([this.options.custom.start, e.latlng], this.options.customPrintStyle);
-				this.options.custom.rectangle.addTo(this._map);
 			}
+			this.options.custom.rectangle.addTo(this._map);
 		}
 	},
 
@@ -136,6 +138,9 @@ L.BrowserPrint = L.Class.extend({
 		this._map.off('mouseup', this._endAutoPolygon, this);
 
 		this._map.dragging.enable();
+
+		// we hide the pane because it destorys sometimes interactions with layers if printing is finished
+		this._map.getPane(this.options.customPrintStyle.pane).style.display = "none";
 	},
 
 	_getPageSizeFromBounds: function(bounds) {
