@@ -145,6 +145,7 @@ You can pass a number of options for printing:
 | manualMode | Boolean | false | Adds a button with id='leaflet-browser-print--manualMode-button' for debugging purpose, also can be used to print map with external button. |
 | customPrintStyle | [Polyline options](https://leafletjs.com/reference-1.7.1.html#polyline-option) | `{ color: "gray", dashArray: "5, 10", pane: "customPrintPane" }` | Style for rectangle on custom print. 'customPrintPane' - is a custom pane with z-index => 9999 |
 | cancelWithEsc    | Boolean        | true | Cancel printing with the ESC key |
+| printFunction    | Function | window.print | Function that will be executed for printing. |
 | debug    | Boolean        | false | Stops opening the print window. Only for developing use. |
 
 
@@ -364,19 +365,27 @@ To print actual map we use in-browser print mechanism:
 window.print()
 ```
 
-You can override it to support any other behavior as you want.
+You can use the options `printFunction` to implement any other behavior that you want.
 Example with [domtoimage](https://github.com/tsayen/dom-to-image) plugin to export map as image.png:
 
 ```js
-window.print = function () {
+var saveAsImage = function () {
 	return domtoimage.toPng(document.body)
-				.then(function (dataUrl) {
-					var link = document.createElement('a');
-					link.download = map.printControl.options.documentTitle || "exportedMap" + '.png';
-					link.href = dataUrl;
-					link.click();
-				});
+        .then(function (dataUrl) {
+            var link = document.createElement('a');
+            link.download = map.printControl.options.documentTitle || "exportedMap" + '.png';
+            link.href = dataUrl;
+            link.click();
+        });
 };
+
+L.control.browserPrint({
+    documentTitle: "printImage",
+    printModes: [
+        L.BrowserPrint.Mode.Auto("Download PNG"),
+    ],
+    printFunction: saveAsImage
+}).addTo(map);
 ```
 
 Full example you can find [here](https://igor-vladyka.github.io/leaflet.browser.print/examples/savePNG.html).

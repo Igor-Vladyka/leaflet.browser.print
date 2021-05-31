@@ -13,6 +13,7 @@ L.BrowserPrint = L.Class.extend({
 		manualMode: false,
 		customPrintStyle: { color: "gray", dashArray: '5, 10', pane: "customPrintPane" },
 		cancelWithEsc: true,
+		printFunction: window.print,
 		debug: false
 	},
 	initialize: function(map, options){
@@ -268,7 +269,8 @@ L.BrowserPrint = L.Class.extend({
 				return;
 			}
 			self._map.fire(L.BrowserPrint.Event.Print, { printLayer: origins.printLayer, printMap: overlayMap, printObjects: printObjects });
-			var printPromise = window.print();
+			var printFunction = self.options.printFunction || window.print;
+			var printPromise = printFunction();
 			if (printPromise) {
 				Promise.all([printPromise]).then(function(){
 					self._printEnd(origins);
