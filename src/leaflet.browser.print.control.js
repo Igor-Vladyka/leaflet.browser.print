@@ -44,9 +44,11 @@ L.Control.BrowserPrint = L.Control.extend({
 		map.printControl = this; // Make control available from the map object itself;
 		return container;
 	},
-	cancel(){
+	
+	cancel: function () {
 		this.browserPrint.cancel();
 	},
+
 	_createIcon: function (container) {
 		this.__link__ = L.DomUtil.create('a', '', container);
 		this.__link__.className = "leaflet-browser-print";
@@ -149,5 +151,3 @@ L.control.browserPrint = function(options, browserPrint) {
 
 	return new L.Control.BrowserPrint(options,browserPrint);
 };
-
-
