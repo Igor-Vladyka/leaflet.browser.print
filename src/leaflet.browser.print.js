@@ -164,7 +164,8 @@ L.BrowserPrint = L.Class.extend({
 
 		mapContainer.style.height =  "calc("+(pageOrientation === "Landscape" ? size.Width : size.Height) + " - "+header+" - " +footer+ ")";
 	},
-	_printCancel(){
+
+	_printCancel: function() {
 		clearInterval(self.printInterval);
 		L.DomEvent.off(document,'keyup',this._keyUpCancel,this);
 		var activeMode = this.activeMode;
@@ -175,11 +176,13 @@ L.BrowserPrint = L.Class.extend({
 		this._map.fire(L.BrowserPrint.Event.PrintCancel, { mode: activeMode });
 		this._printEnd();
 	},
-	_keyUpCancel(e){
+
+	_keyUpCancel: function(e){
 		if(e.which === 27){ //ESC
 			this.cancel();
 		}
 	},
+
 	_printMode: function(mode){
 		if(this._map.isPrinting){
 			console.error("printing is already active");
@@ -190,6 +193,7 @@ L.BrowserPrint = L.Class.extend({
 		this.activeMode = mode;
 		this['_print' + mode.mode](mode);
 	},
+
 	_print: function (printMode, autoBounds) {
 		this._map.fire(L.BrowserPrint.Event.PrintInit, { mode: printMode });
 		if(this.options.cancelWithEsc) {
@@ -273,11 +277,11 @@ L.BrowserPrint = L.Class.extend({
 			var printPromise = printFunction();
 			if (printPromise) {
 				Promise.all([printPromise]).then(function(){
-					self._printEnd(origins);
+					self._printEnd(overlayMap, origins);
 					self._map.fire(L.BrowserPrint.Event.PrintEnd, { printLayer: origins.printLayer, printMap: overlayMap, printObjects: printObjects });
 				})
 			} else {
-				self._printEnd(origins);
+				self._printEnd(overlayMap, origins);
 				self._map.fire(L.BrowserPrint.Event.PrintEnd, { printLayer: origins.printLayer, printMap: overlayMap, printObjects: printObjects });
 			}
 		}, 1000);
@@ -320,10 +324,15 @@ L.BrowserPrint = L.Class.extend({
 		this._removePrintClassFromContainer(this._map, "leaflet-browser-print--custom");
 	},
 
-	_printEnd: function (origins) {
+	_printEnd: function (overlayMap, origins) {
 		this._clearPrint();
 
-		if(this.__overlay__) {
+		if (overlayMap) {
+			overlayMap.remove();
+			overlayMap = null;
+		}
+
+		if (this.__overlay__) {
 			document.body.removeChild(this.__overlay__);
 			this.__overlay__ = null;
 		}
