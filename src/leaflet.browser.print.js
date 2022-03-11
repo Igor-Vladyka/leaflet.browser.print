@@ -234,7 +234,7 @@ L.BrowserPrint = L.Class.extend({
 		this._map.fire(L.BrowserPrint.Event.PrintStart, { printLayer: origins.printLayer, printMap: overlay.map, printObjects: overlay.objects });
 
 		if (options.invalidateBounds) {
-			overlay.map.fitBounds(origins.bounds);
+			overlay.map.fitBounds(origins.bounds, overlay.map.options);
 			overlay.map.invalidateSize({reset: true, animate: false, pan: false});
 		} else {
 			overlay.map.setView(this._map.getCenter(), this._map.getZoom());
@@ -383,7 +383,6 @@ L.BrowserPrint = L.Class.extend({
 		return printStyleSheet;
 	},
 
-
 	_addPrintMapOverlay: function (printMode, pageOrientation, origins) {
 		this.__overlay__ = document.createElement("div");
 		this.__overlay__.className = this._map.getContainer().className + " leaflet-print-overlay";
@@ -471,10 +470,7 @@ L.BrowserPrint = L.Class.extend({
 			overlayMapDom.style.transform += " rotate("+(90*rotate)+"deg)";
 		}
 
-
 		gridContainer.appendChild(overlayMapDom);
-
-
 
 		if(options.footer && options.footer.enabled) {
 			var footerContainer = document.createElement("div");
@@ -492,16 +488,20 @@ L.BrowserPrint = L.Class.extend({
 			this.__overlay__.appendChild(footerContainer);
 		}
 
-
-
 		document.body.className += " leaflet--printing";
 
-		var newMapOptions = L.BrowserPrint.Utils.cloneBasicOptionsWithoutLayers(this._map.options);
-		newMapOptions.maxZoom = this._map.getMaxZoom();
-		return this._setupPrintMap(overlayMapDom.id, newMapOptions, origins.printLayer, origins.printObjects, origins.panes);
+		return this._setupPrintMap(overlayMapDom.id, this._combineBasicOptions(origins.printLayer), origins.printLayer, origins.printObjects, origins.panes);
 	},
 
-	_setupPrintMap: function (id, options, printLayer, printObjects, panes) {
+	_combineBasicOptions: function (printLayer) {
+		var options = L.BrowserPrint.Utils.cloneBasicOptionsWithoutLayers(this._map.options);
+
+		if (printLayer) {
+			options.maxZoom = printLayer.options.maxZoom;
+		} else {
+			options.maxZoom = this._map.getMaxZoom();
+		}
+
 		options.zoomControl = false;
 		options.dragging = false;
 		options.zoomAnimation = false;
@@ -511,6 +511,11 @@ L.BrowserPrint = L.Class.extend({
 		options.scrollWheelZoom = false;
 		options.tap = false;
 		options.touchZoom = false;
+
+		return options;
+	},
+
+	_setupPrintMap: function (id, options, printLayer, printObjects, panes) {
 		var overlayMap = L.map(id, options);
 
 		if (printLayer) {

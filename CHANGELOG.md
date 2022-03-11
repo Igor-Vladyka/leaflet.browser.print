@@ -1,11 +1,14 @@
 # Changelog
 
+## [2.0.1] - 2022-03-11
+- Fixed maxZoom validation on print when switching underlying layers dynamically. Now maxZoom will be used from printLayer if exists.
+
 ## [2.0.0] - 2020-11-06
 ### !!Breaking Changes!!
 The complete code has changed! It's now more readable and more structured.
 
 Now it is possible to use BrowserPrint without a Control.
- 
+
 ### Added
 - `L.browserPrint(map, options)`
 - More options added:
@@ -26,8 +29,7 @@ Now it is possible to use BrowserPrint without a Control.
 ## [1.0.7] - 2020-08-30
 
 ### Added
-
-- Added changelog :) 
+- Added changelog :)
 - Handled empty map printing in a correct way.
 
 ### Changed
