@@ -1,7 +1,8 @@
 # Changelog
 
-## [2.0.1] - 2022-03-11
+## [2.0.2] - 2022-03-11
 - Fixed maxZoom validation on print when switching underlying layers dynamically. Now maxZoom will be used from printLayer if exists.
+- Fixed map memory leak after printing. 
 
 ## [2.0.0] - 2020-11-06
 ### !!Breaking Changes!!
