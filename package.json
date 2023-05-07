@@ -1,6 +1,7 @@
 {
   "name": "leaflet.browser.print",
   "version": "2.0.2",
+  "main": "dist/leaflet.browser.print",
   "keywords": [
     "leaflet.js",
     "browser",
