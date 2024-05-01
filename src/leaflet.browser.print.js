@@ -215,6 +215,7 @@ L.BrowserPrint = L.Class.extend({
 			printLayer: L.BrowserPrint.Utils.cloneLayer(this.options.printLayer),
 			panes: []
 		};
+		this._documentTitle = origins.documentTitle;
 
 		var mapPanes = this._map.getPanes();
 		for (var pane in mapPanes) {
@@ -340,7 +341,7 @@ L.BrowserPrint = L.Class.extend({
 
 		document.body.className = document.body.className.replace(" leaflet--printing", "");
 		if (this.options.documentTitle) {
-			document.title = origins.documentTitle;
+			document.title = this._documentTitle;
 		}
 
 		this._map.invalidateSize({reset: true, animate: false, pan: false});
