@@ -350,7 +350,7 @@ L.BrowserPrint = L.Class.extend({
 		var printObjects = {};
 		for (var id in this._map._layers){
 			var layer = this._map._layers[id];
-			if (!printLayer || !layer._url || layer instanceof L.TileLayer.WMS) {
+			if (!printLayer || !layer._url || layer instanceof L.ImageOverlay || layer instanceof L.TileLayer.WMS) {
 				var type = L.BrowserPrint.Utils.getType(layer);
 				if (type) {
 					if (!printObjects[type]) {
