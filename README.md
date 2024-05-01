@@ -409,7 +409,7 @@ Example:
 
 	document.querySelector("#custom_print_button").addEventListener("click", function(){
 		var modeToUse = L.BrowserPrint.Mode.Auto();
-		map.printControl.print(modeToUse);
+		map.printControl.browserPrint.print(modeToUse);
 	});
 ```
 
