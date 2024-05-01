@@ -66,6 +66,7 @@ L.BrowserPrint = L.Class.extend({
 		this._addPrintClassToContainer(this._map, "leaflet-browser-print--custom");
 		this.options.custom = { mode: mode, options: options};
 		this._map.on('mousedown', this._startAutoPolygon, this);
+		L.DomEvent.on(this._map._container, 'touchstart', this._startAutoPolygon, this);
 	},
 
 	_addPrintClassToContainer: function (map, printClassName) {
@@ -89,22 +90,42 @@ L.BrowserPrint = L.Class.extend({
 
 		this._map.dragging.disable();
 
-		this.options.custom.start = e.latlng;
+		let latlng;
+		if(e.type === 'touchstart'){
+            const p1 = this._map.mouseEventToContainerPoint(e.touches[0]);
+            latlng = this._map.containerPointToLatLng(p1);
+        } else {
+		    latlng = e.latlng
+        }
+
+		this.options.custom.start = latlng;
 
 		this._map.getPane(this.options.customPrintStyle.pane).style.display = "initial";
 
 		this._map.off('mousedown', this._startAutoPolygon, this);
+        L.DomEvent.off(this._map._container, 'touchstart', this._startAutoPolygon, this);
 		this._map.on('mousemove', this._moveAutoPolygon, this);
 		this._map.on('mouseup', this._endAutoPolygon, this);
+        L.DomEvent.on(this._map._container, 'touchmove', this._moveAutoPolygon, this);
+        L.DomEvent.on(this._map._container, 'touchend', this._endAutoPolygon, this);
 	},
 
 	_moveAutoPolygon: function (e) {
 		if (this.options.custom) {
 			L.DomEvent.stop(e);
+
+			let latlng;
+            if(e.type === 'touchmove'){
+                const p1 = this._map.mouseEventToContainerPoint(e.touches[0]);
+                latlng = this._map.containerPointToLatLng(p1);
+            } else {
+                latlng = e.latlng
+            }
+
 			if (this.options.custom.rectangle) {
-				this.options.custom.rectangle.setBounds(L.latLngBounds(this.options.custom.start, e.latlng));
+				this.options.custom.rectangle.setBounds(L.latLngBounds(this.options.custom.start, latlng));
 			} else {
-				this.options.custom.rectangle = L.rectangle([this.options.custom.start, e.latlng], this.options.customPrintStyle);
+				this.options.custom.rectangle = L.rectangle([this.options.custom.start, latlng], this.options.customPrintStyle);
 			}
 			this.options.custom.rectangle.addTo(this._map);
 		}
@@ -137,6 +158,10 @@ L.BrowserPrint = L.Class.extend({
 		this._map.off('mousedown', this._startAutoPolygon, this);
 		this._map.off('mousemove', this._moveAutoPolygon, this);
 		this._map.off('mouseup', this._endAutoPolygon, this);
+
+        L.DomEvent.off(this._map._container, 'touchstart', this._startAutoPolygon, this);
+        L.DomEvent.off(this._map._container, 'touchmove', this._moveAutoPolygon, this);
+        L.DomEvent.off(this._map._container, 'touchend', this._endAutoPolygon, this);
 
 		this._map.dragging.enable();
 
