@@ -27,8 +27,8 @@ L.Control.BrowserPrint = L.Control.extend({
 
 
 		if (this.options.printModes.length > 1) {
-			L.DomEvent.on(container, 'mouseover', this._displayPageSizeButtons, this);
-			L.DomEvent.on(container, 'mouseout', this._hidePageSizeButtons, this);
+            L.DomEvent.on(container, 'click', this._displayPageSizeButtons, this);
+            map.on('click', this._hidePageSizeButtons, this);
 		} else {
 			container.style.cursor = "pointer";
 		}
@@ -44,7 +44,7 @@ L.Control.BrowserPrint = L.Control.extend({
 		map.printControl = this; // Make control available from the map object itself;
 		return container;
 	},
-	
+
 	cancel: function () {
 		this.browserPrint.cancel();
 	},
@@ -105,6 +105,12 @@ L.Control.BrowserPrint = L.Control.extend({
 	},
 
     _displayPageSizeButtons: function() {
+	    if(this._controlIsOpen){
+	        // close control with click
+	        this._hidePageSizeButtons();
+	        return;
+        }
+	    this._controlIsOpen = true;
 		if (this.options.position.indexOf("left") > 0) {
 	        this.__link__.style.borderTopRightRadius = "0px";
 	    	this.__link__.style.borderBottomRightRadius = "0px";
@@ -119,6 +125,7 @@ L.Control.BrowserPrint = L.Control.extend({
     },
 
     _hidePageSizeButtons: function () {
+        this._controlIsOpen = false;
 		if (this.options.position.indexOf("left") > 0) {
 	    	this.__link__.style.borderTopRightRadius = "";
 	    	this.__link__.style.borderBottomRightRadius = "";
