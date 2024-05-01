@@ -24,8 +24,8 @@
     "watch": "npx webpack -w"
   },
   "devDependencies": {
-    "leaflet": "^1.7.1",
-    "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.11"
+    "leaflet": "^1.9.4",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
   }
 }
