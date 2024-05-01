@@ -130,6 +130,7 @@ L.BrowserPrint = L.Class.extend({
 			delete this.options.custom;
 		} else {
 			this._clearPrint();
+            this._map.isPrinting = false;
 		}
 	},
 	_removeAutoPolygon: function(){
