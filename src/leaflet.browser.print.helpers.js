@@ -86,8 +86,8 @@ L.BrowserPrint.Helper = {
 		var height = Math.floor(size.Height - topbottom);
 		var width = Math.floor(size.Width - leftright);
 
-		size.Width = width * (window.devicePixelRatio || 1) + 'mm';
-		size.Height = height * (window.devicePixelRatio || 1) + 'mm';
+		size.Width = width + 'mm';
+		size.Height = height + 'mm';
 
 		return size;
 	}
